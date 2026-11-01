@@ -1139,15 +1139,15 @@ const MIRROR = (() => {
     state.busy = b;
     [shootBtn, albumBtn, againBtn].forEach(x => { x.disabled = b; });
   }
-  async function loadImage(file) {
-    const url = URL.createObjectURL(file);
-    try {
-      const img = new Image();
-      img.decoding = 'async';
+  // 用 onload 等图：img.decode() 在页面切到后台时可能永远不回话
+  function loadImage(file) {
+    const url = URL.createObjectURL(file), img = new Image();
+    return new Promise((resolve, reject) => {
+      const done = ok => { img.onload = img.onerror = null; setTimeout(() => URL.revokeObjectURL(url), 60000); ok ? resolve(img) : reject(new Error('decode')); };
+      img.onload = () => done(true);
+      img.onerror = () => done(false);
       img.src = url;
-      await img.decode();
-      return img;
-    } finally { setTimeout(() => URL.revokeObjectURL(url), 0); }
+    });
   }
   async function run(file) {
     if (state.busy) return;
