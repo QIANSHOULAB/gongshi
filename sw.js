@@ -1,6 +1,6 @@
 // 车间小工具的离线看门狗（工时榨汁机 + 英寸照妖镜）：页面先上网拿新的，断网就用存下的；
 // 照妖镜的识字模型和运行库存一次用到底。
-const PAGES = 'gongshi-pages-v1';
+const PAGES = 'gongshi-pages-v2';
 const ASSETS = 'inch-mirror-assets-v1';
 const BIG = /\/(ort\/[^/]+|models\/[^/]+)$/;
 
@@ -43,7 +43,7 @@ self.addEventListener('fetch', e => {
     e.respondWith((async () => {
       const c = await caches.open(PAGES);
       try {
-        const res = await fetch(req);
+        const res = await fetch(req, { cache: 'no-cache' });   // 每次跟服务器核一下，改了马上见
         if (res.ok) c.put(url.origin + url.pathname, res.clone()).catch(() => {});
         return res;
       } catch (err) {
