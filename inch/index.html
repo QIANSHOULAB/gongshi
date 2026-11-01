@@ -114,8 +114,13 @@ a { -webkit-tap-highlight-color: transparent; }
 .unit { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px;
   background: rgba(240,138,93,.12); border: 1px solid rgba(240,138,93,.45); border-radius: 10px; font-size: 14px; }
 .unit button { flex: none; height: 34px; padding: 0 14px; border: 0; border-radius: 9px; background: var(--warn); color: var(--on-accent); font-weight: 700; }
-.pic { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #fff; }
+/* 结果图不受 440 那条竖栏管：手机横过来就铺满整个屏宽，字跟着变大 */
+.pic { --w: min(calc(100vw - 32px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)), 1100px);
+  position: relative; width: var(--w); margin-left: calc((100% - var(--w)) / 2);
+  border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #fff; }
 .pic img { display: block; width: 100%; height: auto; -webkit-touch-callout: default; }
+.turn { margin: -2px 2px 0; font-size: 13.5px; color: var(--muted); }
+@media (orientation: landscape) { .turn { display: none; } }
 .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .acts .btn { height: 52px; font-size: 16px; }
 .foot { margin: 0; padding-inline: 2px; font-size: 12.5px; color: var(--muted); }
@@ -178,7 +183,7 @@ a { -webkit-tap-highlight-color: transparent; }
     <input class="pick" id="cam" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
     <input class="pick" id="lib" type="file" accept="image/*" tabindex="-1" aria-hidden="true">
   </div>
-  <p class="hint" id="hint">对着检查表拍，DIMENSION、LSL、USL 三列当场现原形。</p>
+  <p class="hint" id="hint">对着检查表拍，尺寸、公差、控制范围当场现原形。</p>
 
   <section class="status" id="status" aria-live="polite" hidden>
     <p><span id="st-text"></span><span class="pct" id="st-pct"></span></p>
@@ -190,6 +195,7 @@ a { -webkit-tap-highlight-color: transparent; }
     <p class="sum" id="sum"></p>
     <div class="unit" id="unit" hidden><span id="unit-text"></span><button type="button" id="unit-fix">换过来</button></div>
     <div class="pic"><img id="pic" alt="换算结果：原图数字旁边的红字是换算后的值"></div>
+    <p class="turn" id="turn" hidden>手机横过来看，字大一倍多。</p>
     <div class="acts">
       <button class="btn primary" id="save" type="button">保存图片</button>
       <button class="btn ghost" id="again" type="button">再拍一张</button>
@@ -785,30 +791,36 @@ const MIRROR = (() => {
       const dec = present.length ? Math.max.apply(null, present.map(k => v[k].dec)) : 4;
       const eps = 0.5 * Math.pow(10, 6 - Math.min(6, dec));
       const st = v.STOCK ? micro(v.STOCK) : 0;
-      const eq = (a, b, c) => [0, 1, -1].some(sg => Math.abs(micro(a) + micro(b) + sg * st - micro(c)) <= eps);
+      // a + b (± 余量) = c 吗？对上了返回用的哪个符号，没对上返回 null
+      const eq = (a, b, c) => { for (const sg of [0, 1, -1]) if (Math.abs(micro(a) + micro(b) + sg * st - micro(c)) <= eps) return sg; return null; };
       const h1 = !!(v.DIM && v.LSL && v.LCL), h2 = !!(v.DIM && v.USL && v.UCL);
       const sdec = Math.min(6, Math.max(v.LCL ? v.LCL.dec : 0, v.UCL ? v.UCL.dec : 0, v.DIM ? v.DIM.dec : 0, 1));
+      const fm = m => fmtMicro(m, sdec), set = (o, ks) => ks.forEach(k => { o[k] = 1; });
       if (h1 && h2) {
         const e1 = eq(v.DIM, v.LSL, v.LCL), e2 = eq(v.DIM, v.USL, v.UCL);
-        if (e1 && e2) res.ok = { DIM: 1, LSL: 1, USL: 1 };
-        else if (e1) { res.ok = { DIM: 1, LSL: 1 }; res.flag.USL = 1; res.sugg.USL = fmtMicro(micro(v.UCL) - micro(v.DIM), sdec); }
-        else if (e2) { res.ok = { DIM: 1, USL: 1 }; res.flag.LSL = 1; res.sugg.LSL = fmtMicro(micro(v.LCL) - micro(v.DIM), sdec); }
-        else {
+        if (e1 != null && e2 != null) set(res.ok, ['DIM', 'LSL', 'USL', 'LCL', 'UCL']);
+        else if (e1 != null) {        // 下面那条对上了：尺寸没错，上差和 UCL 里有一个认错
+          set(res.ok, ['DIM', 'LSL', 'LCL']); set(res.flag, ['USL', 'UCL']);
+          res.sugg.USL = fm(micro(v.UCL) - micro(v.DIM) - e1 * st); res.sugg.UCL = fm(micro(v.DIM) + micro(v.USL) + e1 * st);
+        } else if (e2 != null) {
+          set(res.ok, ['DIM', 'USL', 'UCL']); set(res.flag, ['LSL', 'LCL']);
+          res.sugg.LSL = fm(micro(v.LCL) - micro(v.DIM) - e2 * st); res.sugg.LCL = fm(micro(v.DIM) + micro(v.LSL) + e2 * st);
+        } else {                      // 两条都对不上：多半是尺寸认错了
           const d1 = micro(v.LCL) - micro(v.LSL), d2 = micro(v.UCL) - micro(v.USL);
           res.flag.DIM = 1;
-          if (Math.abs(d1 - d2) <= eps) res.sugg.DIM = fmtMicro(d1, sdec);
-          else { res.flag.LSL = 1; res.flag.USL = 1; }
+          if (Math.abs(d1 - d2) <= eps) { res.sugg.DIM = fm(d1); set(res.ok, ['LSL', 'USL', 'LCL', 'UCL']); }
+          else set(res.flag, ['LSL', 'USL', 'LCL', 'UCL']);
         }
       } else if (h1) {
-        if (eq(v.DIM, v.LSL, v.LCL)) res.ok = { DIM: 1, LSL: 1 }; else { res.flag.DIM = 1; res.flag.LSL = 1; }
+        if (eq(v.DIM, v.LSL, v.LCL) != null) set(res.ok, ['DIM', 'LSL', 'LCL']); else set(res.flag, ['DIM', 'LSL', 'LCL']);
       } else if (h2) {
-        if (eq(v.DIM, v.USL, v.UCL)) res.ok = { DIM: 1, USL: 1 }; else { res.flag.DIM = 1; res.flag.USL = 1; }
+        if (eq(v.DIM, v.USL, v.UCL) != null) set(res.ok, ['DIM', 'USL', 'UCL']); else set(res.flag, ['DIM', 'USL', 'UCL']);
       }
-      for (const k of ['DIM', 'LSL', 'USL']) {
+      for (const k of ['DIM', 'LSL', 'USL', 'LCL', 'UCL', 'STOCK']) {
         const it = r[k];
         if (!it) continue;
         if (it.edited) { delete res.flag[k]; continue; }                 // 人改过的就是真理
-        if (it.num && !res.ok[k] && !res.flag[k] && it.conf < 0.9) res.flag[k] = 1;
+        if (it.num && !res.ok[k] && !res.flag[k] && it.conf < 0.9 && (k !== 'STOCK' || it.num.n !== 0)) res.flag[k] = 1;
       }
       res.checked = h1 || h2;
       return res;
@@ -900,16 +912,20 @@ const MIRROR = (() => {
     const pitch = rowY.length > 1 ? median(rowY.slice(1).map((y, i) => y - rowY[i])) : A.pitch;
     const order = Object.keys(colX).sort((a, b) => colX[a] - colX[b]);
     const nb = (k, d) => { const i = order.indexOf(k) + d; return i >= 0 && i < order.length ? order[i] : null; };
-    const lk = colX.NO != null ? 'NO' : colX.SYM != null ? 'SYM' : 'DIM', n1 = nb(lk, 1), n2 = nb('USL', 1);
-    const gapL = n1 ? colX[n1] - colX[lk] : 3 * th, gapR = n2 ? colX[n2] - colX.USL : Math.max(3 * th, colX.USL - colX.LSL);
-    const x0 = colX[lk] - 0.62 * gapL, x1 = colX.USL + 0.5 * gapR;
+    // 从标号一直裁到最右边要换的那列（有控制范围就到 UCL，没有就到上差）
+    const lk = colX.NO != null ? 'NO' : colX.SYM != null ? 'SYM' : 'DIM', n1 = nb(lk, 1);
+    const rk = colX.UCL != null ? 'UCL' : colX.LCL != null ? 'LCL' : 'USL', n2 = nb(rk, 1), p2 = nb(rk, -1);
+    const gapL = n1 ? colX[n1] - colX[lk] : 3 * th;
+    const gapR = n2 ? colX[n2] - colX[rk] : Math.max(3 * th, p2 ? colX[rk] - colX[p2] : 3 * th);
+    const x0 = colX[lk] - 0.62 * gapL, x1 = colX[rk] + 0.5 * gapR;
+    const SHOW = r => ['DIM', 'LSL', 'USL', 'STOCK', 'LCL', 'UCL'].filter(k => r[k] && r[k].num && colX[k] <= colX[rk] + 1 && (k !== 'STOCK' || r[k].num.n !== 0));
     const mL = 0.35 * gapL, mR = 0.3 * gapR, X0 = x0 - mL, X1 = x1 + mR;
     const yTop = hdrY0 - 0.9 * th, yBot = rowY[rowY.length - 1] + 0.75 * pitch;
     // 3) 每行原数字下面插一条，原图像素往下抻
     const cap = 1.45 * glyph, fs0 = cap / 0.72, S = Math.round(cap * 1.55);
     const cuts = [];
     rows.forEach((r, k) => {
-      if (['DIM', 'LSL', 'USL'].some(c => r[c] && r[c].num)) cuts.push({ v: rowY[k] + 0.5 * glyph + 0.3 * Math.max(0, 0.5 * pitch - 0.5 * glyph), k });
+      if (SHOW(r).length) cuts.push({ v: rowY[k] + 0.5 * glyph + 0.3 * Math.max(0, 0.5 * pitch - 0.5 * glyph), k });
     });
     const vm = [], stripAt = {}; let v = yTop;
     for (const c of cuts.concat([{ v: yBot, k: null }])) {
@@ -965,9 +981,8 @@ const MIRROR = (() => {
     g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
     rows.forEach((r, k) => {
       if (stripAt[k] == null) return;
-      for (const key of ['DIM', 'LSL', 'USL']) {
+      for (const key of SHOW(r)) {
         const it = r[key];
-        if (!it || !it.num) continue;
         const txt = convert(it.num, mode), flagged = !!chk[k].flag[key];
         let fs = fs0; g.font = '700 ' + fs + 'px ' + FONT;
         let tw = g.measureText(txt).width; const maxW = 0.9 * colW(key);
@@ -1212,6 +1227,7 @@ const MIRROR = (() => {
       if (st.flags) { text += ' · 黄的没把握，点它改'; cls += ' flag'; }
     }
     sumEl.className = cls; sumEl.textContent = text;
+    $('turn').hidden = out.canvas.width <= 1200;     // 图宽了（带控制范围），竖屏看字小，提醒一句
     const want = state.mode === 'in2mm' ? 'in' : 'mm';
     if (job.unit && job.unit !== want) {
       unitText.textContent = '表上写的是' + (job.unit === 'in' ? '英寸' : '毫米') + '，你选的是' + (state.mode === 'in2mm' ? '英寸 → 毫米' : '毫米 → 英寸') + '。';
@@ -1229,7 +1245,7 @@ const MIRROR = (() => {
       return { kind: 'table', mode: state.mode, stat: out.stat, rows: job.A.rows.map((r, i) => {
         const o = { no: r.NO ? r.NO.text : null };
         for (const k of ['DIM', 'LSL', 'USL', 'LCL', 'UCL']) if (r[k]) o[k] = r[k].text;
-        o.conv = {}; for (const k of ['DIM', 'LSL', 'USL']) if (r[k] && r[k].num) o.conv[k] = MIRROR.convert(r[k].num, state.mode);
+        o.conv = {}; for (const k of ['DIM', 'LSL', 'USL', 'LCL', 'UCL']) if (r[k] && r[k].num) o.conv[k] = MIRROR.convert(r[k].num, state.mode);
         o.flag = Object.keys(out.chk[i].flag); o.ok = Object.keys(out.chk[i].ok); o.sugg = out.chk[i].sugg;
         return o;
       }), size: [out.canvas.width, out.canvas.height], labels: out.labels.length };
@@ -1262,7 +1278,7 @@ const MIRROR = (() => {
     }
     if (hit) openEdit(hit);
   });
-  const NAMES = { DIM: '尺寸 DIMENSION', LSL: '下差 LSL', USL: '上差 USL' };
+  const NAMES = { DIM: '尺寸 DIMENSION', LSL: '下差 LSL', USL: '上差 USL', LCL: '控制下限 LCL', UCL: '控制上限 UCL', STOCK: '加工余量 STOCK' };
   function openEdit(L) {
     const job = state.job, it = L.item;
     state.editing = L;
@@ -1271,7 +1287,11 @@ const MIRROR = (() => {
     edNum.value = it.num ? it.num.s : it.text;
     const sug = row ? state.out.chk[L.row].sugg[L.key] : null;
     edSug.hidden = !sug;
-    if (sug) { edSugText.innerHTML = ''; edSugText.append('按 LCL/UCL 倒推是'); const b = document.createElement('b'); b.textContent = sug; edSugText.append(b); edSug.dataset.v = sug; }
+    if (sug) {
+      edSugText.innerHTML = '';
+      edSugText.append(L.key === 'LCL' || L.key === 'UCL' ? '按尺寸和公差算该是' : '按 LCL/UCL 倒推是');
+      const b = document.createElement('b'); b.textContent = sug; edSugText.append(b); edSug.dataset.v = sug;
+    }
     preview();
     veil.hidden = false;
     fitSheet();
