@@ -88,7 +88,6 @@ html, body { overflow-x: hidden; overflow-x: clip; }
   --D: min(68vw, 300px);
   position: relative; z-index: 1; width: 100vw; margin-left: calc(50% - 50vw);
   height: calc(var(--D) + 56px); display: grid; place-items: center;
-  overflow-x: hidden; overflow-x: clip; overflow-y: visible;
 }
 .vines, .spores, .hero::before {
   position: absolute; left: 50%; top: 50%; width: calc(var(--D) * 2); height: calc(var(--D) * 2);
@@ -101,18 +100,17 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 .vines svg { display: block; width: 100%; height: 100%; overflow: visible; }
 /* 藤蔓四周慢慢化进黑里；镜子下面那截收得早，别爬进底下的字里 */
 .vines.back {
-  -webkit-mask-image: radial-gradient(closest-side, #000 50%, rgba(0,0,0,.55) 76%, transparent 100%), linear-gradient(#000 66%, transparent 80%);
-  -webkit-mask-composite: source-in;
-  mask-image: radial-gradient(closest-side, #000 50%, rgba(0,0,0,.55) 76%, transparent 100%), linear-gradient(#000 66%, transparent 80%);
-  mask-composite: intersect;
+  -webkit-mask-image: radial-gradient(closest-side at 50% 44%, #000 54%, rgba(0,0,0,.5) 74%, transparent 92%);
+  mask-image: radial-gradient(closest-side at 50% 44%, #000 54%, rgba(0,0,0,.5) 74%, transparent 92%);
 }
 .vines.front {
   z-index: 3;
-  -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 96%), linear-gradient(#000 64%, transparent 76%);
-  -webkit-mask-composite: source-in;
-  mask-image: radial-gradient(closest-side, #000 62%, transparent 96%), linear-gradient(#000 64%, transparent 76%);
-  mask-composite: intersect;
+  -webkit-mask-image: radial-gradient(closest-side at 50% 44%, #000 60%, transparent 88%);
+  mask-image: radial-gradient(closest-side at 50% 44%, #000 60%, transparent 88%);
 }
+/* 打开时藤蔓从镜子里长出来：整层放大 + 渐显（Safari 不吃 SVG 遮罩动画，改用 CSS） */
+.hero .vines { animation: bloom 2.2s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes bloom { from { opacity: 0; transform: translate(-50%, -50%) scale(.62); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 .vines .pulse { fill: none; stroke: hsl(214, 100%, 90%); stroke-width: 1.6; stroke-linecap: round; opacity: 0; }
 .vines .tw { animation: twinkle 3.6s ease-in-out infinite; }
 @keyframes twinkle { 0%, 100% { opacity: .25; } 50% { opacity: .9; } }
@@ -166,6 +164,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 .hero.flash .mirror::after { animation: burst .85s cubic-bezier(.2,.7,.3,1) both; }
 @keyframes burst { 0% { opacity: .95; transform: scale(.62); } 100% { opacity: 0; transform: scale(1.75); } }
 @media (prefers-reduced-motion: reduce) {
+  .hero .vines { animation: none; }
   .vines .tw, .spore, .hero.working .face::after { animation: none; }
   .spore { display: none; }
 }
@@ -1396,7 +1395,7 @@ const HERO = (() => {
       calcMode: 'spline', keyTimes: '0;1', keySplines: '.3 .05 .25 1' }, c);
   }
   function layerGroups(parent, mask) {
-    const g = el('g', { mask }, parent);
+    const g = el('g', {}, parent);
     return { halo: el('g', {}, g), tendrils: el('g', {}, g), leaves: el('g', {}, g), body: el('g', {}, g), fruit: el('g', {}, g), pulse: el('g', {}, g), pulses: [] };
   }
 
@@ -1525,8 +1524,7 @@ const HERO = (() => {
     const v = buildVines(document.getElementById('vines-back'), document.getElementById('vines-front'), document.getElementById('spores'));
     pulses = v.pulses;
     if (!reduce) {
-      v.grows.forEach(a => { try { a.beginElement(); } catch (e) {} });
-      pulses.forEach((p, i) => { const a = flow(p, i, 2300, 1, 250 + i * 110); if (a) a.onfinish = () => a.cancel(); });
+            pulses.forEach((p, i) => { const a = flow(p, i, 2300, 1, 250 + i * 110); if (a) a.onfinish = () => a.cancel(); });
     }
     if ('IntersectionObserver' in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; kick(); }).observe(hero);
     document.addEventListener('visibilitychange', kick);
