@@ -42,10 +42,22 @@ body {
   line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 20px 32px;
+  padding-block: 14px 32px;
   -webkit-text-size-adjust: 100%;
 }
 .wrap { max-width: 440px; margin: 0 auto; display: grid; gap: 14px; }
+/* 顶上两个工具来回切：工时榨汁机 | 英寸照妖镜 */
+.tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
+}
+.tabs a {
+  height: 34px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; color: var(--muted); font-size: 14px; font-weight: 700; text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.tabs a[aria-current="page"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.tabs a:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .head h1 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 700; text-wrap: balance; }
 .sub { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
 
@@ -295,6 +307,11 @@ li.off .v { color: var(--faint); font-weight: 500; }
 </head>
 <body>
 <main class="wrap">
+  <nav class="tabs" aria-label="千手院车间小工具">
+    <a href="./" aria-current="page">工时榨汁机</a>
+    <a href="inch/">英寸照妖镜</a>
+  </nav>
+
   <header class="head">
     <h1>工时榨汁机</h1>
     <p class="sub">智商欠费算盘精，鸡毛蒜皮当圣经。<br>抹去凡间烟火气，灵长动物化肉身。</p>
@@ -804,6 +821,7 @@ const CO = (() => {
     chipEl.hidden = false;
   }
   render();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});   // 断网也能打开
 })();
 </script>
 </body>

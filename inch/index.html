@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>英寸照妖镜</title>
+<meta name="theme-color" content="#0e141c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<style>
+/* 和工时榨汁机同一套深色工单皮肤；整页就一条竖栏：方向 → 拍照 → 结果图。 */
+:root {
+  --bg: #0e141c;
+  --surface: #172030;
+  --surface-2: #1c2738;
+  --ink: #e5eaf1;
+  --muted: #9aa7b8;
+  --faint: #5c6a7d;
+  --line: #273347;
+  --field-line: #3a4a60;
+  --accent: #86aee6;
+  --on-accent: #0e141c;
+  --band: #1f3556;
+  --ok: #6fd3a0;
+  --flag: #ffd60a;
+  --warn: #f08a5d;
+  --focus: #86aee6;
+  --font-num: "Barlow Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 14px 32px;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 440px; margin: 0 auto; display: grid; gap: 14px; }
+button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+a { -webkit-tap-highlight-color: transparent; }
+
+.tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
+}
+.tabs a {
+  height: 34px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; color: var(--muted); font-size: 14px; font-weight: 700; text-decoration: none;
+}
+.tabs a[aria-current="page"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.tabs a:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+.head h1 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 700; }
+.sub { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
+
+.seg {
+  position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 3px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 13px;
+}
+.seg::before {
+  content: ""; position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px);
+  border-radius: 10px; background: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,.35);
+  transition: transform .24s cubic-bezier(.3,.7,.2,1);
+}
+.seg[data-mode="mm2in"]::before { transform: translateX(100%); }
+.seg button {
+  position: relative; z-index: 1; height: 46px; border: 0; background: transparent;
+  color: var(--muted); font-size: 16px; font-weight: 700; letter-spacing: .01em; transition: color .2s;
+}
+.seg button[aria-checked="true"] { color: var(--on-accent); }
+.seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 10px; }
+
+.shoot { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.btn {
+  height: 58px; padding: 0 22px; border: 0; border-radius: 15px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  font-size: 17px; font-weight: 700; color: var(--ink); background: transparent;
+  transition: transform .12s ease, opacity .2s;
+}
+.btn svg { width: 22px; height: 22px; flex: none; }
+.btn.primary { background: var(--accent); color: var(--on-accent); }
+.btn.ghost { border: 1px solid var(--field-line); }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .45; }
+.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.pick { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.hint { margin: -2px 2px 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+
+.status {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px 14px;
+}
+.status p { margin: 0; font-size: 15px; font-weight: 600; display: flex; justify-content: space-between; gap: 12px; }
+.status .pct { font-family: var(--font-num); font-size: 17px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.bar { height: 4px; margin-top: 10px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; border-radius: 2px; background: var(--accent); transition: width .3s ease; }
+.status.bad { border-color: var(--warn); }
+.status.bad .bar { display: none; }
+.status .retry { margin-top: 10px; height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--field-line); background: transparent; color: var(--ink); font-weight: 700; }
+
+.result { display: grid; gap: 10px; }
+.sum { display: flex; align-items: flex-start; gap: 9px; margin: 0; font-size: 15px; font-weight: 700; line-height: 1.45; }
+.sum::before { content: ""; flex: none; width: 9px; height: 9px; margin-top: 6px; border-radius: 50%; background: var(--ok); }
+.sum.flag::before { background: var(--flag); }
+.sum.none::before { background: var(--warn); }
+.unit { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px;
+  background: rgba(240,138,93,.12); border: 1px solid rgba(240,138,93,.45); border-radius: 10px; font-size: 14px; }
+.unit button { flex: none; height: 34px; padding: 0 14px; border: 0; border-radius: 9px; background: var(--warn); color: var(--on-accent); font-weight: 700; }
+.pic { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #fff; }
+.pic img { display: block; width: 100%; height: auto; -webkit-touch-callout: default; }
+.acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.acts .btn { height: 52px; font-size: 16px; }
+.foot { margin: 0; padding-inline: 2px; font-size: 12.5px; color: var(--muted); }
+
+/* 改数：底部弹出的小单子 */
+.veil { position: fixed; inset: 0; z-index: 20; display: flex; align-items: flex-end; justify-content: center;
+  background: rgba(4,8,14,.55); animation: fade .18s ease; overscroll-behavior: contain; touch-action: none; }
+.veil .sheet { touch-action: manipulation; }
+.sheet { width: min(100%, 480px); padding: 8px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface-2); border: 1px solid var(--line); border-bottom: 0; border-radius: 20px 20px 0 0;
+  box-shadow: 0 -12px 40px rgba(0,0,0,.45); animation: rise .26s cubic-bezier(.2,.8,.2,1); }
+.grab { width: 38px; height: 5px; margin: 0 auto 12px; border-radius: 3px; background: var(--field-line); }
+.sheet h2 { margin: 0; font-size: 18px; font-weight: 700; }
+.meta { margin: 2px 0 12px; font-size: 13.5px; color: var(--muted); }
+.field { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 8px; }
+.sign, .num {
+  height: 58px; border-radius: 12px; border: 1px solid var(--field-line); background: var(--surface); color: var(--ink);
+}
+.sign { font-family: var(--font-num); font-size: 26px; font-weight: 700; }
+.num { width: 100%; min-width: 0; padding: 0 14px; font-family: var(--font-num); font-size: 34px; font-weight: 700;
+  letter-spacing: .02em; font-variant-numeric: tabular-nums; -webkit-appearance: none; appearance: none; }
+.num:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.num[aria-invalid="true"] { border-color: var(--warn); outline-color: var(--warn); }
+.prev { margin: 10px 2px 0; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.prev b { color: #ff6b6b; font-family: var(--font-num); font-size: 22px; font-weight: 700; margin-right: 4px; }
+.sug { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding: 10px 12px;
+  border-radius: 12px; background: rgba(255,214,10,.1); border: 1px solid rgba(255,214,10,.4); font-size: 14px; }
+.sug b { font-family: var(--font-num); font-size: 20px; color: var(--flag); margin-left: 4px; }
+.sug button { flex: none; height: 36px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--flag); color: #1a1500; font-weight: 700; }
+.sheet .acts { margin-top: 16px; }
+@keyframes rise { from { transform: translateY(100%); } }
+@keyframes fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .seg::before, .bar i { transition: none; } .veil, .sheet { animation: none; } }
+</style>
+<script src="ort/ort.wasm.min.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <nav class="tabs" aria-label="千手院车间小工具">
+    <a href="../">工时榨汁机</a>
+    <a href="./" aria-current="page">英寸照妖镜</a>
+  </nav>
+
+  <header class="head">
+    <h1>英寸照妖镜</h1>
+    <p class="sub">八分之三算断魂，二五点四乘进坟。<br>烂图一拍全干碎，只认毫米弃碑文。</p>
+  </header>
+
+  <div class="seg" id="seg" role="radiogroup" aria-label="换算方向">
+    <button type="button" role="radio" data-mode="in2mm">英寸 → 毫米</button>
+    <button type="button" role="radio" data-mode="mm2in">毫米 → 英寸</button>
+  </div>
+
+  <div class="shoot">
+    <button class="btn primary" id="shoot" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.3-2h7l1.3 2h1.7A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.6"/></svg>
+      拍照
+    </button>
+    <button class="btn ghost" id="album" type="button">相册</button>
+    <input class="pick" id="cam" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
+    <input class="pick" id="lib" type="file" accept="image/*" tabindex="-1" aria-hidden="true">
+  </div>
+  <p class="hint" id="hint">对着检查表拍，DIMENSION、LSL、USL 三列当场现原形。</p>
+
+  <section class="status" id="status" aria-live="polite" hidden>
+    <p><span id="st-text"></span><span class="pct" id="st-pct"></span></p>
+    <div class="bar"><i id="st-bar"></i></div>
+    <button class="retry" id="retry" type="button" hidden>重试</button>
+  </section>
+
+  <section class="result" id="result" aria-live="polite" hidden>
+    <p class="sum" id="sum"></p>
+    <div class="unit" id="unit" hidden><span id="unit-text"></span><button type="button" id="unit-fix">换过来</button></div>
+    <div class="pic"><img id="pic" alt="换算结果：原图数字旁边的红字是换算后的值"></div>
+    <div class="acts">
+      <button class="btn primary" id="save" type="button">保存图片</button>
+      <button class="btn ghost" id="again" type="button">再拍一张</button>
+    </div>
+  </section>
+
+  <p class="foot">照片只在这台手机里认，哪儿也不去。</p>
+</main>
+
+<div class="veil" id="veil" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ed-title">
+    <div class="grab"></div>
+    <h2 id="ed-title">这个数认对了吗？</h2>
+    <p class="meta" id="ed-meta"></p>
+    <div class="field">
+      <button class="sign" id="ed-sign" type="button" aria-label="正负号">±</button>
+      <input class="num" id="ed-num" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="原数">
+    </div>
+    <p class="prev" id="ed-prev"></p>
+    <div class="sug" id="ed-sug" hidden><span id="ed-sug-text"></span><button type="button" id="ed-sug-use">用这个</button></div>
+    <div class="acts">
+      <button class="btn ghost" id="ed-cancel" type="button">取消</button>
+      <button class="btn primary" id="ed-ok" type="button">改好了</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   英寸照妖镜 —— 拍检查表，DIMENSION / LSL / USL 三列在原图上落红字换算值。
+   识字全在手机本地跑（PaddleOCR PP-OCRv4 + onnxruntime-web），照片不出手机。
+   ============================================================================ */
+const MIRROR = (() => {
+  'use strict';
+  const BASE = new URL('./', location.href).href;
+  const FILES = {
+    glue: 'ort/ort-wasm-simd-threaded.js',
+    wasm: ['ort/ort-wasm-simd-threaded.wasm', 14848852],
+    det: ['models/det.onnx', 4745517],
+    rec: ['models/rec.onnx', 10857958],
+    cls: ['models/cls.onnx', 585532],
+    keys: 'models/keys.txt'
+  };
+  const CACHE = 'inch-mirror-assets-v1';
+  const T = { WORK: 2016, DET_ORIENT: 640, DET_MAIN: 1024, REC_H: 48, REC_MINW: 96, REC_BATCH: 8, ORIENT_N: 8, MAX_RATIO: 8.5 };
+
+  // ------------------------------------------------------------------ 小工具
+  const median = a => { if (!a.length) return NaN; const s = a.slice().sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+  const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+  function fit(xs, ys) {                       // 最小二乘 y = s·x + a，返回 [s, a]
+    const mx = mean(xs), my = mean(ys); let sxx = 0, sxy = 0;
+    for (let i = 0; i < xs.length; i++) { sxx += (xs[i] - mx) ** 2; sxy += (xs[i] - mx) * (ys[i] - my); }
+    const s = sxx > 1e-9 ? sxy / sxx : 0;
+    return [s, my - s * mx];
+  }
+  function lev(a, b) {
+    const d = []; for (let j = 0; j <= b.length; j++) d[j] = j;
+    for (let i = 1; i <= a.length; i++) {
+      let p = d[0]; d[0] = i;
+      for (let j = 1; j <= b.length; j++) { const t = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, p + (a[i - 1] !== b[j - 1])); p = t; }
+    }
+    return d[b.length];
+  }
+  const mkCanvas = (w, h) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c; };
+  const ctx2d = c => c.getContext('2d', { willReadFrequently: true });
+  const nextFrame = () => new Promise(r => setTimeout(r, 0));
+
+  // ------------------------------------------------------------------ 数字：认、算
+  // 解析成有理数 n/d（d = 10^小数位，或分数的分母），换算全程整数运算，不吃浮点误差。
+  function parseNum(text) {
+    let s = String(text == null ? '' : text).trim().replace(/\s+/g, ' ');
+    const digits = (s.match(/\d/g) || []).length;
+    if (!digits) return null;
+    s = s.replace(/[—–一－_~]/g, '-').replace(/[，,。]/g, '.');
+    if (digits >= 2) s = s.replace(/[OoDQ]/g, '0').replace(/[lI|]/g, '1');
+    let m = s.match(/^([+-]?)(?:(\d+)[- ])?(\d+)\/(\d+)$/);   // 3/8、1-1/4
+    if (m) {
+      const w = m[2] ? +m[2] : 0, a = +m[3], b = +m[4];
+      if ([2, 4, 8, 16, 32, 64].indexOf(b) < 0 || a <= 0 || a >= b) return null;
+      return { s: (m[1] || '') + (m[2] ? m[2] + '-' : '') + a + '/' + b, n: (w * b + a) * (m[1] === '-' ? -1 : 1), d: b, dec: 6, plus: m[1] === '+' };
+    }
+    s = s.replace(/ /g, '');
+    m = s.match(/^([+-]?)(\d*)(?:\.(\d*))?$/);
+    if (!m || (!m[2] && !m[3])) return null;
+    const fp = (m[3] || '').slice(0, 6), d = Math.pow(10, fp.length);
+    const n = (parseInt(m[2] || '0', 10) * d + (fp ? parseInt(fp, 10) : 0)) * (m[1] === '-' ? -1 : 1);
+    return { s, n, d, dec: fp.length, plus: m[1] === '+' };
+  }
+  function roundDiv(n, d) {
+    const neg = (n < 0) !== (d < 0); n = Math.abs(n); d = Math.abs(d);
+    let q = Math.floor(n / d); if (2 * (n - q * d) >= d) q++;
+    return neg ? -q : q;
+  }
+  // 1 英寸 = 25.4 毫米（1959 年定死的精确值）。毫米留 3 位，英寸留 4 位。
+  function convert(p, mode) {
+    const out = mode === 'in2mm' ? roundDiv(p.n * 25400, p.d) : roundDiv(p.n * 100000, 254 * p.d);
+    const dec = mode === 'in2mm' ? 3 : 4, P = Math.pow(10, dec), a = Math.abs(out);
+    return (out < 0 ? '-' : p.plus && a ? '+' : '') + Math.floor(a / P) + '.' + String(a % P).padStart(dec, '0');
+  }
+  const micro = p => roundDiv(p.n * 1000000, p.d);
+  function fmtMicro(m, dec) {
+    const a = Math.abs(m), s = String(a % 1000000).padStart(6, '0').slice(0, Math.max(1, dec));
+    return (m < 0 ? '-' : '') + Math.floor(a / 1000000) + '.' + s;
+  }
+
+  // ------------------------------------------------------------------ 识字引擎
+  let det = null, rec = null, cls = null, chars = null, loading = null;
+  const prof = { det: 0, detPx: 0, rec: 0, recN: 0, recW: 0, helperBatches: 0 };
+  async function fetchAsset(path, onBytes) {
+    const url = BASE + path;
+    let cache = null;
+    try { cache = await caches.open(CACHE); } catch (e) {}
+    if (cache) {
+      const hit = await cache.match(url);
+      if (hit) { const b = await hit.arrayBuffer(); onBytes(b.byteLength); return b; }
+    }
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(path + ' ' + res.status);
+    let buf;
+    if (res.body && res.body.getReader) {
+      const rd = res.body.getReader(), parts = []; let got = 0;
+      for (;;) { const r = await rd.read(); if (r.done) break; parts.push(r.value); got += r.value.length; onBytes(r.value.length); }
+      const u = new Uint8Array(got); let o = 0; for (const p of parts) { u.set(p, o); o += p.length; }
+      buf = u.buffer;
+    } else { buf = await res.arrayBuffer(); onBytes(buf.byteLength); }
+    if (cache) { try { await cache.put(url, new Response(buf.slice(0), { headers: { 'Content-Type': 'application/octet-stream' } })); } catch (e) {} }
+    return buf;
+  }
+  function load(onProgress) {
+    if (loading) return loading;
+    loading = (async () => {
+      if (typeof ort === 'undefined') throw new Error('ort.wasm.min.js 没加载');
+      const total = FILES.wasm[1] + FILES.det[1] + FILES.rec[1] + FILES.cls[1];
+      let got = 0;
+      const tick = n => { got += n; onProgress && onProgress(Math.min(0.99, got / total)); };
+      const [wasm, d, r, cl, keys] = await Promise.all([
+        fetchAsset(FILES.wasm[0], tick), fetchAsset(FILES.det[0], tick), fetchAsset(FILES.rec[0], tick), fetchAsset(FILES.cls[0], tick),
+        fetch(BASE + FILES.keys).then(x => { if (!x.ok) throw new Error('keys ' + x.status); return x.text(); })
+      ]);
+      ort.env.wasm.wasmPaths = { mjs: BASE + FILES.glue, wasm: BASE + FILES.wasm[0] };
+      ort.env.wasm.wasmBinary = wasm;
+      ort.env.wasm.numThreads = 1;
+      ort.env.wasm.proxy = false;
+      const opt = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' };
+      det = await ort.InferenceSession.create(new Uint8Array(d), opt);
+      rec = await ort.InferenceSession.create(new Uint8Array(r), opt);
+      cls = await ort.InferenceSession.create(new Uint8Array(cl), opt);
+      chars = [''].concat(keys.replace(/\r/g, '').split('\n'), [' ']);
+      startHelper(wasm, r);
+      onProgress && onProgress(1);
+      return true;
+    })();
+    loading.catch(() => { loading = null; });
+    return loading;
+  }
+
+  async function detect(src, maxSide) {
+    const w = src.width, h = src.height, r = Math.min(1, maxSide / Math.max(w, h));
+    const nw = Math.max(32, Math.round(w * r / 32) * 32), nh = Math.max(32, Math.round(h * r / 32) * 32);
+    const c = mkCanvas(nw, nh), g = ctx2d(c);
+    g.imageSmoothingQuality = 'high';
+    g.drawImage(src, 0, 0, nw, nh);
+    const px = g.getImageData(0, 0, nw, nh).data, N = nw * nh, x = new Float32Array(3 * N);
+    for (let i = 0, j = 0; i < N; i++, j += 4) {      // 模型吃 BGR
+      x[i] = (px[j + 2] / 255 - 0.485) / 0.229;
+      x[N + i] = (px[j + 1] / 255 - 0.456) / 0.224;
+      x[2 * N + i] = (px[j] / 255 - 0.406) / 0.225;
+    }
+    const feeds = {}; feeds[det.inputNames[0]] = new ort.Tensor('float32', x, [1, 3, nh, nw]);
+    const t0 = performance.now();
+    const out = await det.run(feeds);
+    prof.det += performance.now() - t0; prof.detPx += nw * nh;
+    return { prob: out[det.outputNames[0]].data, w: nw, h: nh, sx: w / nw, sy: h / nh };
+  }
+
+  // 概率图二值化后找连通块，顺手累计矩（算倾角）和平均概率（算可信度）
+  function components(prob, w, h, thr) {
+    const N = w * h, lab = new Int32Array(N), stack = new Int32Array(N), out = [];
+    let n = 0;
+    for (let i = 0; i < N; i++) {
+      if (lab[i] || prob[i] <= thr) continue;
+      n++; let sp = 0; stack[sp++] = i; lab[i] = n;
+      let area = 0, sum = 0, x0 = w, y0 = h, x1 = -1, y1 = -1, sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
+      while (sp) {
+        const p = stack[--sp], x = p % w, y = (p - x) / w;
+        area++; sum += prob[p]; sx += x; sy += y; sxx += x * x; syy += y * y; sxy += x * y;
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+        if (x > 0 && !lab[p - 1] && prob[p - 1] > thr) { lab[p - 1] = n; stack[sp++] = p - 1; }
+        if (x < w - 1 && !lab[p + 1] && prob[p + 1] > thr) { lab[p + 1] = n; stack[sp++] = p + 1; }
+        if (y > 0 && !lab[p - w] && prob[p - w] > thr) { lab[p - w] = n; stack[sp++] = p - w; }
+        if (y < h - 1 && !lab[p + w] && prob[p + w] > thr) { lab[p + w] = n; stack[sp++] = p + w; }
+      }
+      out.push({ area, score: sum / area, x0, y0, x1, y1, sx, sy, sxx, syy, sxy });
+    }
+    return out;
+  }
+
+  // 帮手：后台再开一个识字的，两个一起认，手机两颗大核都用上（开不起来就主线程自己认）
+  const HELPER_SRC = [
+    'self.onmessage = async e => {',
+    '  const m = e.data;',
+    '  try {',
+    '    if (m.type === "init") {',
+    '      importScripts(m.ortUrl);',
+    '      ort.env.wasm.wasmPaths = m.paths; ort.env.wasm.wasmBinary = m.wasm; ort.env.wasm.numThreads = 1; ort.env.wasm.proxy = false;',
+    '      self.rec = await ort.InferenceSession.create(new Uint8Array(m.model), { executionProviders: ["wasm"], graphOptimizationLevel: "all" });',
+    '      self.postMessage({ type: "ready" });',
+    '    } else if (m.type === "run") {',
+    '      const f = {}; f[self.rec.inputNames[0]] = new ort.Tensor("float32", m.x, m.dims);',
+    '      const out = (await self.rec.run(f))[self.rec.outputNames[0]];',
+    '      const N = out.dims[0], Tn = out.dims[1], C = out.dims[2], d = out.data, idx = new Int32Array(N * Tn), pr = new Float32Array(N * Tn);',
+    '      for (let i = 0; i < N * Tn; i++) { const o = i * C; let b = 0, bv = d[o]; for (let c = 1; c < C; c++) if (d[o + c] > bv) { bv = d[o + c]; b = c; } idx[i] = b; pr[i] = bv; }',
+    '      self.postMessage({ type: "done", id: m.id, idx, pr, Tn }, [idx.buffer, pr.buffer]);',
+    '    }',
+    '  } catch (err) { self.postMessage({ type: "error", id: m.id, msg: String(err && err.message || err) }); }',
+    '};'
+  ].join('\n');
+  const helper = { w: null, ready: false, busy: false, seq: 0, wait: {} };
+  function startHelper(wasm, model) {
+    if (helper.w || typeof Worker === 'undefined') return;
+    try {
+      const w = new Worker(URL.createObjectURL(new Blob([HELPER_SRC], { type: 'text/javascript' })));
+      helper.w = w;
+      w.onmessage = e => {
+        const m = e.data;
+        if (m.type === 'ready') { helper.ready = true; return; }
+        const cb = helper.wait[m.id]; delete helper.wait[m.id];
+        if (m.type === 'error') { helper.ready = false; if (cb) cb.reject(new Error(m.msg)); return; }
+        if (cb) cb.resolve(m);
+      };
+      w.onerror = () => { helper.ready = false; for (const k in helper.wait) helper.wait[k].reject(new Error('helper')); helper.wait = {}; };
+      const wb = wasm.slice(0), mb = model.slice(0);
+      w.postMessage({ type: 'init', ortUrl: BASE + 'ort/ort.wasm.min.js', paths: { mjs: BASE + FILES.glue, wasm: BASE + FILES.wasm[0] }, wasm: wb, model: mb }, [wb, mb]);
+    } catch (e) { helper.w = null; }
+  }
+  function helperRun(x, dims) {
+    return new Promise((resolve, reject) => {
+      const id = ++helper.seq;
+      helper.wait[id] = { resolve, reject };
+      helper.w.postMessage({ type: 'run', id, x, dims }, [x.buffer]);
+    });
+  }
+  async function mainRun(x, dims) {
+    const f = {}; f[rec.inputNames[0]] = new ort.Tensor('float32', x, dims);
+    const out = (await rec.run(f))[rec.outputNames[0]];
+    const N = out.dims[0], Tn = out.dims[1], C = out.dims[2], d = out.data, idx = new Int32Array(N * Tn), pr = new Float32Array(N * Tn);
+    for (let i = 0; i < N * Tn; i++) { const o = i * C; let b = 0, bv = d[o]; for (let c = 1; c < C; c++) if (d[o + c] > bv) { bv = d[o + c]; b = c; } idx[i] = b; pr[i] = bv; }
+    return { idx, pr, Tn };
+  }
+
+  // crops: [{src, x, y, w, h}]，横排文字。返回 [{text, conf}]
+  async function recognize(crops) {
+    const n = crops.length, res = new Array(n), H = T.REC_H;
+    if (!n) return res;
+    const t0 = performance.now();
+    const ratio = crops.map(c => c.w / c.h);
+    const order = crops.map((_, i) => i).sort((a, b) => ratio[a] - ratio[b]);
+    const tmp = mkCanvas(T.REC_MINW, H); let tg = ctx2d(tmp);
+    const batches = [];
+    for (let s = 0; s < n; s += T.REC_BATCH) batches.push(order.slice(s, s + T.REC_BATCH));
+    const build = idx => {
+      const W = Math.max(T.REC_MINW, Math.ceil(H * Math.max.apply(null, idx.map(i => ratio[i]))));
+      const plane = H * W, x = new Float32Array(idx.length * 3 * plane);
+      idx.forEach((i, k) => {
+        const c = crops[i], rw = Math.min(W, Math.max(1, Math.ceil(H * ratio[i])));
+        if (tmp.width < rw) { tmp.width = rw; tg = ctx2d(tmp); }
+        tg.imageSmoothingQuality = 'high';
+        tg.drawImage(c.src, c.x, c.y, c.w, c.h, 0, 0, rw, H);
+        const px = tg.getImageData(0, 0, rw, H).data, base = k * 3 * plane;
+        for (let yy = 0; yy < H; yy++) {
+          for (let xx = 0; xx < rw; xx++) {
+            const j = (yy * rw + xx) * 4, o = base + yy * W + xx;
+            x[o] = px[j + 2] / 127.5 - 1;
+            x[o + plane] = px[j + 1] / 127.5 - 1;
+            x[o + 2 * plane] = px[j] / 127.5 - 1;
+          }
+        }
+      });
+      prof.recN += idx.length; prof.recW += idx.length * W;
+      return { x, dims: [idx.length, 3, H, W] };
+    };
+    const decode = (idx, r) => idx.forEach((i, k) => {
+      let text = '', sum = 0, cnt = 0, last = 0;
+      for (let t = 0; t < r.Tn; t++) {
+        const o = k * r.Tn + t, best = r.idx[o];
+        if (best !== 0 && best !== last) { text += chars[best] || ''; sum += r.pr[o]; cnt++; }
+        last = best;
+      }
+      res[i] = { text, conf: cnt ? sum / cnt : 0 };
+    });
+    // 活按工作量对半分：帮手那份一次性打包扔过去，主线程埋头干自己那份；帮手出错就收回来自己补
+    const cost = idx => idx.length * Math.max(T.REC_MINW, Math.ceil(H * Math.max.apply(null, idx.map(i => ratio[i]))));
+    const mine = [], theirs = [];
+    if (helper.ready && batches.length > 1) {
+      let a = 0, b = 0;
+      batches.slice().sort((p, q) => cost(q) - cost(p)).forEach(idx => { if (a <= b) { mine.push(idx); a += cost(idx); } else { theirs.push(idx); b += cost(idx); } });
+    } else mine.push.apply(mine, batches);
+    const away = theirs.map(idx => { const b = build(idx); return helperRun(b.x, b.dims).then(r => { prof.helperBatches++; decode(idx, r); }, () => idx); });
+    for (const idx of mine) { const b = build(idx); decode(idx, await mainRun(b.x, b.dims)); }
+    for (const left of await Promise.all(away)) {
+      if (left) { const b = build(left); decode(left, await mainRun(b.x, b.dims)); }
+    }
+    prof.rec += performance.now() - t0;
+    return res;
+  }
+
+  // ------------------------------------------------------------------ 照片扶正
+  function toCanvas(img, maxSide) {
+    const w0 = img.naturalWidth || img.width, h0 = img.naturalHeight || img.height;
+    const s = Math.min(1, maxSide / Math.max(w0, h0));
+    const c = mkCanvas(w0 * s, h0 * s), g = ctx2d(c);
+    g.imageSmoothingQuality = 'high';
+    g.drawImage(img, 0, 0, c.width, c.height);
+    return c;
+  }
+  function rotateCanvas(src, deg) {           // 逆时针转 deg 度，画布撑大，空角补白
+    const a = -deg * Math.PI / 180, cos = Math.abs(Math.cos(a)), sin = Math.abs(Math.sin(a));
+    const w = src.width, h = src.height, nw = Math.round(h * sin + w * cos), nh = Math.round(h * cos + w * sin);
+    const c = mkCanvas(nw, nh), g = ctx2d(c);
+    g.fillStyle = '#fff'; g.fillRect(0, 0, nw, nh);
+    g.imageSmoothingQuality = 'high';
+    g.translate(nw / 2, nh / 2); g.rotate(a); g.translate(-w / 2, -h / 2);
+    g.drawImage(src, 0, 0);
+    return c;
+  }
+  function cropRot(src, cx, cy, L, Wd, deg) {
+    const c = mkCanvas(Math.max(8, L), Math.max(8, Wd)), g = ctx2d(c);
+    g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+    g.translate(c.width / 2, c.height / 2); g.rotate(-deg * Math.PI / 180); g.translate(-cx, -cy);
+    g.drawImage(src, 0, 0);
+    return { src: c, x: 0, y: 0, w: c.width, h: c.height };
+  }
+  // 文字主轴方向 + 0/180 由识字可信度定。返回要逆时针转的角度。
+  async function findOrientation(src) {
+    const d = await detect(src, T.DET_ORIENT);
+    const cand = [];
+    for (const c of components(d.prob, d.w, d.h, 0.3)) {
+      if (c.area < 30) continue;
+      const mx = c.sx / c.area, my = c.sy / c.area;
+      const cxx = c.sxx / c.area - mx * mx, cyy = c.syy / c.area - my * my, cxy = c.sxy / c.area - mx * my;
+      const tr = cxx + cyy, disc = Math.sqrt(Math.max(0, tr * tr / 4 - (cxx * cyy - cxy * cxy)));
+      const l1 = tr / 2 + disc, l2 = tr / 2 - disc;
+      if (l2 <= 0 || l1 / l2 < 6) continue;
+      cand.push({ area: c.area, mx, my, th: 0.5 * Math.atan2(2 * cxy, cxx - cyy), s1: Math.sqrt(l1), s2: Math.sqrt(l2), el: l1 / l2 });
+    }
+    if (cand.length < 3) return 0;
+    let cs = 0, sn = 0;
+    for (const c of cand) { cs += c.area * Math.cos(2 * c.th); sn += c.area * Math.sin(2 * c.th); }
+    let phi = 0.5 * Math.atan2(sn, cs);
+    const res = [];
+    for (const c of cand) { const r = c.th - phi, rr = Math.atan2(Math.sin(2 * r), Math.cos(2 * r)) / 2; if (Math.abs(rr) < 8 * Math.PI / 180) res.push(rr); }
+    if (res.length) phi += median(res);
+    const base = phi * 180 / Math.PI;
+    // 转平以后是正是倒：挑几块字让方向分类器投票（PaddleOCR 自带的 0°/180° 小模型）
+    const pool = cand.filter(c => c.el < 40);
+    const top = (pool.length >= 4 ? pool : cand).sort((a, b) => b.area - a.area).slice(0, T.ORIENT_N);
+    const crops = top.map(c => cropRot(src, c.mx * d.sx, c.my * d.sy, 2 * 2.2 * c.s1 * d.sx, 2 * 2.2 * c.s2 * d.sy + 8, base));
+    const p180 = await flipVotes(crops);
+    return p180 > 0.5 ? base + 180 : base;
+  }
+  async function flipVotes(crops) {
+    const H = 48, W = 192, plane = H * W, x = new Float32Array(crops.length * 3 * plane);
+    const tmp = mkCanvas(W, H), g = ctx2d(tmp);
+    crops.forEach((c, k) => {
+      const rw = Math.min(W, Math.max(1, Math.ceil(H * c.w / c.h)));
+      g.clearRect(0, 0, W, H); g.imageSmoothingQuality = 'high';
+      g.drawImage(c.src, c.x, c.y, c.w, c.h, 0, 0, rw, H);
+      const px = g.getImageData(0, 0, rw, H).data, base = k * 3 * plane;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < rw; xx++) {
+        const j = (yy * rw + xx) * 4, o = base + yy * W + xx;
+        x[o] = px[j + 2] / 127.5 - 1; x[o + plane] = px[j + 1] / 127.5 - 1; x[o + 2 * plane] = px[j] / 127.5 - 1;
+      }
+    });
+    const f = {}; f[cls.inputNames[0]] = new ort.Tensor('float32', x, [crops.length, 3, H, W]);
+    const out = (await cls.run(f))[cls.outputNames[0]].data;
+    let s = 0; for (let k = 0; k < crops.length; k++) s += out[k * 2 + 1];
+    return s / crops.length;
+  }
+
+  // 扶正后的图：找字框 → 认字
+  async function readAll(up) {
+    const d = await detect(up, T.DET_MAIN), items = [];
+    for (const c of components(d.prob, d.w, d.h, 0.3)) {
+      const w = c.x1 - c.x0 + 1, h = c.y1 - c.y0 + 1;
+      if (Math.min(w, h) < 3 || c.area < 6 || c.score < 0.6) continue;
+      const g = w * h * 1.6 / (2 * (w + h));          // DB 的 unclip，把缩进去的字框撑回来
+      const x0 = Math.max(0, Math.floor((c.x0 - g) * d.sx)), y0 = Math.max(0, Math.floor((c.y0 - g) * d.sy));
+      const x1 = Math.min(up.width, Math.ceil((c.x0 + w + g) * d.sx)), y1 = Math.min(up.height, Math.ceil((c.y0 + h + g) * d.sy));
+      // 整句长条（说明、备注）不是数字也不是要找的表头，不认，省一大半时间
+      if (x1 - x0 < 4 || y1 - y0 < 4 || (x1 - x0) / (y1 - y0) > T.MAX_RATIO) continue;
+      items.push({ x0, y0, x1, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, text: '', conf: 0, num: null, done: false });
+    }
+    if (!items.length) return items;
+    const th = median(items.map(i => i.y1 - i.y0));
+    const recog = async list => {
+      const todo = list.filter(i => !i.done);
+      if (!todo.length) return;
+      const r = await recognize(todo.map(it => ({ src: up, x: it.x0, y: it.y0, w: it.x1 - it.x0, h: it.y1 - it.y0 })));
+      todo.forEach((it, i) => { it.text = r[i].text; it.conf = r[i].conf; it.num = parseNum(it.text); it.done = true; });
+    };
+    // 只认用得上的：先认表格开头几排找表头，再只认 尺寸/下差/上差/余量/LCL/UCL 那几列
+    const finish = async hd => {
+      const want = { DIM: 1, LSL: 1, USL: 1, STOCK: 1, LCL: 1, UCL: 1 };
+      const xs = Object.keys(hd.hx).map(k => [k, hd.hx[k]]).sort((a, b) => a[1] - b[1]);
+      const pick = items.filter(it => {
+        if (it.done || it.cy < hd.hy + 0.5 * th) return false;
+        let bi = 0;
+        for (let i = 1; i < xs.length; i++) if (Math.abs(it.cx - xs[i][1]) < Math.abs(it.cx - xs[bi][1])) bi = i;
+        const gaps = [];
+        if (bi > 0) gaps.push(xs[bi][1] - xs[bi - 1][1]);
+        if (bi < xs.length - 1) gaps.push(xs[bi + 1][1] - xs[bi][1]);
+        const gap = gaps.length ? Math.min.apply(null, gaps) : 6 * th;
+        return want[xs[bi][0]] && Math.abs(it.cx - xs[bi][1]) < 0.6 * gap;
+      });
+      await recog(pick);
+    };
+    const head = tableHead(items, th);
+    if (head) {
+      await recog(head);
+      const hd = headerOf(items, th);
+      if (hd) { await finish(hd); return items; }
+    }
+    const rest = items.filter(i => !i.done).sort((a, b) => a.cy - b.cy);   // 找不到就从上往下一段段认
+    for (let s = 0; s < rest.length; s += 24) {
+      await recog(rest.slice(s, s + 24));
+      const hd = headerOf(items, th);
+      if (hd && s + 24 < rest.length) { await finish(hd); return items; }
+    }
+    return items;
+  }
+  // 纯几何找表：一排排字框里，连着好几排、每排好几格、行距稳定的那一大块就是表；表头在它开头几排
+  function tableHead(items, h) {
+    const slopes = [];
+    for (const a of items) {
+      let best = null;
+      for (const b of items) {
+        const dx = b.cx - a.cx, dy = b.cy - a.cy;
+        if (dx <= h || dx > 10 * h || Math.abs(dy) > 0.7 * h) continue;
+        if (!best || dx < best.dx) best = { dx, dy };
+      }
+      if (best) slopes.push(best.dy / best.dx);
+    }
+    const s = slopes.length ? median(slopes) : 0;
+    const ys = items.map(it => ({ it, y: it.cy - s * it.cx })).sort((a, b) => a.y - b.y);
+    const L = []; let cur = [ys[0]];
+    for (let k = 1; k < ys.length; k++) { if (ys[k].y - cur[cur.length - 1].y > 0.55 * h) { L.push(cur); cur = []; } cur.push(ys[k]); }
+    L.push(cur);
+    const lines = L.map(l => ({ y: median(l.map(o => o.y)), items: l.map(o => o.it) }));
+    let run = null;
+    for (let a = 0; a < lines.length; a++) {
+      if (lines[a].items.length < 5) continue;
+      let b = a;
+      while (b + 1 < lines.length && lines[b + 1].items.length >= 3 && lines[b + 1].y - lines[b].y < 3.2 * h) b++;
+      if (!run || b - a > run.b - run.a) run = { a, b };
+    }
+    if (!run || run.b - run.a < 3) return null;
+    const out = [];
+    for (let k = Math.max(0, run.a - 2); k <= Math.min(run.b, run.a + 4); k++) out.push.apply(out, lines[k].items);
+    return out;
+  }
+
+  // ------------------------------------------------------------------ 读表
+  function hdrKey(text) {
+    const t = String(text).toUpperCase().replace(/[^A-Z]/g, '');
+    if (!t) return null;
+    if (t.indexOf('DIMEN') === 0 || lev(t, 'DIMENSION') <= 2) return 'DIM';
+    for (const k of ['LSL', 'USL', 'LCL', 'UCL']) if (t === k || (t.length <= 4 && t.slice(0, 3) === k)) return k;
+    if (lev(t, 'STOCK') <= 1) return 'STOCK';
+    if (t === 'NO') return 'NO';
+    if (t === 'SYM') return 'SYM';
+    return null;
+  }
+  // 表头：DIMENSION 带着 LSL、USL 站在同一排才算数
+  function headerOf(items, th) {
+    const cands = [];
+    for (const it of items) { if (!it.text) continue; const k = hdrKey(it.text); if (k) cands.push({ k, it }); }
+    let best = null;
+    for (const dm of cands.filter(c => c.k === 'DIM')) {
+      const near = cands.filter(c => Math.abs(c.it.cy - dm.it.cy) < 2.5 * th);
+      const ks = near.map(c => c.k), sc = (ks.indexOf('LSL') >= 0) + (ks.indexOf('USL') >= 0) + dm.it.conf;
+      if (!best || sc > best.sc) best = { dm, near, sc };
+    }
+    if (!best) return null;
+    const hs = {};
+    for (const c of best.near) {
+      const cur = hs[c.k];
+      if (!cur || Math.abs(c.it.cy - best.dm.it.cy) < Math.abs(cur.cy - best.dm.it.cy)) hs[c.k] = c.it;
+    }
+    hs.DIM = best.dm.it;
+    if (!hs.LSL || !hs.USL) return null;
+    const hy = median(Object.keys(hs).map(k => hs[k].cy));
+    // 表头格 = 英文标签 + 紧跟在右边的中文小标签（「LSL 下」「DIMENSION 尺寸」）；本身带中文的就不再并
+    const cjk = /[一-鿿]/, hx = {}, hspan = {};
+    for (const k in hs) {
+      const h = hs[k]; let b = null;
+      if (!cjk.test(h.text)) {
+        for (const it of items) {
+          if (it === h || !it.text || !cjk.test(it.text) || it.text.replace(/\s/g, '').length > 3) continue;
+          const gap = it.x0 - h.x1;
+          if (Math.abs(it.cy - h.cy) < 0.35 * th && gap >= -2 && gap < 1.8 * th && (!b || it.x0 < b.x0)) b = it;
+        }
+      }
+      hspan[k] = [h.x0, b ? b.x1 : h.x1];
+      hx[k] = (hspan[k][0] + hspan[k][1]) / 2;
+    }
+    return { hs, hy, hx, hspan };
+  }
+
+  function analyze(items) {
+    if (items.length < 6) return null;
+    const th = median(items.map(i => i.y1 - i.y0));
+    const hd = headerOf(items, th);
+    if (!hd) return null;
+    const hs = hd.hs, hy = hd.hy, hx = hd.hx, hspan = hd.hspan;
+    const body = items.filter(it => it.cy > hy + 0.8 * th);
+    const nums = body.filter(it => it.num).sort((a, b) => a.cx - b.cx);
+    if (nums.length < 2) return null;
+    const groups = []; let cur = [nums[0]];
+    for (let i = 1; i < nums.length; i++) { if (nums[i].cx - nums[i - 1].cx > 2.5 * th) { groups.push(cur); cur = []; } cur.push(nums[i]); }
+    groups.push(cur);
+    const cl = groups.filter(g => g.length >= 2), ccx = cl.map(g => median(g.map(i => i.cx)));
+    const cols = {}, used = {};
+    const pri = k => (k === 'DIM' || k === 'LSL' || k === 'USL') ? 0 : 1;
+    // 数字列认表头：列中心落在表头格的字里最好，其次比谁离得近
+    const spanDist = (x, s) => x < s[0] ? s[0] - x : x > s[1] ? x - s[1] : 0;
+    for (const k of Object.keys(hx).sort((a, b) => pri(a) - pri(b))) {
+      let bj = -1, bd = Infinity;
+      cl.forEach((g, j) => { if (!used[j]) { const dd = spanDist(ccx[j], hspan[k]) * 4 + Math.abs(ccx[j] - hx[k]); if (dd < bd) { bd = dd; bj = j; } } });
+      if (bj >= 0 && spanDist(ccx[bj], hspan[k]) < 3 * th) { cols[k] = bj; used[bj] = 1; }
+    }
+    if (cols.DIM == null) return null;
+    const lines = {};
+    for (const k in cols) {
+      const g = cl[cols[k]], ys = g.map(i => i.cy), xs = g.map(i => i.cx);
+      if (g.length >= 3 && Math.max.apply(null, ys) - Math.min.apply(null, ys) > 3 * th) { const f = fit(ys, xs); lines[k] = [f[1], f[0]]; }
+      else lines[k] = [median(xs), 0];
+    }
+    for (const k of ['NO', 'SYM', 'LSL', 'USL', 'STOCK', 'LCL', 'UCL']) {
+      if (hs[k] && !lines[k]) {
+        const mem = body.filter(i => Math.abs(i.cx - hx[k]) < 2 * th);
+        lines[k] = [mem.length ? median(mem.map(i => i.cx)) : hx[k], 0];
+      }
+    }
+    const colx = (k, y) => lines[k][0] + lines[k][1] * y;
+    const NUMCOL = { DIM: 1, LSL: 1, USL: 1, LCL: 1, UCL: 1, STOCK: 1 };
+    for (const it of body) {
+      let bk = null, bd = 2.2 * th;
+      for (const k in lines) { const dd = Math.abs(it.cx - colx(k, it.cy)); if (dd < bd) { bd = dd; bk = k; } }
+      it.col = bk;
+      // 数字列里孤零零一个圈，十有八九是 0（单字最容易被认成字母 o）
+      if (bk && NUMCOL[bk] && !it.num && /^[oODQ0]$/.test(it.text.trim())) it.num = parseNum('0');
+    }
+    let anchors = body.filter(i => i.col === 'DIM').sort((a, b) => a.cy - b.cy);
+    if (!anchors.length) return null;
+    let pitch = anchors.length > 1 ? median(anchors.slice(1).map((a, i) => a.cy - anchors[i].cy)) : 2.5 * th;
+    if (!(pitch > 0.8 * th)) pitch = 2.5 * th;
+    const kept = [anchors[0]];
+    for (let i = 1; i < anchors.length; i++) { if (anchors[i].cy - anchors[i - 1].cy > 2.6 * pitch) break; kept.push(anchors[i]); }
+    anchors = kept;
+    const order = Object.keys(lines).sort((a, b) => colx(a, anchors[0].cy) - colx(b, anchors[0].cy));
+    const di = order.indexOf('DIM');
+    // 一行一行往两边追：每找到一格就更新这一行的斜率，透视、纸弯都追得住
+    const rows = anchors.map(a => {
+      const r = { DIM: a };
+      for (const dir of [1, -1]) {
+        let px = a.cx, py = a.cy, s = 0, first = true;
+        const ks = dir === 1 ? order.slice(di + 1) : order.slice(0, di).reverse();
+        for (const k of ks) {
+          const ex = colx(k, py), ey = py + s * (ex - px);
+          let c = null, cd = 0.4 * pitch;
+          for (const i of body) if (i.col === k) { const dd = Math.abs(i.cy - ey); if (dd < cd) { cd = dd; c = i; } }
+          if (c) {
+            const ns = Math.abs(c.cx - px) > 1 ? (c.cy - py) / (c.cx - px) : s;
+            s = first ? ns : 0.5 * s + 0.5 * ns; first = false;
+            px = c.cx; py = c.cy; r[k] = c;
+          }
+        }
+      }
+      return r;
+    });
+    return { hs, hx, lines, rows, pitch, th, hy };
+  }
+
+  // 对账：尺寸 + 下差 = LCL，尺寸 + 上差 = UCL（有加工余量时允许 ± 余量）
+  function checkRows(rows) {
+    return rows.map(r => {
+      const v = {}, res = { ok: {}, flag: {}, sugg: {} };
+      for (const k of ['DIM', 'LSL', 'USL', 'LCL', 'UCL', 'STOCK']) v[k] = r[k] && r[k].num ? r[k].num : null;
+      const present = Object.keys(v).filter(k => v[k]);
+      const dec = present.length ? Math.max.apply(null, present.map(k => v[k].dec)) : 4;
+      const eps = 0.5 * Math.pow(10, 6 - Math.min(6, dec));
+      const st = v.STOCK ? micro(v.STOCK) : 0;
+      const eq = (a, b, c) => [0, 1, -1].some(sg => Math.abs(micro(a) + micro(b) + sg * st - micro(c)) <= eps);
+      const h1 = !!(v.DIM && v.LSL && v.LCL), h2 = !!(v.DIM && v.USL && v.UCL);
+      const sdec = Math.min(6, Math.max(v.LCL ? v.LCL.dec : 0, v.UCL ? v.UCL.dec : 0, v.DIM ? v.DIM.dec : 0, 1));
+      if (h1 && h2) {
+        const e1 = eq(v.DIM, v.LSL, v.LCL), e2 = eq(v.DIM, v.USL, v.UCL);
+        if (e1 && e2) res.ok = { DIM: 1, LSL: 1, USL: 1 };
+        else if (e1) { res.ok = { DIM: 1, LSL: 1 }; res.flag.USL = 1; res.sugg.USL = fmtMicro(micro(v.UCL) - micro(v.DIM), sdec); }
+        else if (e2) { res.ok = { DIM: 1, USL: 1 }; res.flag.LSL = 1; res.sugg.LSL = fmtMicro(micro(v.LCL) - micro(v.DIM), sdec); }
+        else {
+          const d1 = micro(v.LCL) - micro(v.LSL), d2 = micro(v.UCL) - micro(v.USL);
+          res.flag.DIM = 1;
+          if (Math.abs(d1 - d2) <= eps) res.sugg.DIM = fmtMicro(d1, sdec);
+          else { res.flag.LSL = 1; res.flag.USL = 1; }
+        }
+      } else if (h1) {
+        if (eq(v.DIM, v.LSL, v.LCL)) res.ok = { DIM: 1, LSL: 1 }; else { res.flag.DIM = 1; res.flag.LSL = 1; }
+      } else if (h2) {
+        if (eq(v.DIM, v.USL, v.UCL)) res.ok = { DIM: 1, USL: 1 }; else { res.flag.DIM = 1; res.flag.USL = 1; }
+      }
+      for (const k of ['DIM', 'LSL', 'USL']) {
+        const it = r[k];
+        if (!it) continue;
+        if (it.edited) { delete res.flag[k]; continue; }                 // 人改过的就是真理
+        if (it.num && !res.ok[k] && !res.flag[k] && it.conf < 0.9) res.flag[k] = 1;
+      }
+      res.checked = h1 || h2;
+      return res;
+    });
+  }
+
+  // ------------------------------------------------------------------ 出图
+  function homography(src, dst) {
+    const A = [], b = [];
+    for (let i = 0; i < 4; i++) {
+      const x = src[i][0], y = src[i][1], u = dst[i][0], v = dst[i][1];
+      A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u);
+      A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v);
+    }
+    for (let c = 0; c < 8; c++) {
+      let p = c; for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+      if (Math.abs(A[p][c]) < 1e-12) return null;
+      [A[c], A[p]] = [A[p], A[c]]; [b[c], b[p]] = [b[p], b[c]];
+      for (let r = 0; r < 8; r++) {
+        if (r === c) continue;
+        const f = A[r][c] / A[c][c];
+        for (let k = c; k < 8; k++) A[r][k] -= f * A[c][k];
+        b[r] -= f * b[c];
+      }
+    }
+    return b.map((v, i) => v / A[i][i]).concat([1]);
+  }
+  function inv3(m) {
+    const [a, b, c, d, e, f, g, h, i] = m, A = e * i - f * h, B = -(d * i - f * g), C = d * h - e * g, D = a * A + b * B + c * C;
+    if (Math.abs(D) < 1e-12) return null;
+    return [A / D, -(b * i - c * h) / D, (b * f - c * e) / D, B / D, (a * i - c * g) / D, -(a * f - c * d) / D, C / D, -(a * h - b * g) / D, (a * e - b * d) / D];
+  }
+  const applyH = (H, x, y) => { const w = H[6] * x + H[7] * y + H[8]; return [(H[0] * x + H[1] * y + H[2]) / w, (H[3] * x + H[4] * y + H[5]) / w]; };
+  function pathRound(g, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+    g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+  }
+  const FONT = '-apple-system, "SF Pro Display", "Helvetica Neue", "PingFang SC", Arial, sans-serif';
+  const RED = '#d70015';
+  function footer(c, glyph, mode) {
+    const F = Math.max(30, Math.round(1.9 * glyph)), out = mkCanvas(c.width, c.height + F), g = ctx2d(out);
+    g.drawImage(c, 0, 0);
+    g.fillStyle = '#0e141c'; g.fillRect(0, c.height, out.width, F);
+    const fs = Math.round(F * 0.44), y = c.height + F / 2;
+    g.font = '700 ' + fs + 'px ' + FONT; g.textBaseline = 'middle'; g.textAlign = 'left';
+    g.fillStyle = '#ff5a5f'; g.fillText('红字', fs * 0.7, y);
+    const w1 = g.measureText('红字').width;
+    g.fillStyle = '#e5eaf1'; g.fillText(' = ' + (mode === 'in2mm' ? '毫米' : '英寸'), fs * 0.7 + w1, y);
+    g.textAlign = 'right'; g.fillStyle = '#9aa7b8'; g.font = '600 ' + Math.round(fs * 0.9) + 'px ' + FONT;
+    g.fillText('英寸照妖镜', out.width - fs * 0.7, y);
+    return out;
+  }
+
+  function renderTable(up, A, chk, mode) {
+    const rows = A.rows, lines = A.lines, th = A.th, glyph = 0.59 * th;
+    const colx = (k, y) => lines[k][0] + lines[k][1] * y;
+    // 1) 四个角 → 透视矫正（行列拉直）
+    let H = null;
+    const full = rows.filter(r => Object.keys(r).length >= 3);
+    const left = ['NO', 'SYM', 'DIM'].find(k => lines[k]), right = ['UCL', 'LCL', 'STOCK', 'USL'].find(k => lines[k]);
+    if (full.length >= 2 && left && right && left !== right) {
+      const rowfit = r => { const ms = Object.keys(r).map(k => r[k]); const f = fit(ms.map(m => m.cx), ms.map(m => m.cy)); return [f[1], f[0]]; };
+      const colfit = k => { const ms = rows.map(r => r[k]).filter(Boolean); if (ms.length >= 3) { const f = fit(ms.map(m => m.cy), ms.map(m => m.cx)); return [f[1], f[0]]; } return lines[k]; };
+      const inter = (rw, cl) => { const y = (rw[0] + rw[1] * cl[0]) / (1 - rw[1] * cl[1]); return [cl[0] + cl[1] * y, y]; };
+      const top = rowfit(full[0]), bot = rowfit(full[full.length - 1]), L = colfit(left), R = colfit(right);
+      const TL = inter(top, L), TR = inter(top, R), BL = inter(bot, L), BR = inter(bot, R);
+      const xL = (TL[0] + BL[0]) / 2, xR = (TR[0] + BR[0]) / 2, yT = (TL[1] + TR[1]) / 2, yB = (BL[1] + BR[1]) / 2;
+      if (xR - xL > 4 * th && yB - yT > 2 * th) {
+        H = homography([TL, TR, BL, BR], [[xL, yT], [xR, yT], [xL, yB], [xR, yB]]);
+        if (H) {
+          const Hi0 = inv3(H);
+          const bad = !Hi0 || [TL, TR, BL, BR].some(p => { const q = applyH(H, p[0], p[1]); return !isFinite(q[0]) || !isFinite(q[1]); });
+          if (bad) H = null;
+        }
+      }
+    }
+    if (!H) H = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    const Hi = inv3(H);
+    const mp = it => applyH(H, it.cx, it.cy);
+    // 2) 矫正后的列位置、行位置
+    const colX = {};
+    for (const k in lines) {
+      const xs = rows.map(r => r[k]).filter(Boolean).map(m => mp(m)[0]);
+      colX[k] = xs.length ? median(xs) : applyH(H, colx(k, A.hy), A.hy)[0];
+    }
+    const rowY = rows.map(r => mean(Object.keys(r).map(k => mp(r[k])[1])));
+    const hdrY0 = Math.min.apply(null, Object.keys(A.hs).map(k => applyH(H, A.hs[k].cx, A.hs[k].y0)[1]));
+    const pitch = rowY.length > 1 ? median(rowY.slice(1).map((y, i) => y - rowY[i])) : A.pitch;
+    const order = Object.keys(colX).sort((a, b) => colX[a] - colX[b]);
+    const nb = (k, d) => { const i = order.indexOf(k) + d; return i >= 0 && i < order.length ? order[i] : null; };
+    const lk = colX.NO != null ? 'NO' : colX.SYM != null ? 'SYM' : 'DIM', n1 = nb(lk, 1), n2 = nb('USL', 1);
+    const gapL = n1 ? colX[n1] - colX[lk] : 3 * th, gapR = n2 ? colX[n2] - colX.USL : Math.max(3 * th, colX.USL - colX.LSL);
+    const x0 = colX[lk] - 0.62 * gapL, x1 = colX.USL + 0.5 * gapR;
+    const mL = 0.35 * gapL, mR = 0.3 * gapR, X0 = x0 - mL, X1 = x1 + mR;
+    const yTop = hdrY0 - 0.9 * th, yBot = rowY[rowY.length - 1] + 0.75 * pitch;
+    // 3) 每行原数字下面插一条，原图像素往下抻
+    const cap = 1.45 * glyph, fs0 = cap / 0.72, S = Math.round(cap * 1.55);
+    const cuts = [];
+    rows.forEach((r, k) => {
+      if (['DIM', 'LSL', 'USL'].some(c => r[c] && r[c].num)) cuts.push({ v: rowY[k] + 0.5 * glyph + 0.3 * Math.max(0, 0.5 * pitch - 0.5 * glyph), k });
+    });
+    const vm = [], stripAt = {}; let v = yTop;
+    for (const c of cuts.concat([{ v: yBot, k: null }])) {
+      const n = Math.max(0, Math.round(c.v - v));
+      for (let i = 0; i < n; i++) vm.push(v + i);
+      v += n;
+      if (c.k != null) { stripAt[c.k] = vm.length; for (let i = 0; i < S; i++) vm.push(v); }
+    }
+    const Wm = Math.max(8, Math.round(X1 - X0)), Hm = vm.length;
+    const sd = ctx2d(up).getImageData(0, 0, up.width, up.height).data, sw = up.width, sh = up.height;
+    const warp = mkCanvas(Wm, Hm), wg = ctx2d(warp), img = wg.createImageData(Wm, Hm), od = img.data;
+    for (let y = 0; y < Hm; y++) {
+      const V = vm[y];
+      for (let x = 0; x < Wm; x++) {
+        const U = X0 + x, w = Hi[6] * U + Hi[7] * V + Hi[8];
+        let fx = (Hi[0] * U + Hi[1] * V + Hi[2]) / w, fy = (Hi[3] * U + Hi[4] * V + Hi[5]) / w;
+        if (!(fx > 0)) fx = 0; else if (fx > sw - 1.001) fx = sw - 1.001;
+        if (!(fy > 0)) fy = 0; else if (fy > sh - 1.001) fy = sh - 1.001;
+        const ix = fx | 0, iy = fy | 0, ax = fx - ix, ay = fy - iy, i00 = (iy * sw + ix) * 4, i01 = i00 + sw * 4, o = (y * Wm + x) * 4;
+        for (let c = 0; c < 3; c++) {
+          const p = sd[i00 + c] + (sd[i00 + 4 + c] - sd[i00 + c]) * ax, q = sd[i01 + c] + (sd[i01 + 4 + c] - sd[i01 + c]) * ax;
+          od[o + c] = p + (q - p) * ay;
+        }
+        od[o + 3] = 255;
+      }
+    }
+    wg.putImageData(img, 0, 0);
+    // 4) 边贴到表格线上
+    const dark = (xa, xb, ya, yb, vertical) => {
+      const prof = [];
+      if (vertical) for (let x = xa; x <= xb; x++) { let s = 0; for (let y = ya; y < yb; y += 2) { const o = (y * Wm + x) * 4; s += 765 - od[o] - od[o + 1] - od[o + 2]; } prof.push(s); }
+      else for (let y = ya; y <= yb; y++) { let s = 0; for (let x = xa; x < xb; x += 2) { const o = (y * Wm + x) * 4; s += 765 - od[o] - od[o + 1] - od[o + 2]; } prof.push(s); }
+      let bi = 0; for (let i = 1; i < prof.length; i++) if (prof[i] > prof[bi]) bi = i;
+      const md = median(prof);
+      return prof.length && prof[bi] > md * 1.6 + 1 ? bi : -1;
+    };
+    const firstRowOut = Math.max(0, Math.round(rowY[0] - yTop));
+    let cL = Math.round(mL), cR = Wm - Math.round(mR), cT = 0, cB = Hm;
+    let p = dark(0, Math.min(Wm - 1, Math.round(mL + 0.25 * gapL)), firstRowOut, Hm, true); if (p >= 0) cL = Math.max(0, p - 3);
+    const ra = Math.max(0, Math.round(Wm - 2 * mR - 0.0)), rb = Wm - 1;
+    p = dark(ra, rb, firstRowOut, Hm, true); if (p >= 0) cR = Math.min(Wm, ra + p + 4);
+    const tb = Math.max(1, Math.round(hdrY0 - yTop + 0.15 * th));
+    p = dark(cL, cR, 0, Math.min(Hm - 1, tb), false); if (p >= 0) cT = Math.max(0, p - 3);
+    const ba = Math.max(0, Hm - Math.round(0.55 * pitch));
+    p = dark(cL, cR, ba, Hm - 1, false); if (p >= 0) cB = Math.min(Hm, ba + p + 4);
+    const outW = Math.max(8, cR - cL), outH = Math.max(8, cB - cT);
+    const c = mkCanvas(outW, outH), g = ctx2d(c);
+    g.drawImage(warp, cL, cT, outW, outH, 0, 0, outW, outH);
+    warp.width = warp.height = 1;
+    // 5) 落红字
+    const labels = [];
+    const colW = k => { const a = nb(k, -1), b = nb(k, 1), ds = []; if (a) ds.push(colX[k] - colX[a]); if (b) ds.push(colX[b] - colX[k]); return ds.length ? Math.min.apply(null, ds) : 4 * th; };
+    g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
+    rows.forEach((r, k) => {
+      if (stripAt[k] == null) return;
+      for (const key of ['DIM', 'LSL', 'USL']) {
+        const it = r[key];
+        if (!it || !it.num) continue;
+        const txt = convert(it.num, mode), flagged = !!chk[k].flag[key];
+        let fs = fs0; g.font = '700 ' + fs + 'px ' + FONT;
+        let tw = g.measureText(txt).width; const maxW = 0.9 * colW(key);
+        if (tw > maxW) { fs *= maxW / tw; g.font = '700 ' + fs + 'px ' + FONT; tw = g.measureText(txt).width; }
+        const u = mp(it)[0] - X0 - cL, top = stripAt[k] - cT, base = top + S / 2 + 0.36 * fs;
+        const pad = 0.35 * fs;
+        if (flagged) {
+          g.fillStyle = '#ffd60a'; pathRound(g, u - tw / 2 - pad, top + 1, tw + 2 * pad, S - 2, 0.3 * fs); g.fill();
+        } else {
+          g.lineWidth = Math.max(3, fs * 0.16); g.strokeStyle = 'rgba(255,255,255,.92)'; g.strokeText(txt, u, base);
+        }
+        g.fillStyle = RED; g.fillText(txt, u, base);
+        labels.push({ x: u - tw / 2 - pad, y: top, w: tw + 2 * pad, h: S, row: k, key, item: it, flagged });
+      }
+    });
+    return { canvas: footer(c, glyph, mode), labels };
+  }
+
+  // 没认出表头：整张图里的纯数字全换，红字贴在右边
+  function renderLoose(up, items, mode) {
+    const nums = items.filter(i => i.num);
+    const th = median(items.map(i => i.y1 - i.y0));
+    let x0 = Math.min.apply(null, items.map(i => i.x0)), y0 = Math.min.apply(null, items.map(i => i.y0));
+    let x1 = Math.max.apply(null, items.map(i => i.x1)), y1 = Math.max.apply(null, items.map(i => i.y1));
+    x0 = Math.max(0, Math.floor(x0 - 1.5 * th)); y0 = Math.max(0, Math.floor(y0 - 1.5 * th));
+    x1 = Math.min(up.width, Math.ceil(x1 + 4 * th)); y1 = Math.min(up.height, Math.ceil(y1 + 1.5 * th));
+    const c = mkCanvas(x1 - x0, y1 - y0), g = ctx2d(c);
+    g.drawImage(up, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
+    const labels = [];
+    g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+    for (const it of nums) {
+      const glyph = 0.59 * (it.y1 - it.y0), cap = 1.15 * glyph, fs = cap / 0.72, pad = 0.3 * fs;
+      const txt = convert(it.num, mode);
+      g.font = '700 ' + fs + 'px ' + FONT;
+      const tw = g.measureText(txt).width;
+      let lx = it.x1 - x0 + 0.15 * fs, base = it.cy - y0 + cap / 2;
+      if (lx + tw + 2 * pad > c.width) { lx = it.cx - x0 - tw / 2 - pad; base = it.y1 - y0 + cap + 0.4 * fs; }
+      g.fillStyle = it.flag ? 'rgba(255,214,10,.95)' : 'rgba(255,255,255,.88)';
+      pathRound(g, lx, base - cap - pad, tw + 2 * pad, cap + 2 * pad, 0.3 * fs); g.fill();
+      g.fillStyle = RED; g.fillText(txt, lx + pad, base);
+      labels.push({ x: lx, y: base - cap - pad, w: tw + 2 * pad, h: cap + 2 * pad, item: it, key: null, row: -1, flagged: !!it.flag });
+    }
+    return { canvas: footer(c, 0.59 * th, mode), labels };
+  }
+
+  function unitHint(items) {
+    for (const it of items) {
+      const t = String(it.text).replace(/\s/g, '').toLowerCase();
+      if (t === 'inch' || t === 'inches' || t === '英寸' || t === 'in.') return 'in';
+      if (t === 'mm' || t === '毫米') return 'mm';
+    }
+    return null;
+  }
+
+  async function read(img, onStep) {
+    const t = {}; let t0 = performance.now();
+    const lap = k => { const n = performance.now(); t[k] = Math.round(n - t0); t0 = n; };
+    onStep && onStep('orient'); await nextFrame();
+    const src = toCanvas(img, T.WORK); lap('decode');
+    const R = await findOrientation(src); lap('orient');
+    const up = rotateCanvas(src, R); src.width = src.height = 1; lap('rotate');
+    onStep && onStep('read'); await nextFrame();
+    const items = await readAll(up); lap('read');
+    onStep && onStep('check'); await nextFrame();
+    const A = analyze(items); lap('analyze');
+    let kind = 'none';
+    if (A && A.rows.some(r => ['DIM', 'LSL', 'USL'].some(k => r[k] && r[k].num))) kind = 'table';
+    else if (items.some(i => i.num)) kind = 'loose';
+    return { up, items, A: kind === 'table' ? A : null, kind, R, unit: unitHint(items), t };
+  }
+
+  function draw(job, mode) {
+    if (job.kind === 'table') {
+      const chk = checkRows(job.A.rows);
+      const out = renderTable(job.up, job.A, chk, mode);
+      const stat = { rows: job.A.rows.length, checked: chk.filter(c => c.checked).length, okRows: chk.filter(c => c.checked && !Object.keys(c.flag).length).length,
+        flags: chk.reduce((s, c) => s + Object.keys(c.flag).length, 0) };
+      return Object.assign(out, { chk, stat });
+    }
+    if (job.kind === 'loose') {
+      job.items.forEach(i => { i.flag = !!i.num && !i.edited && i.conf < 0.9; });
+      const out = renderLoose(job.up, job.items, mode);
+      return Object.assign(out, { stat: { flags: job.items.filter(i => i.flag).length } });
+    }
+    return null;
+  }
+
+  return { load, read, draw, parseNum, convert, checkRows, analyze, prof, helper, get ready() { return !!(det && rec); } };
+})();
+</script>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const MODE_KEY = 'inch-mirror-mode';
+  const seg = $('seg'), statusEl = $('status'), stText = $('st-text'), stPct = $('st-pct'), stBar = $('st-bar'), retryEl = $('retry');
+  const resultEl = $('result'), sumEl = $('sum'), pic = $('pic'), hintEl = $('hint'), unitEl = $('unit'), unitText = $('unit-text');
+  const cam = $('cam'), lib = $('lib'), shootBtn = $('shoot'), albumBtn = $('album'), againBtn = $('again'), saveBtn = $('save');
+  const veil = $('veil'), edMeta = $('ed-meta'), edNum = $('ed-num'), edPrev = $('ed-prev'), edSug = $('ed-sug'), edSugText = $('ed-sug-text');
+  const state = { mode: 'in2mm', job: null, out: null, url: null, busy: false, editing: null, engine: 'idle' };
+  window.__inch = { state, timings: {} };
+
+  try { const m = localStorage.getItem(MODE_KEY); if (m === 'in2mm' || m === 'mm2in') state.mode = m; } catch (e) {}
+  const UNIT = () => state.mode === 'in2mm' ? '毫米' : '英寸';
+
+  function paintMode() {
+    seg.dataset.mode = state.mode;
+    seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', String(b.dataset.mode === state.mode)));
+  }
+  paintMode();
+  seg.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b || b.dataset.mode === state.mode) return;
+    setMode(b.dataset.mode);
+  });
+  function setMode(m) {
+    state.mode = m;
+    try { localStorage.setItem(MODE_KEY, m); } catch (e) {}
+    paintMode();
+    if (state.job && state.job.kind !== 'none') show();
+  }
+
+  // ------------------------------------------------------------------ 状态条
+  function status(text, pct, bad) {
+    statusEl.hidden = false;
+    statusEl.classList.toggle('bad', !!bad);
+    stText.textContent = text;
+    stPct.textContent = pct == null || bad ? '' : Math.round(pct * 100) + '%';
+    stBar.style.width = pct == null ? '0' : Math.round(pct * 100) + '%';
+    retryEl.hidden = !bad;
+  }
+  const hideStatus = () => { statusEl.hidden = true; };
+
+  // ------------------------------------------------------------------ 装引擎
+  let firstTime = true, lastP = 0, shown = false;
+  const loadMsg = () => state.waiting ? '脑子还在装，装好马上照。'
+    : firstTime ? '第一次用，先给手机装个识字的脑子（约 30 MB），装完断网也能用。' : '开光中…';
+  const showLoad = () => { if (shown && (!state.busy || state.waiting)) status(loadMsg(), lastP); };
+  function boot() {
+    state.engine = 'loading';
+    const timer = setTimeout(() => { shown = true; showLoad(); }, 350);
+    return MIRROR.load(p => { lastP = p; showLoad(); })
+      .then(() => { clearTimeout(timer); state.engine = 'ready'; if (!state.busy) hideStatus(); })
+      .catch(err => {
+        clearTimeout(timer); state.engine = 'failed';
+        status('脑子没装上（' + (err && err.message || err) + '）。有网了点「重试」。', null, true);
+        throw err;
+      });
+  }
+  (async () => {
+    try {
+      const c = await caches.open('inch-mirror-assets-v1');
+      firstTime = !(await c.match(new URL('models/rec.onnx', location.href).href));
+    } catch (e) {}
+    boot().catch(() => {});
+  })();
+  retryEl.addEventListener('click', () => { boot().catch(() => {}); });
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(() => {});
+
+  // ------------------------------------------------------------------ 拍
+  const pickCam = () => { cam.value = ''; cam.click(); };
+  const pickLib = () => { lib.value = ''; lib.click(); };
+  shootBtn.addEventListener('click', pickCam);
+  againBtn.addEventListener('click', pickCam);
+  albumBtn.addEventListener('click', pickLib);
+  cam.addEventListener('change', () => cam.files[0] && run(cam.files[0]));
+  lib.addEventListener('change', () => lib.files[0] && run(lib.files[0]));
+
+  const STEP = { orient: ['照片扶正中…', 0.15], read: ['认字中…', 0.45], check: ['对账中…', 0.85], draw: ['落红字…', 0.95] };
+  function setBusy(b) {
+    state.busy = b;
+    [shootBtn, albumBtn, againBtn].forEach(x => { x.disabled = b; });
+  }
+  async function loadImage(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = url;
+      await img.decode();
+      return img;
+    } finally { setTimeout(() => URL.revokeObjectURL(url), 0); }
+  }
+  async function run(file) {
+    if (state.busy) return;
+    setBusy(true);
+    hintEl.hidden = true;
+    try {
+      if (state.engine !== 'ready') {
+        state.waiting = true; shown = true; showLoad();
+        try { if (state.engine === 'failed') await boot(); else await MIRROR.load(); } finally { state.waiting = false; }
+      }
+      let img;
+      try { img = await loadImage(file); } catch (e) { throw new Error('这张图手机打不开'); }
+      const job = await MIRROR.read(img, k => status(STEP[k][0], STEP[k][1]));
+      state.job = job;
+      window.__inch.timings = job.t;
+      status(STEP.draw[0], STEP.draw[1]);
+      await new Promise(r => setTimeout(r, 0));
+      await show(true);
+      hideStatus();
+    } catch (err) {
+      console.error(err);
+      status('照妖失败：' + (err && err.message || err) + '。再拍一张试试。', null, true);
+      retryEl.hidden = true;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // ------------------------------------------------------------------ 出结果
+  async function show(scroll) {
+    const job = state.job;
+    resultEl.hidden = false;
+    unitEl.hidden = true;
+    if (!job || job.kind === 'none') {
+      sumEl.className = 'sum none';
+      sumEl.textContent = '一个数字都没照出来。凑近点、拍正点，再来一张。';
+      pic.parentElement.hidden = true; saveBtn.hidden = true;
+      state.out = null;
+      window.__inch.result = { kind: 'none' };
+      return;
+    }
+    const t0 = performance.now();
+    const out = MIRROR.draw(job, state.mode);
+    state.out = out;
+    pic.parentElement.hidden = false; saveBtn.hidden = false;
+    const blob = await new Promise(r => out.canvas.toBlob(r, 'image/jpeg', 0.92));
+    if (state.url) URL.revokeObjectURL(state.url);
+    state.url = URL.createObjectURL(blob);
+    state.blob = blob;
+    await new Promise(res => { pic.onload = res; pic.onerror = res; pic.src = state.url; });
+    const st = out.stat, unit = UNIT();
+    let text, cls = 'sum';
+    if (job.kind === 'table') {
+      if (st.flags) { text = '红字是' + unit + ' · ' + st.flags + ' 个黄格没对上账，点它改'; cls += ' flag'; }
+      else if (st.checked) text = '红字是' + unit + ' · ' + st.okRows + ' 行全对上账';
+      else text = '红字是' + unit + ' · 认错了就点红字改';
+    } else {
+      text = '没找到 DIMENSION / LSL / USL，照片里的数字全换了 · 红字是' + unit;
+      if (st.flags) { text += ' · 黄的没把握，点它改'; cls += ' flag'; }
+    }
+    sumEl.className = cls; sumEl.textContent = text;
+    const want = state.mode === 'in2mm' ? 'in' : 'mm';
+    if (job.unit && job.unit !== want) {
+      unitText.textContent = '表上写的是' + (job.unit === 'in' ? '英寸' : '毫米') + '，你选的是' + (state.mode === 'in2mm' ? '英寸 → 毫米' : '毫米 → 英寸') + '。';
+      unitEl.hidden = false;
+    }
+    window.__inch.timings.draw = Math.round(performance.now() - t0);
+    window.__inch.result = summarize();
+    if (scroll) resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  $('unit-fix').addEventListener('click', () => setMode(state.mode === 'in2mm' ? 'mm2in' : 'in2mm'));
+
+  function summarize() {
+    const job = state.job, out = state.out;
+    if (job.kind === 'table') {
+      return { kind: 'table', mode: state.mode, stat: out.stat, rows: job.A.rows.map((r, i) => {
+        const o = { no: r.NO ? r.NO.text : null };
+        for (const k of ['DIM', 'LSL', 'USL', 'LCL', 'UCL']) if (r[k]) o[k] = r[k].text;
+        o.conv = {}; for (const k of ['DIM', 'LSL', 'USL']) if (r[k] && r[k].num) o.conv[k] = MIRROR.convert(r[k].num, state.mode);
+        o.flag = Object.keys(out.chk[i].flag); o.ok = Object.keys(out.chk[i].ok); o.sugg = out.chk[i].sugg;
+        return o;
+      }), size: [out.canvas.width, out.canvas.height], labels: out.labels.length };
+    }
+    return { kind: job.kind, mode: state.mode, nums: job.items.filter(i => i.num).map(i => [i.text, MIRROR.convert(i.num, state.mode)]), labels: out.labels.length };
+  }
+
+  // ------------------------------------------------------------------ 存图
+  saveBtn.addEventListener('click', async () => {
+    if (!state.blob) return;
+    const d = new Date(), p = n => String(n).padStart(2, '0');
+    const name = '英寸照妖镜-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '.jpg';
+    const file = new File([state.blob], name, { type: 'image/jpeg' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file] }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    const a = document.createElement('a'); a.href = state.url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  // ------------------------------------------------------------------ 点红字改数
+  pic.addEventListener('click', e => {
+    if (!state.out) return;
+    const r = pic.getBoundingClientRect(), k = state.out.canvas.width / r.width;
+    const x = (e.clientX - r.left) * k, y = (e.clientY - r.top) * k, pad = 10 * k;
+    let hit = null, hd = Infinity;
+    for (const L of state.out.labels) {
+      if (x < L.x - pad || x > L.x + L.w + pad || y < L.y - pad || y > L.y + L.h + pad) continue;
+      const d = Math.abs(x - (L.x + L.w / 2)) + Math.abs(y - (L.y + L.h / 2));
+      if (d < hd) { hd = d; hit = L; }
+    }
+    if (hit) openEdit(hit);
+  });
+  const NAMES = { DIM: '尺寸 DIMENSION', LSL: '下差 LSL', USL: '上差 USL' };
+  function openEdit(L) {
+    const job = state.job, it = L.item;
+    state.editing = L;
+    const row = L.row >= 0 ? job.A.rows[L.row] : null;
+    edMeta.textContent = (row && row.NO && row.NO.text ? '标号 ' + row.NO.text + ' · ' : '') + (L.key ? NAMES[L.key] : '照片里的数') + ' · 认成 ' + it.text;
+    edNum.value = it.num ? it.num.s : it.text;
+    const sug = row ? state.out.chk[L.row].sugg[L.key] : null;
+    edSug.hidden = !sug;
+    if (sug) { edSugText.innerHTML = ''; edSugText.append('按 LCL/UCL 倒推是'); const b = document.createElement('b'); b.textContent = sug; edSugText.append(b); edSug.dataset.v = sug; }
+    preview();
+    veil.hidden = false;
+    fitSheet();
+    edNum.focus();                                   // 必须在点击当下聚焦，iPhone 才肯弹键盘
+    try { edNum.setSelectionRange(0, edNum.value.length); } catch (x) {}
+  }
+  // 键盘弹起来时，单子跟着顶到键盘上面
+  function fitSheet() {
+    const vv = window.visualViewport;
+    if (veil.hidden || !vv) return;
+    veil.style.top = vv.offsetTop + 'px';
+    veil.style.bottom = Math.max(0, window.innerHeight - vv.height - vv.offsetTop) + 'px';
+  }
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fitSheet);
+    window.visualViewport.addEventListener('scroll', fitSheet);
+  }
+  function preview() {
+    const p = MIRROR.parseNum(edNum.value);
+    edNum.setAttribute('aria-invalid', String(!p && edNum.value.trim() !== ''));
+    edPrev.innerHTML = '';
+    if (p) { const b = document.createElement('b'); b.textContent = MIRROR.convert(p, state.mode); edPrev.append('= ', b, UNIT()); }
+    else edPrev.textContent = '只认数字，比如 1.0860、-0.0050、3/8';
+    $('ed-ok').disabled = !p;
+  }
+  edNum.addEventListener('input', preview);
+  edNum.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } });
+  $('ed-sign').addEventListener('click', () => {
+    const v = edNum.value.trim();
+    edNum.value = v.charAt(0) === '-' ? v.slice(1) : v.charAt(0) === '+' ? '-' + v.slice(1) : '-' + v;
+    preview();
+  });
+  $('ed-sug-use').addEventListener('click', () => { edNum.value = edSug.dataset.v; preview(); });
+  const closeEdit = () => { edNum.blur(); veil.hidden = true; veil.style.top = veil.style.bottom = ''; state.editing = null; };
+  $('ed-cancel').addEventListener('click', closeEdit);
+  veil.addEventListener('click', e => { if (e.target === veil) closeEdit(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !veil.hidden) closeEdit(); });
+  $('ed-ok').addEventListener('click', commit);
+  function commit() {
+    const L = state.editing, p = MIRROR.parseNum(edNum.value);
+    if (!L || !p) return;
+    L.item.num = p; L.item.text = edNum.value.trim(); L.item.edited = true; L.item.conf = 1;
+    closeEdit();
+    show(false);
+  }
+  window.__inch.run = run;
+  window.__inch.openEdit = i => state.out && openEdit(state.out.labels[i]);
+})();
+</script>
+</body>
+</html>
