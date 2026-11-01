@@ -713,13 +713,16 @@ const MIRROR = (() => {
     const cl = groups.filter(g => g.length >= 2), ccx = cl.map(g => median(g.map(i => i.cx)));
     const cols = {}, used = {};
     const pri = k => (k === 'DIM' || k === 'LSL' || k === 'USL') ? 0 : 1;
-    // 数字列认表头：列中心落在表头格的字里最好，其次比谁离得近
+    // 数字列认表头：所有「表头-数字列」配对按距离排队，最近的先配，配过的谁也不能再抢
+    // （列中心落在表头那几个字底下最好，其次比谁离得近；空着的一列不能把隔壁的数字抢过去）
     const spanDist = (x, s) => x < s[0] ? s[0] - x : x > s[1] ? x - s[1] : 0;
-    for (const k of Object.keys(hx).sort((a, b) => pri(a) - pri(b))) {
-      let bj = -1, bd = Infinity;
-      cl.forEach((g, j) => { if (!used[j]) { const dd = spanDist(ccx[j], hspan[k]) * 4 + Math.abs(ccx[j] - hx[k]); if (dd < bd) { bd = dd; bj = j; } } });
-      if (bj >= 0 && spanDist(ccx[bj], hspan[k]) < 3 * th) { cols[k] = bj; used[bj] = 1; }
-    }
+    const pairs = [];
+    for (const k of Object.keys(hx)) cl.forEach((g, j) => {
+      const sd = spanDist(ccx[j], hspan[k]);
+      if (sd < 3 * th) pairs.push({ k, j, cost: sd * 4 + Math.abs(ccx[j] - hx[k]) - (pri(k) ? 0 : 0.5) });
+    });
+    pairs.sort((a, b) => a.cost - b.cost);
+    for (const p of pairs) if (cols[p.k] == null && !used[p.j]) { cols[p.k] = p.j; used[p.j] = 1; }
     if (cols.DIM == null) return null;
     const lines = {};
     for (const k in cols) {
