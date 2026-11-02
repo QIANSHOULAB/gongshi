@@ -59,6 +59,16 @@ a { -webkit-tap-highlight-color: transparent; }
 .tabs a[aria-current="page"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
 .tabs a:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 
+/* 英文小字：照工时榨汁机那套，中文下面一行小号大写 */
+.en { display: block; font-size: 10.5px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); line-height: 1.3; }
+.seg button .en, .btn .en, .album .en, .unit button .en, .sug button .en, .retry .en { color: inherit; opacity: .72; }
+.seg button, .btn, .album { flex-direction: column; line-height: 1.15; }
+.btn > span, .album > span { display: block; }
+.btn.withicon, .album { flex-direction: row; }
+.face-label .en { margin-top: 5px; font-size: 10.5px; letter-spacing: .12em; color: inherit; opacity: .62; font-weight: 700; }
+.hint .en { margin-top: 2px; }
+.status .en, .sum .en, .turn .en, .meta .en, .prev .en, .unit-text .en { margin-top: 2px; }
+.sheet h2 .en { font-size: 11px; margin-top: 2px; }
 .head { text-align: center; }
 .head h1 { margin: 2px 0 0; font-size: 30px; line-height: 1.2; font-weight: 700; letter-spacing: .06em; }
 .sub { margin: 6px 0 0; font-size: 15px; line-height: 1.6; color: var(--muted); }
@@ -272,8 +282,8 @@ html, body { overflow-x: hidden; overflow-x: clip; }
   </header>
 
   <div class="seg" id="seg" role="radiogroup" aria-label="换算方向">
-    <button type="button" role="radio" data-mode="in2mm">英寸 → 毫米</button>
-    <button type="button" role="radio" data-mode="mm2in">毫米 → 英寸</button>
+    <button type="button" role="radio" data-mode="in2mm">英寸 → 毫米<span class="en">Inch → mm</span></button>
+    <button type="button" role="radio" data-mode="mm2in">毫米 → 英寸<span class="en">mm → Inch</span></button>
   </div>
 
   <section class="hero" id="hero">
@@ -284,7 +294,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
       <svg class="layer" id="mirror-rim" viewBox="-140 -140 280 280" aria-hidden="true"></svg>
       <span class="face">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.3-2h7l1.3 2h1.7A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.6"/></svg>
-        <span class="face-label" id="face-label">拍照</span>
+        <span class="face-label"><span id="face-label">拍照</span><span class="en" id="face-en">Shoot</span></span>
       </span>
     </button>
     <div class="vines front" id="vines-front" aria-hidden="true"></div>
@@ -295,23 +305,23 @@ html, body { overflow-x: hidden; overflow-x: clip; }
   <section class="status" id="status" aria-live="polite" hidden>
     <p><span id="st-text"></span><span class="pct" id="st-pct"></span></p>
     <div class="bar"><i id="st-bar"></i></div>
-    <button class="retry" id="retry" type="button" hidden>重试</button>
+    <button class="retry" id="retry" type="button" hidden>重试<span class="en">Retry</span></button>
   </section>
 
-  <p class="hint" id="hint"><b>对着检查表拍</b>尺寸、公差、控制范围当场现原形。</p>
+  <p class="hint" id="hint"><b>对着检查表拍<span class="en">Snap the inspection sheet</span></b>尺寸、公差、控制范围当场现原形。<span class="en">Size, tolerance, limits — exposed</span></p>
   <button class="album" id="album" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 15.5l-4.6-4.6a1.6 1.6 0 0 0-2.3 0L6 19"/></svg>
-    相册
+    <span>相册<span class="en">Photos</span></span>
   </button>
 
   <section class="result" id="result" aria-live="polite" hidden>
     <p class="sum" id="sum"></p>
-    <div class="unit" id="unit" hidden><span id="unit-text"></span><button type="button" id="unit-fix">换过来</button></div>
+    <div class="unit" id="unit" hidden><span id="unit-text"></span><button type="button" id="unit-fix">换过来<span class="en">Switch</span></button></div>
     <div class="pic"><img id="pic" alt="换算结果：原图数字旁边的红字是换算后的值"></div>
-    <p class="turn" id="turn" hidden>手机横过来看，字大一倍多。</p>
+    <p class="turn" id="turn" hidden>手机横过来看，字大一倍多。<span class="en">Turn your phone sideways for bigger text</span></p>
     <div class="acts">
-      <button class="btn primary" id="save" type="button">保存图片</button>
-      <button class="btn ghost" id="again" type="button">再拍一张</button>
+      <button class="btn primary" id="save" type="button"><span>保存图片<span class="en">Save image</span></span></button>
+      <button class="btn ghost" id="again" type="button"><span>再拍一张<span class="en">Shoot again</span></span></button>
     </div>
   </section>
 
@@ -320,17 +330,17 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 <div class="veil" id="veil" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ed-title">
     <div class="grab"></div>
-    <h2 id="ed-title">这个数认对了吗？</h2>
+    <h2 id="ed-title">这个数认对了吗？<span class="en">Did it read this right?</span></h2>
     <p class="meta" id="ed-meta"></p>
     <div class="field">
       <button class="sign" id="ed-sign" type="button" aria-label="正负号">±</button>
       <input class="num" id="ed-num" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="原数">
     </div>
     <p class="prev" id="ed-prev"></p>
-    <div class="sug" id="ed-sug" hidden><span id="ed-sug-text"></span><button type="button" id="ed-sug-use">用这个</button></div>
+    <div class="sug" id="ed-sug" hidden><span id="ed-sug-text"></span><button type="button" id="ed-sug-use">用这个<span class="en">Use it</span></button></div>
     <div class="acts">
-      <button class="btn ghost" id="ed-cancel" type="button">取消</button>
-      <button class="btn primary" id="ed-ok" type="button">改好了</button>
+      <button class="btn ghost" id="ed-cancel" type="button"><span>取消<span class="en">Cancel</span></span></button>
+      <button class="btn primary" id="ed-ok" type="button"><span>改好了<span class="en">Done</span></span></button>
     </div>
   </div>
 </div>
@@ -1579,10 +1589,13 @@ HERO.init();
   }
 
   // ------------------------------------------------------------------ 状态条
-  function status(text, pct, bad) {
+  // 中文 + 下面一行英文小字
+  const put = (node, zh, en) => { node.textContent = zh; if (en) { const e = document.createElement('span'); e.className = 'en'; e.textContent = en; node.appendChild(e); } };
+  const setSum = (zh, en) => { const t = document.createElement('span'); put(t, zh, en); sumEl.replaceChildren(t); };
+  function status(text, pct, bad, en) {
     statusEl.hidden = false;
     statusEl.classList.toggle('bad', !!bad);
-    stText.textContent = text;
+    put(stText, text, en);
     stPct.textContent = pct == null || bad ? '' : Math.round(pct * 100) + '%';
     stBar.style.width = pct == null ? '0' : Math.round(pct * 100) + '%';
     retryEl.hidden = !bad;
@@ -1591,9 +1604,9 @@ HERO.init();
 
   // ------------------------------------------------------------------ 装引擎
   let firstTime = true, lastP = 0, shown = false;
-  const loadMsg = () => state.waiting ? '脑子还在装，装好马上照。'
-    : firstTime ? '第一次用，先给手机装个识字的脑子（约 30 MB），装完断网也能用。' : '开光中…';
-  const showLoad = () => { if (shown && (!state.busy || state.waiting)) status(loadMsg(), lastP); };
+  const loadMsg = () => state.waiting ? ['脑子还在装，装好马上照。', 'Still loading, hang on']
+    : firstTime ? ['第一次用，先给手机装个识字的脑子（约 30 MB），装完断网也能用。', 'First run: downloading the reader (~30 MB), works offline after'] : ['开光中…', 'Warming up'];
+  const showLoad = () => { if (shown && (!state.busy || state.waiting)) { const m = loadMsg(); status(m[0], lastP, false, m[1]); } };
   function boot() {
     state.engine = 'loading';
     const timer = setTimeout(() => { shown = true; showLoad(); }, 350);
@@ -1601,7 +1614,7 @@ HERO.init();
       .then(() => { clearTimeout(timer); state.engine = 'ready'; if (!state.busy) hideStatus(); })
       .catch(err => {
         clearTimeout(timer); state.engine = 'failed';
-        status('脑子没装上（' + (err && err.message || err) + '）。有网了点「重试」。', null, true);
+        status('脑子没装上（' + (err && err.message || err) + '）。有网了点「重试」。', null, true, 'Download failed. Tap Retry when online');
         throw err;
       });
   }
@@ -1624,12 +1637,12 @@ HERO.init();
   cam.addEventListener('change', () => cam.files[0] && run(cam.files[0]));
   lib.addEventListener('change', () => lib.files[0] && run(lib.files[0]));
 
-  const STEP = { orient: ['照片扶正中…', 0.15], read: ['认字中…', 0.45], check: ['对账中…', 0.85], draw: ['落红字…', 0.95] };
+  const STEP = { orient: ['照片扶正中…', 0.15, 'Straightening'], read: ['认字中…', 0.45, 'Reading'], check: ['对账中…', 0.85, 'Cross-checking'], draw: ['落红字…', 0.95, 'Drawing'] };
   function setBusy(b) {
     state.busy = b;
     [shootBtn, albumBtn, againBtn].forEach(x => { x.disabled = b; });
     $('hero').classList.toggle('working', b);       // 镜子转快、镜面扫光、藤上跑光
-    $('face-label').textContent = b ? '照妖中' : '拍照';
+    $('face-label').textContent = b ? '照妖中' : '拍照'; $('face-en').textContent = b ? 'Reading' : 'Shoot';
     HERO.setWorking(b);
   }
   // 用 onload 等图：img.decode() 在页面切到后台时可能永远不回话
@@ -1653,16 +1666,16 @@ HERO.init();
       }
       let img;
       try { img = await loadImage(file); } catch (e) { throw new Error('这张图手机打不开'); }
-      const job = await MIRROR.read(img, k => status(STEP[k][0], STEP[k][1]));
+      const job = await MIRROR.read(img, k => status(STEP[k][0], STEP[k][1], false, STEP[k][2]));
       state.job = job;
       window.__inch.timings = job.t;
-      status(STEP.draw[0], STEP.draw[1]);
+      status(STEP.draw[0], STEP.draw[1], false, STEP.draw[2]);
       await new Promise(r => setTimeout(r, 0));
       await show(true);
       hideStatus();
     } catch (err) {
       console.error(err);
-      status('照妖失败：' + (err && err.message || err) + '。再拍一张试试。', null, true);
+      status('照妖失败：' + (err && err.message || err) + '。再拍一张试试。', null, true, 'Failed. Try another shot');
       retryEl.hidden = true;
     } finally {
       setBusy(false);
@@ -1676,7 +1689,7 @@ HERO.init();
     unitEl.hidden = true;
     if (!job || job.kind === 'none') {
       sumEl.className = 'sum none';
-      sumEl.textContent = '一个数字都没照出来。凑近点、拍正点，再来一张。';
+      setSum('一个数字都没照出来。凑近点、拍正点，再来一张。', 'No numbers found. Get closer, shoot straight, try again');
       pic.parentElement.hidden = true; saveBtn.hidden = true;
       state.out = null;
       window.__inch.result = { kind: 'none' };
@@ -1691,21 +1704,22 @@ HERO.init();
     state.url = URL.createObjectURL(blob);
     state.blob = blob;
     await new Promise(res => { pic.onload = res; pic.onerror = res; pic.src = state.url; });
-    const st = out.stat, unit = UNIT();
-    let text, cls = 'sum';
+    const st = out.stat, unit = UNIT(), uen = state.mode === 'in2mm' ? 'mm' : 'inch';
+    let text, en, cls = 'sum';
     if (job.kind === 'table') {
-      if (st.flags) { text = '红字是' + unit + ' · ' + st.flags + ' 个黄格没对上账，点它改'; cls += ' flag'; }
-      else if (st.checked) text = '红字是' + unit + ' · ' + st.okRows + ' 行全对上账';
-      else text = '红字是' + unit + ' · 认错了就点红字改';
+      if (st.flags) { text = '红字是' + unit + ' · ' + st.flags + ' 个黄格没对上账，点它改'; en = 'Red = ' + uen + ' · ' + st.flags + ' yellow cell' + (st.flags > 1 ? 's' : '') + " don't add up, tap to fix"; cls += ' flag'; }
+      else if (st.checked) { text = '红字是' + unit + ' · ' + st.okRows + ' 行全对上账'; en = 'Red = ' + uen + ' · all ' + st.okRows + ' rows check out'; }
+      else { text = '红字是' + unit + ' · 认错了就点红字改'; en = 'Red = ' + uen + ' · tap a red number to fix it'; }
     } else {
-      text = '没找到 DIMENSION / LSL / USL，照片里的数字全换了 · 红字是' + unit;
-      if (st.flags) { text += ' · 黄的没把握，点它改'; cls += ' flag'; }
+      text = '没找到 DIMENSION / LSL / USL，照片里的数字全换了 · 红字是' + unit; en = 'No table found, converted every number · red = ' + uen;
+      if (st.flags) { text += ' · 黄的没把握，点它改'; en += ' · yellow = unsure, tap to fix'; cls += ' flag'; }
     }
-    sumEl.className = cls; sumEl.textContent = text;
+    sumEl.className = cls; setSum(text, en);
     $('turn').hidden = out.canvas.width <= 1200;     // 图宽了（带控制范围），竖屏看字小，提醒一句
     const want = state.mode === 'in2mm' ? 'in' : 'mm';
     if (job.unit && job.unit !== want) {
-      unitText.textContent = '表上写的是' + (job.unit === 'in' ? '英寸' : '毫米') + '，你选的是' + (state.mode === 'in2mm' ? '英寸 → 毫米' : '毫米 → 英寸') + '。';
+      put(unitText, '表上写的是' + (job.unit === 'in' ? '英寸' : '毫米') + '，你选的是' + (state.mode === 'in2mm' ? '英寸 → 毫米' : '毫米 → 英寸') + '。',
+        'Sheet says ' + (job.unit === 'in' ? 'inch' : 'mm') + ', mode is ' + (state.mode === 'in2mm' ? 'inch → mm' : 'mm → inch'));
       unitEl.hidden = false;
     }
     window.__inch.timings.draw = Math.round(performance.now() - t0);
@@ -1789,7 +1803,7 @@ HERO.init();
     edNum.setAttribute('aria-invalid', String(!p && edNum.value.trim() !== ''));
     edPrev.innerHTML = '';
     if (p) { const b = document.createElement('b'); b.textContent = MIRROR.convert(p, state.mode); edPrev.append('= ', b, UNIT()); }
-    else edPrev.textContent = '只认数字，比如 1.0860、-0.0050、3/8';
+    else put(edPrev, '只认数字，比如 1.0860、-0.0050、3/8', 'Numbers only, e.g. 1.0860, -0.0050, 3/8');
     $('ed-ok').disabled = !p;
   }
   edNum.addEventListener('input', preview);
