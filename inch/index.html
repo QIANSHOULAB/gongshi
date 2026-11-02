@@ -62,12 +62,18 @@ a { -webkit-tap-highlight-color: transparent; }
 /* 英文小字：照工时榨汁机那套，中文下面一行小号大写 */
 .en { display: block; font-size: 10.5px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); line-height: 1.3; }
 .seg button .en, .btn .en, .album .en, .unit button .en, .sug button .en, .retry .en { color: inherit; opacity: .72; }
-.seg button, .btn, .album { flex-direction: column; line-height: 1.15; }
+.btn, .album { flex-direction: column; line-height: 1.15; }
 .btn > span, .album > span { display: block; }
 .btn.withicon, .album { flex-direction: row; }
 .face-label .en { margin-top: 5px; font-size: 10.5px; letter-spacing: .12em; color: inherit; opacity: .62; font-weight: 700; }
-.hint .en { margin-top: 2px; }
-.status .en, .sum .en, .turn .en, .meta .en, .prev .en, .unit-text .en { margin-top: 2px; }
+/* 长句子的英文跟榨汁机底下那行一样：正常大小写、稍大一点，读得顺；全大写只给短标签 */
+.en.s { font-size: 12px; letter-spacing: 0; text-transform: none; line-height: 1.4; margin-top: 2px; }
+.hint b { margin-bottom: 10px; }
+.hint b .en { margin-top: 4px; font-weight: 600; }
+.status .en, .sum .en, .turn .en, .prev .en, #unit-text .en { font-size: 12px; letter-spacing: 0; text-transform: none; line-height: 1.4; margin-top: 2px; }
+.sum .en { font-weight: 500; }
+.status p { align-items: flex-start; }
+.unit button, .sug button, .retry { line-height: 1.15; height: auto; min-height: 36px; padding-block: 5px; }
 .sheet h2 .en { font-size: 11px; margin-top: 2px; }
 .head { text-align: center; }
 .head h1 { margin: 2px 0 0; font-size: 30px; line-height: 1.2; font-weight: 700; letter-spacing: .06em; }
@@ -86,7 +92,8 @@ a { -webkit-tap-highlight-color: transparent; }
 }
 .seg[data-mode="mm2in"]::before { transform: translateX(100%); }
 .seg button {
-  position: relative; z-index: 1; height: 46px; border: 0; background: transparent;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; line-height: 1.15;
+  position: relative; z-index: 1; height: 52px; padding: 0 6px; border: 0; background: transparent;
   color: var(--muted); font-size: 16px; font-weight: 700; letter-spacing: .01em; transition: color .2s;
 }
 .seg button[aria-checked="true"] { color: var(--on-accent); }
@@ -99,6 +106,8 @@ html, body { overflow-x: hidden; overflow-x: clip; }
   position: relative; z-index: 1; width: 100vw; margin-left: calc(50% - 50vw);
   height: calc(var(--D) + 56px); display: grid; place-items: center;
 }
+.stage { position: absolute; left: 0; right: 0; top: calc(50% - var(--D)); height: calc(var(--D) * 2); overflow: hidden; pointer-events: none; }
+.stage.front { z-index: 3; }
 .vines, .spores, .hero::before {
   position: absolute; left: 50%; top: 50%; width: calc(var(--D) * 2); height: calc(var(--D) * 2);
   transform: translate(-50%, -50%); pointer-events: none;
@@ -223,7 +232,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 .sum::before { content: ""; flex: none; width: 9px; height: 9px; margin-top: 6px; border-radius: 50%; background: var(--ok); }
 .sum.flag::before { background: var(--flag); }
 .sum.none::before { background: var(--warn); }
-.unit { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px;
+.unit { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px 11px 14px; line-height: 1.4;
   background: rgba(240,138,93,.12); border: 1px solid rgba(240,138,93,.45); border-radius: 10px; font-size: 14px; }
 .unit button { flex: none; height: 34px; padding: 0 14px; border: 0; border-radius: 9px; background: var(--warn); color: var(--on-accent); font-weight: 700; }
 /* 结果图不受 440 那条竖栏管：手机横过来就铺满整个屏宽，字跟着变大 */
@@ -231,7 +240,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
   position: relative; width: var(--w); margin-left: calc((100% - var(--w)) / 2);
   border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #fff; }
 .pic img { display: block; width: 100%; height: auto; -webkit-touch-callout: default; }
-.turn { margin: -2px 2px 0; font-size: 13.5px; color: var(--muted); }
+.turn { margin: -2px 2px 0; font-size: 13px; color: var(--muted); text-align: center; }
 @media (orientation: landscape) { .turn { display: none; } }
 .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .acts .btn { height: 52px; font-size: 16px; }
@@ -287,8 +296,10 @@ html, body { overflow-x: hidden; overflow-x: clip; }
   </div>
 
   <section class="hero" id="hero">
-    <div class="vines back" id="vines-back" aria-hidden="true"></div>
-    <div class="spores" id="spores" aria-hidden="true"></div>
+    <div class="stage" aria-hidden="true">
+      <div class="vines back" id="vines-back"></div>
+      <div class="spores" id="spores"></div>
+    </div>
     <button class="mirror" id="shoot" type="button" aria-label="拍照">
       <svg class="layer spin" id="mirror-spin" viewBox="-140 -140 280 280" aria-hidden="true"></svg>
       <svg class="layer" id="mirror-rim" viewBox="-140 -140 280 280" aria-hidden="true"></svg>
@@ -297,7 +308,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
         <span class="face-label"><span id="face-label">拍照</span><span class="en" id="face-en">Shoot</span></span>
       </span>
     </button>
-    <div class="vines front" id="vines-front" aria-hidden="true"></div>
+    <div class="stage front" aria-hidden="true"><div class="vines front" id="vines-front"></div></div>
   </section>
   <input class="pick" id="cam" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
   <input class="pick" id="lib" type="file" accept="image/*" tabindex="-1" aria-hidden="true">
@@ -308,7 +319,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
     <button class="retry" id="retry" type="button" hidden>重试<span class="en">Retry</span></button>
   </section>
 
-  <p class="hint" id="hint"><b>对着检查表拍<span class="en">Snap the inspection sheet</span></b>尺寸、公差、控制范围当场现原形。<span class="en">Size, tolerance, limits — exposed</span></p>
+  <p class="hint" id="hint"><b>对着检查表拍<span class="en">Snap the inspection sheet</span></b>尺寸、公差、控制范围当场现原形。<span class="en s">Size, tolerance and limits, unmasked on the spot</span></p>
   <button class="album" id="album" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 15.5l-4.6-4.6a1.6 1.6 0 0 0-2.3 0L6 19"/></svg>
     <span>相册<span class="en">Photos</span></span>
@@ -318,7 +329,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
     <p class="sum" id="sum"></p>
     <div class="unit" id="unit" hidden><span id="unit-text"></span><button type="button" id="unit-fix">换过来<span class="en">Switch</span></button></div>
     <div class="pic"><img id="pic" alt="换算结果：原图数字旁边的红字是换算后的值"></div>
-    <p class="turn" id="turn" hidden>手机横过来看，字大一倍多。<span class="en">Turn your phone sideways for bigger text</span></p>
+    <p class="turn" id="turn" hidden>手机横过来看，字大一倍多。<span class="en">Turn sideways for bigger text</span></p>
     <div class="acts">
       <button class="btn primary" id="save" type="button"><span>保存图片<span class="en">Save image</span></span></button>
       <button class="btn ghost" id="again" type="button"><span>再拍一张<span class="en">Shoot again</span></span></button>
@@ -1718,8 +1729,8 @@ HERO.init();
     $('turn').hidden = out.canvas.width <= 1200;     // 图宽了（带控制范围），竖屏看字小，提醒一句
     const want = state.mode === 'in2mm' ? 'in' : 'mm';
     if (job.unit && job.unit !== want) {
-      put(unitText, '表上写的是' + (job.unit === 'in' ? '英寸' : '毫米') + '，你选的是' + (state.mode === 'in2mm' ? '英寸 → 毫米' : '毫米 → 英寸') + '。',
-        'Sheet says ' + (job.unit === 'in' ? 'inch' : 'mm') + ', mode is ' + (state.mode === 'in2mm' ? 'inch → mm' : 'mm → inch'));
+      put(unitText, '表上是' + (job.unit === 'in' ? '英寸' : '毫米') + '，选反了？',
+        'Sheet is in ' + (job.unit === 'in' ? 'inches' : 'mm') + '. Wrong way round?');
       unitEl.hidden = false;
     }
     window.__inch.timings.draw = Math.round(performance.now() - t0);
