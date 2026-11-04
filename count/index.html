@@ -472,6 +472,7 @@ html[lang="en"] .cap { font-family: "Bungee", Impact, sans-serif; font-size: 16p
   let usedModel = '';
   let busy = false, pending = false, runId = 0;
   let reveal = Infinity, raf = 0;     // 数数动画：照片上亮到第几颗
+  try { document.fonts.load('100px Ultra', '0123456789'); } catch (e) {}   // 结果数字的字体先下好，点钞动画第一帧就是它
 
   const cv = $('cv'), ctx = cv.getContext('2d');
 
