@@ -2,7 +2,7 @@
    改字只改这里。{n} 这类是填空；页面上带 data-i18n 的地方照 key 填（-html 的允许 <br> <b>）。
    挑语言：网址 ?lang=zh|en（只管这一次）> 右上角选过的（localStorage「gongshi.lang」）> 英文。
    不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。 */
-window.GS_VERSION = '0.1.1';
+window.GS_VERSION = '0.2.0';
 window.GS_STRINGS = {
   en: {
     htmlLang: 'en',
@@ -10,6 +10,7 @@ window.GS_STRINGS = {
       tabsLabel: 'Shop-floor tools',
       tabCo: 'Net Hours',
       tabInch: 'Inch Converter',
+      tabCount: 'Tray Count',
       langLabel: 'Language'
     },
     co: {
@@ -69,6 +70,50 @@ window.GS_STRINGS = {
       // 英文界面里打这些词，存回去也落成左边的中文，两边来回切不会变成「自己改过的表」。
       names: { '休息': 'Break', '茶歇': 'Break', '午饭': 'Lunch', '午餐': 'Lunch', '晚饭': 'Dinner', '晚餐': 'Dinner',
                '早饭': 'Breakfast', '早餐': 'Breakfast', '夜宵': 'Supper', '宵夜': 'Supper', '开会': 'Meeting' }
+    },
+    count: {
+      docTitle: 'Huoyan · Tray Count',
+      metaDesc: 'Snap a tray of parts and get the count. Only the tray you aimed at counts; a half tray at the edge gets ignored. Tap to fix any miss.',
+      h1: 'Huoyan · Tray Count',
+      sub: 'Lost count at 37 again?<br>Snap the tray. The machine never gets bored.',
+      shoot: 'Snap the tray',
+      album: 'Pick from photos',
+      hint: 'Shoot from straight above. One whole tray in frame.',
+      working: ['Reading every slot', 'Counting the leaners too', 'Pretending the half tray isn’t there', 'Double-checking the stacked ones'],
+      unit: 'pcs',
+      total: 'Total',
+      trayN: 'Tray {i}',
+      trayPcs: '{n} pcs',
+      cut: 'Cut off · not counted',
+      cutMain: 'Not fully in frame. Check the edges.',
+      include: 'Count it',
+      exclude: 'Skip it',
+      fixHint: 'Tap a dot to drop it. Tap a missed part to add it.',
+      edited: 'Fixed by hand: {d}',
+      retake: 'Snap another',
+      save: 'Save image',
+      recount: 'Recount',
+      by: 'Counted by {m}',
+      none: 'Saw nothing to count. Get closer and shoot from above.',
+      keyTitle: 'One free key, then it counts forever',
+      keyBody: 'Google Gemini does the counting. Grab a free key, paste it here, and counting starts on its own.',
+      keyNote: 'The key stays on this phone. Each photo goes to Google to be counted and is not kept here.',
+      keyGet: 'Get a free key',
+      key1: 'Key 1',
+      key2: 'Key 2 (spare, used when 1 runs dry)',
+      keyPh: 'AIza… or AQ.…',
+      model: 'Model',
+      modelAuto: 'Auto: Pro first, Flash when Pro runs out',
+      settings: 'Settings',
+      done: 'Done',
+      cancel: 'Cancel',
+      errHttp: 'Google said: HTTP {s} · {m}',
+      errNet: 'Can’t reach Google. Check the connection.',
+      errParse: 'Couldn’t read Google’s answer ({r}). Try Recount.',
+      errNoKey: 'Need a key first.',
+      imgBrand: 'Huoyan · Tray Count',
+      fileName: 'tray-count',
+      foot: 'Counts one tray. A second tray counts only if it’s fully in frame.'
     },
     inch: {
       docTitle: 'Yingcun · Inch Converter',
@@ -138,6 +183,7 @@ window.GS_STRINGS = {
       tabsLabel: '车间小工具',
       tabCo: '工时榨汁机',
       tabInch: '英寸照妖镜',
+      tabCount: '火眼点件',
       langLabel: '语言'
     },
     co: {
@@ -194,6 +240,50 @@ window.GS_STRINGS = {
       foot: '上班 {on} · 下班 {off} · 只扣和起止时间重叠的部分',
       footCustom: '休息表是这台手机自己改的',
       names: {}
+    },
+    count: {
+      docTitle: '火眼点件',
+      metaDesc: '对着一盘工件拍一张，数量当场蹦出来。只数对准的那一盒，边上露半截的不算；数错的点一下就改。',
+      h1: '火眼点件',
+      sub: '数到三十七，忘了刚才那个数没数。<br>拍一张，火眼替你从一数到底。',
+      shoot: '拍这一盘',
+      album: '从相册挑',
+      hint: '尽量从正上方拍，整盘拍进来。',
+      working: ['一格一格过目', '歪着的也逮住', '半截盒子装没看见', '叠着的再瞄一眼'],
+      unit: '件',
+      total: '合计',
+      trayN: '第 {i} 盒',
+      trayPcs: '{n} 件',
+      cut: '没拍全 · 不算',
+      cutMain: '这盒没拍全，边上自己瞄一眼',
+      include: '也算上',
+      exclude: '不算',
+      fixHint: '点圆点删掉，点漏掉的件补上。',
+      edited: '手改 {d}',
+      retake: '再拍一盘',
+      save: '存图',
+      recount: '重数',
+      by: '{m} 数的',
+      none: '一个都没看见。凑近点，从正上方拍。',
+      keyTitle: '领一把免费钥匙，往后一直能数',
+      keyBody: '数数的活是谷歌 Gemini 干的。去谷歌领一把免费钥匙贴进来，贴完自动开数。',
+      keyNote: '钥匙只存在这台手机上。照片发给谷歌去数，这边不留。',
+      keyGet: '去谷歌领钥匙',
+      key1: '钥匙 1',
+      key2: '钥匙 2（备胎，1 号用完自动换）',
+      keyPh: 'AIza… 或 AQ.…',
+      model: '模型',
+      modelAuto: '自动：先 Pro，额度没了换 Flash',
+      settings: '设置',
+      done: '好了',
+      cancel: '取消',
+      errHttp: '谷歌说：HTTP {s} · {m}',
+      errNet: '连不上谷歌，看看网。',
+      errParse: '谷歌的回答没看懂（{r}），点重数再来。',
+      errNoKey: '先贴钥匙。',
+      imgBrand: '火眼点件',
+      fileName: '火眼点件',
+      foot: '只数一盒；第二盒完整拍进来才一起数。'
     },
     inch: {
       docTitle: '英寸照妖镜',

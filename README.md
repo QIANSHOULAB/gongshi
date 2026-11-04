@@ -1,8 +1,8 @@
-# 工时榨汁机 · 英寸照妖镜
+# 工时榨汁机 · 英寸照妖镜 · 火眼点件
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
-两个车间小工具，页面顶上一点就互相切换。版本 0.1.1。
+三个车间小工具，页面顶上一点就互相切换。版本 0.2.0。
 
 打开：https://qianshoulab.github.io/gongshi/
 
@@ -35,3 +35,16 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 - 识字全在手机本地跑，照片不上传；第一次打开下载约 30 MB 识字模型，之后断网也能用
 
 用到的东西：PaddleOCR PP-OCRv4 识字模型（Apache-2.0，ONNX 版来自 RapidOCR）、onnxruntime-web 1.31.1（MIT）。
+
+## 火眼点件
+
+打开：https://qianshoulab.github.io/gongshi/count/
+
+拍一盘工件，数量直接出来。
+
+- 规矩：只数一盒；第二盒完整拍进来才一起数。贴着照片边的盒子一律算没拍全；主盒没拍全也照数，但标黄提醒看边上
+- 每盒旁边有「不算 / 也算上」，判错了自己翻
+- 照片上每个数到的件盖一个糖果圆点：点圆点删掉，点漏掉的件补一个，数字跟着变，右边标「手改 +n −n」
+- 存图：照片 + 圆点 + 底下一条海报数字和时间，手机上直接弹分享（存相册）
+- 数数的是谷歌 Gemini：钥匙存在手机上，网址 ?key= 带过去；默认先 Pro，额度用完自动换 Flash，钥匙 2 是备胎；出错原样显示谷歌回的 HTTP 状态和 message
+- 照片发给谷歌去数，本页不存

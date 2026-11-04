@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en" data-page="count">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Huoyan · Tray Count</title>
+<meta name="description" content="Snap a tray of parts and get the count.">
+<script src="../strings.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=DM+Serif+Display&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* 火眼点件：黑底压住车间白光；色块拼贴（橙 / 绿 / 青）当舞台，结果数字用海报那种巨号衬线白字；
+   工件上的点是糖果球。苹果的留白和层级，颜色可以野，排版不乱。 */
+:root {
+  --bg: #0c0c0e;
+  --surface: #17171b;
+  --raise: #202026;
+  --ink: #f4f1ea;
+  --muted: #a6a29a;
+  --faint: #67645e;
+  --line: #2a2a31;
+  --band: #2c2c34;
+  --focus: #12c6f3;
+  --orange: #ff5b1f;
+  --green: #1fae4b;
+  --cyan: #12c6f3;
+  --pink: #ff8fd6;
+  --lime: #dcf28a;
+  --warn: #ffb84d;
+  --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+  --font-big: "DM Serif Display", Georgia, "Songti SC", serif;
+  --font-mono: "Courier Prime", "Courier New", ui-monospace, monospace;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-ui); font-size: 15px; font-weight: 500; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 14px 32px; -webkit-text-size-adjust: 100%;
+}
+[hidden] { display: none !important; }
+button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.wrap { max-width: 440px; margin: 0 auto; display: grid; gap: 14px; }
+
+/* 顶上三个工具 + EN / 中文：跟另外两页同一套 */
+.top { display: flex; align-items: center; gap: 8px; }
+.top .tabs { flex: 1; min-width: 0; }
+@media (max-width: 719px) { .top { flex-wrap: wrap; } .top .tabs { order: 2; flex-basis: 100%; } .top .lang { margin-left: auto; } .tabs a { font-size: 13.5px; } }
+.tabs, .lang { display: grid; gap: 2px; padding: 3px; background: var(--surface); border: 1px solid var(--line); border-radius: 11px; }
+.tabs { grid-template-columns: repeat(3, 1fr); }
+.lang { flex: none; display: flex; }
+.tabs a, .lang button {
+  height: 34px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 8px;
+  background: transparent; color: var(--muted); font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap;
+}
+.lang button { position: relative; min-width: 44px; padding: 0 10px; font-size: 13px; }
+.lang button::after { content: ""; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }
+.tabs a[aria-current="page"], .lang button[aria-pressed="true"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.tabs a:focus-visible, .lang button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+@media (min-width: 720px) { .lang { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); } }
+
+.head h1 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 700; }
+.sub { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
+
+/* 舞台：没拍之前是一整块色块拼贴，整块都是快门 */
+.stage {
+  position: relative; display: block; width: 100%; aspect-ratio: 1 / 0.92; padding: 0; border: 0; border-radius: 18px;
+  overflow: hidden; background: var(--orange); color: var(--ink); touch-action: manipulation;
+}
+.stage .collage { position: absolute; inset: 0; width: 100%; height: 100%; }
+.stage .collage .drift { animation: drift 9s ease-in-out infinite alternate; transform-origin: 50% 50%; }
+@keyframes drift { to { transform: translate(-10px, 6px) rotate(-1.5deg); } }
+.stage:active .lens { transform: translate(-50%, -50%) scale(.96); }
+.stage:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.lens {
+  position: absolute; left: 50%; top: 46%; width: 44%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  border-radius: 50%; transition: transform .15s ease;
+  background:
+    radial-gradient(60% 50% at 32% 26%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%),
+    radial-gradient(circle at 50% 50%, #ff9a9a 0%, #ff6f74 58%, #e2454f 100%);
+  box-shadow: 0 18px 40px rgba(0,0,0,.35), inset 0 -8px 18px rgba(120,0,20,.35);
+}
+.lens::before {                                     /* 镜筒滚花 */
+  content: ""; position: absolute; inset: 4%; border-radius: 50%;
+  background: repeating-conic-gradient(rgba(0,0,0,.16) 0 4deg, rgba(255,255,255,0) 4deg 9deg);
+  -webkit-mask: radial-gradient(circle, transparent 74%, #000 75%); mask: radial-gradient(circle, transparent 74%, #000 75%);
+}
+.lens::after {                                      /* 黑镜片 + 一抹青光 */
+  content: ""; position: absolute; inset: 22%; border-radius: 50%;
+  background:
+    radial-gradient(28% 22% at 38% 34%, rgba(18,198,243,.9), rgba(18,198,243,0) 70%),
+    radial-gradient(18% 14% at 62% 62%, rgba(220,242,138,.55), rgba(220,242,138,0) 70%),
+    radial-gradient(circle, #232a2e 0%, #0d1012 70%, #000 100%);
+  box-shadow: inset 0 0 0 3px #111, inset 0 0 0 6px #2a2f33;
+}
+.stage-label {
+  position: absolute; left: 50%; bottom: 9%; transform: translateX(-50%); white-space: nowrap;
+  padding: 10px 20px; border-radius: 999px; background: #0c0c0e; color: var(--ink);
+  font-size: 17px; font-weight: 700; letter-spacing: .01em; box-shadow: 0 8px 22px rgba(0,0,0,.3);
+}
+.under { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.link {
+  height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  color: var(--ink); font-size: 15px; font-weight: 700;
+}
+.hint { margin: 0; font-family: var(--font-mono); font-size: 13px; line-height: 1.4; color: var(--muted); }
+.gear {
+  width: 44px; height: 44px; flex: none; display: grid; place-items: center; border: 1px solid var(--line);
+  border-radius: 12px; background: var(--surface); color: var(--muted);
+}
+.gear svg { width: 20px; height: 20px; }
+.link:focus-visible, .gear:focus-visible, .act:focus-visible, .chip button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* 结果：海报式数字带 */
+.band { position: relative; border-radius: 18px; overflow: hidden; background: var(--orange); min-height: 196px; }
+.band .collage { position: absolute; inset: 0; width: 100%; height: 100%; }
+.band-in { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding: 8px 18px 14px; min-height: 196px; }
+.num {
+  font-family: var(--font-big); font-weight: 400; color: #fff; line-height: .82; letter-spacing: -.02em;
+  font-size: 148px; font-variant-numeric: lining-nums; text-shadow: 0 2px 0 rgba(0,0,0,.08);
+}
+.num.long { font-size: 112px; }
+.num.wait { opacity: .9; animation: blink 1s steps(2, end) infinite; }
+@keyframes blink { 50% { opacity: .35; } }
+.band-side { display: grid; justify-items: end; gap: 6px; padding-bottom: 6px; }
+.pill {
+  font-family: var(--font-mono); font-size: 14px; font-weight: 700; line-height: 1; padding: 7px 10px 6px; border-radius: 6px;
+  background: #0c0c0e; color: var(--ink); white-space: nowrap;
+}
+.pill.lite { background: var(--lime); color: #2a0c05; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 6px 4px 10px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--line); font-size: 14px; font-weight: 600;
+}
+.chip i { width: 12px; height: 12px; border-radius: 50%; flex: none; box-shadow: inset 0 -2px 3px rgba(0,0,0,.25); }
+.chip.off { color: var(--muted); }
+.chip.off i { opacity: .35; }
+.chip.warn { border-color: rgba(255,184,77,.5); }
+.chip { flex-wrap: wrap; row-gap: 2px; }
+.chip .w { order: 3; flex-basis: 100%; padding: 0 0 4px 20px; color: var(--warn); font-size: 13px; font-weight: 600; }
+.chip button {
+  white-space: nowrap; height: 28px; padding: 0 10px; border: 0; border-radius: 7px; background: var(--raise); color: var(--ink); font-size: 13px; font-weight: 700;
+}
+
+/* 照片：圆点画在 canvas 上，点圆点删、点空地补 */
+.photo { position: relative; border-radius: 14px; overflow: hidden; background: var(--surface); }
+.photo canvas { display: block; width: 100%; height: auto; touch-action: manipulation; }
+.photo.busy::after {                                 /* 数的时候一道青光来回扫 */
+  content: ""; position: absolute; left: 0; right: 0; height: 22%; top: -22%;
+  background: linear-gradient(180deg, rgba(18,198,243,0), rgba(18,198,243,.38) 70%, rgba(220,242,138,.8) 100%);
+  animation: scan 1.7s cubic-bezier(.45,0,.55,1) infinite;
+}
+.photo.busy canvas { filter: saturate(.6) brightness(.8); }
+@keyframes scan { to { top: 100%; } }
+.status { margin: 0; font-family: var(--font-mono); font-size: 14px; color: var(--muted); min-height: 1.4em; }
+.status.err { color: var(--warn); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.acts { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
+.act {
+  height: 50px; padding: 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  color: var(--ink); font-size: 15px; font-weight: 700; white-space: nowrap;
+}
+.act.main { border: 0; background: var(--ink); color: #0c0c0e; }
+.act:active, .link:active { transform: translateY(1px); }
+.act:disabled { opacity: .45; cursor: default; }
+
+.foot { margin: 0; padding-inline: 2px; font-size: 12.5px; color: var(--muted); }
+.foot.ver { margin-top: -6px; color: var(--faint); }
+
+/* 钥匙 / 设置：底部抽屉 */
+.sheet-bg { position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.6); display: flex; align-items: flex-end; justify-content: center; }
+.sheet {
+  width: 100%; max-width: 480px; max-height: 92vh; overflow: auto; background: var(--surface); border: 1px solid var(--line);
+  border-bottom: 0; border-radius: 20px 20px 0 0; padding: 18px max(18px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
+  display: grid; gap: 12px; animation: up .22s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes up { from { transform: translateY(24px); opacity: 0; } }
+.sheet h2 { margin: 0; font-size: 19px; line-height: 1.3; }
+.sheet p { margin: 0; color: var(--muted); font-size: 14.5px; }
+.sheet .note { font-family: var(--font-mono); font-size: 12.5px; color: var(--faint); }
+.get {
+  display: flex; align-items: center; justify-content: center; height: 46px; border-radius: 12px; background: var(--cyan);
+  color: #04222b; font-weight: 700; text-decoration: none;
+}
+.field { display: grid; gap: 6px; }
+.field span { font-size: 13px; font-weight: 700; color: var(--muted); }
+.field input, .field select {
+  width: 100%; height: 46px; padding: 0 12px; border: 1px solid #3a3a44; border-radius: 10px; background: var(--bg);
+  color: var(--ink); font-family: var(--font-mono); font-size: 15px; -webkit-appearance: none; appearance: none;
+}
+.field select { font-family: var(--font-ui); }
+.field input:focus, .field select:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.sheet-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage .collage .drift, .photo.busy::after, .num.wait, .sheet { animation: none; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <nav class="tabs" data-i18n-attr="aria-label:common.tabsLabel">
+      <a href="../" data-i18n="common.tabCo"></a>
+      <a href="../inch/" data-i18n="common.tabInch"></a>
+      <a href="./" aria-current="page" data-i18n="common.tabCount"></a>
+    </nav>
+    <div class="lang" role="group" data-i18n-attr="aria-label:common.langLabel">
+      <button type="button" data-l="en" lang="en">EN</button>
+      <button type="button" data-l="zh" lang="zh-CN">中文</button>
+    </div>
+  </div>
+
+  <header class="head">
+    <h1 data-i18n="count.h1"></h1>
+    <p class="sub" data-i18n-html="count.sub"></p>
+  </header>
+
+  <!-- 没拍之前 -->
+  <section id="idle" class="wrap" style="gap:12px">
+    <button class="stage" id="shoot" type="button">
+      <svg class="collage" viewBox="0 0 400 368" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect width="400" height="368" fill="#ff5b1f"/>
+        <g class="drift">
+          <polygon points="-20,40 130,-10 230,-10 150,150 280,368 -20,368" fill="#1fae4b"/>
+          <polygon points="250,-10 420,-10 420,120 330,170" fill="#1fae4b"/>
+          <polygon points="30,250 420,120 420,210 160,368 10,368" fill="#12c6f3"/>
+          <polygon points="200,60 300,20 270,110" fill="#12c6f3" opacity=".9"/>
+          <polygon points="330,260 420,230 420,368 300,368" fill="#1fae4b"/>
+        </g>
+      </svg>
+      <span class="lens" aria-hidden="true"></span>
+      <span class="stage-label" data-i18n="count.shoot"></span>
+    </button>
+    <div class="under">
+      <button class="link" id="pick" type="button" data-i18n="count.album"></button>
+      <button class="gear" id="gear1" type="button" data-i18n-attr="aria-label:count.settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <p class="hint" data-i18n="count.hint"></p>
+  </section>
+
+  <!-- 拍了以后 -->
+  <section id="res" class="wrap" style="gap:12px" hidden>
+    <div class="band" aria-live="polite">
+      <svg class="collage" viewBox="0 0 400 196" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect width="400" height="196" fill="#ff5b1f"/>
+        <polygon points="-10,30 110,-10 190,-10 130,110 230,206 -10,206" fill="#1fae4b"/>
+        <polygon points="40,150 410,40 410,110 150,206 20,206" fill="#12c6f3"/>
+        <polygon points="290,-10 410,-10 410,30 330,60" fill="#1fae4b"/>
+        <polygon points="250,206 410,150 410,206" fill="#1fae4b"/>
+      </svg>
+      <div class="band-in">
+        <span class="num wait" id="num">··</span>
+        <div class="band-side">
+          <span class="pill" id="unit" data-i18n="count.unit"></span>
+          <span class="pill lite" id="edited" hidden></span>
+        </div>
+      </div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="photo" id="photo"><canvas id="cv"></canvas></div>
+    <p class="status" id="status"></p>
+    <div class="acts">
+      <button class="act main" id="again" type="button" data-i18n="count.retake"></button>
+      <button class="act" id="save" type="button" data-i18n="count.save"></button>
+      <button class="act" id="recount" type="button" data-i18n="count.recount"></button>
+    </div>
+    <div class="under">
+      <button class="link" id="pick2" type="button" data-i18n="count.album"></button>
+      <button class="gear" id="gear2" type="button" data-i18n-attr="aria-label:count.settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <p class="foot" data-i18n="count.foot"></p>
+  <p class="foot ver" data-version></p>
+
+  <input id="cam" type="file" accept="image/*" capture="environment" hidden>
+  <input id="lib" type="file" accept="image/*" hidden>
+</main>
+
+<!-- 钥匙 / 设置 -->
+<div class="sheet-bg" id="sheetBg" hidden>
+  <form class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetH">
+    <h2 id="sheetH" data-i18n="count.keyTitle"></h2>
+    <p data-i18n="count.keyBody"></p>
+    <a class="get" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" data-i18n="count.keyGet"></a>
+    <label class="field"><span data-i18n="count.key1"></span>
+      <input id="k1" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-i18n-attr="placeholder:count.keyPh"></label>
+    <label class="field"><span data-i18n="count.key2"></span>
+      <input id="k2" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-i18n-attr="placeholder:count.keyPh"></label>
+    <label class="field"><span data-i18n="count.model"></span>
+      <select id="model">
+        <option value="auto" data-i18n="count.modelAuto"></option>
+        <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+        <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+      </select></label>
+    <p class="note" data-i18n="count.keyNote"></p>
+    <div class="sheet-acts">
+      <button class="act" id="sheetX" type="button" data-i18n="count.cancel"></button>
+      <button class="act main" id="sheetOk" type="submit" data-i18n="count.done"></button>
+    </div>
+  </form>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const t = (k, v) => GS.t('count.' + k, v);
+  GS.init();
+
+  /* ---------- 设置：钥匙、模型，只存这台手机 ---------- */
+  const CFG_KEY = 'huoyan.cfg';
+  let cfg = { k1: '', k2: '', model: 'auto' };
+  try { Object.assign(cfg, JSON.parse(localStorage.getItem(CFG_KEY) || '{}')); } catch (e) {}
+  const saveCfg = () => { try { localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); } catch (e) {} };
+  const keys = () => [cfg.k1, cfg.k2].map(s => (s || '').trim()).filter(Boolean);
+  const KEY_RE = /^(AIza[\w-]{30,}|AQ\.[\w.-]{20,})$/;
+
+  /* ---------- 状态 ---------- */
+  const TRAY_COLORS = ['#ff8fd6', '#12c6f3', '#dcf28a', '#ffb84d', '#b9a7ff'];
+  let base = null;          // 扶正、缩好的照片（canvas）
+  let jpeg64 = '';          // 发给谷歌的那份
+  let trays = [];           // {box:[y0,x0,y1,x1], complete, reason, pts:[{y,x,man}], on, color, main}
+  let edits = { add: 0, del: 0 };
+  let usedModel = '';
+  let busy = false, pending = false, runId = 0;
+
+  const cv = $('cv'), ctx = cv.getContext('2d');
+
+  /* ---------- 拍照 / 挑图 ---------- */
+  $('shoot').addEventListener('click', () => $('cam').click());
+  $('again').addEventListener('click', () => $('cam').click());
+  $('pick').addEventListener('click', () => $('lib').click());
+  $('pick2').addEventListener('click', () => $('lib').click());
+  ['cam', 'lib'].forEach(id => $(id).addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (f) loadPhoto(f);
+  }));
+
+  async function loadPhoto(file) {
+    let src;
+    try { src = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+    catch (e) {
+      src = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = URL.createObjectURL(file); });
+    }
+    const W = src.width, H = src.height, s = Math.min(1, 2048 / Math.max(W, H));
+    base = document.createElement('canvas');
+    base.width = Math.round(W * s); base.height = Math.round(H * s);
+    base.getContext('2d').drawImage(src, 0, 0, base.width, base.height);
+    jpeg64 = base.toDataURL('image/jpeg', 0.9).split(',')[1];
+    trays = []; edits = { add: 0, del: 0 }; usedModel = '';
+    $('idle').hidden = true; $('res').hidden = false;
+    draw(); count();
+  }
+
+  /* ---------- 问谷歌 ---------- */
+  const PROMPT = [
+    'This is a shop-floor photo of finished machined parts sitting in foam trays (boxes). Count the parts.',
+    '1. Find every tray / box / foam insert in the photo, including ones only partly visible at the image edges.',
+    '   For each one give box_2d = [ymin, xmin, ymax, xmax] normalized to 0-1000, and complete = true only if the whole tray,',
+    '   all four sides, is inside the photo: not cut off by the image border and not hidden behind something. If not complete, say why in cut_reason.',
+    '2. For each tray, put exactly one point [y, x] (normalized 0-1000) on every individual part in that tray.',
+    '   Work slot by slot, row by row, so none is skipped. Parts that overlap, lean, stack or share one slot each get their own point,',
+    '   placed on a visible area of that specific part. Never mark empty slots, foam, labels, paper tags, strings, tools or anything outside a tray.',
+    '3. part = a 2-4 word description of the parts.'
+  ].join('\n');
+  const SCHEMA = {
+    type: 'OBJECT',
+    properties: {
+      part: { type: 'STRING' },
+      trays: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            box_2d: { type: 'ARRAY', items: { type: 'INTEGER' } },
+            complete: { type: 'BOOLEAN' },
+            cut_reason: { type: 'STRING' },
+            parts: { type: 'ARRAY', items: { type: 'OBJECT', properties: { point: { type: 'ARRAY', items: { type: 'INTEGER' } } }, required: ['point'] } }
+          },
+          required: ['box_2d', 'complete', 'parts'],
+          propertyOrdering: ['box_2d', 'complete', 'cut_reason', 'parts']
+        }
+      }
+    },
+    required: ['trays'],
+    propertyOrdering: ['part', 'trays']
+  };
+
+  class HttpErr extends Error { constructor(s, m) { super(m); this.status = s; } }
+
+  async function ask(model, key) {
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
+    const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 240000);
+    let res;
+    try {
+      res = await fetch(url, {
+        method: 'POST', signal: ac.signal, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ inline_data: { mime_type: 'image/jpeg', data: jpeg64 } }, { text: PROMPT }] }],
+          generationConfig: { responseMimeType: 'application/json', responseSchema: SCHEMA, maxOutputTokens: 32768 }
+        })
+      });
+    } catch (e) { throw new HttpErr(0, ''); }
+    finally { clearTimeout(timer); }
+    const body = await res.json().catch(() => null);
+    if (!res.ok) throw new HttpErr(res.status, (body && body.error && body.error.message) || res.statusText || '');
+    const c = body && body.candidates && body.candidates[0];
+    const txt = c && c.content && (c.content.parts || []).filter(p => p.text && !p.thought).map(p => p.text).join('');
+    if (!txt) throw Object.assign(new Error('parse'), { reason: (c && c.finishReason) || (body && body.promptFeedback && body.promptFeedback.blockReason) || 'empty' });
+    try { return JSON.parse(txt.replace(/^```(?:json)?\s*|\s*```$/g, '')); }
+    catch (e) { throw Object.assign(new Error('parse'), { reason: c.finishReason || 'JSON' }); }
+  }
+
+  async function askChain() {
+    const ks = keys();
+    const models = cfg.model === 'auto' ? ['gemini-2.5-pro', 'gemini-2.5-flash'] : [cfg.model];
+    let last;
+    for (const m of models) for (const k of ks) {
+      try { const r = await ask(m, k); usedModel = m; return r; }
+      catch (e) {
+        last = e;
+        if (e instanceof HttpErr && (e.status === 429 || e.status === 503 || e.status === 500)) continue;   // 额度没了 / 忙：换钥匙、换模型
+        throw e;
+      }
+    }
+    throw last;
+  }
+
+  let ticker = 0;
+  async function count() {
+    if (!base) return;
+    if (!keys().length) { pending = true; render(); openSheet(); setStatus(t('errNoKey')); return; }
+    const id = ++runId;
+    busy = true; setBusy(true);
+    const lines = t('working'); let li = 0;
+    setStatus(lines[0]);
+    clearInterval(ticker);
+    ticker = setInterval(() => { li = (li + 1) % lines.length; setStatus(lines[li]); }, 2200);
+    try {
+      const r = await askChain();
+      if (id !== runId) return;
+      trays = pickTrays(r);
+      edits = { add: 0, del: 0 };
+      setStatus(trays.some(x => x.pts.length) ? t('by', { m: usedModel }) : t('none'));
+    } catch (e) {
+      if (id !== runId) return;
+      trays = [];
+      setStatus(e instanceof HttpErr ? (e.status ? t('errHttp', { s: e.status, m: e.message }) : t('errNet')) : t('errParse', { r: e.reason || '?' }), true);
+    } finally {
+      if (id === runId) { clearInterval(ticker); busy = false; setBusy(false); render(); }
+    }
+  }
+
+  /* ---------- 规矩：只数一盒；第二盒完整入镜才一起数 ---------- */
+  function pickTrays(r) {
+    const cl = v => Math.max(0, Math.min(1000, Math.round(Number(v) || 0)));
+    let list = (r && Array.isArray(r.trays) ? r.trays : []).map(tr => {
+      const b = (tr.box_2d || []).map(cl);
+      if (b.length !== 4) return null;
+      const box = [Math.min(b[0], b[2]), Math.min(b[1], b[3]), Math.max(b[0], b[2]), Math.max(b[1], b[3])];
+      const edge = box[0] <= 6 || box[1] <= 6 || box[2] >= 994 || box[3] >= 994;   // 贴着照片边 = 没拍全
+      const pts = [];
+      (tr.parts || []).forEach(p => {
+        const q = p && p.point; if (!q || q.length < 2) return;
+        const y = cl(q[0]), x = cl(q[1]);
+        if (!pts.some(o => Math.hypot(o.y - y, o.x - x) < 6)) pts.push({ y, x, man: false });   // 同一件点两次的合并
+      });
+      return { box, complete: !!tr.complete && !edge, reason: tr.cut_reason || '', pts,
+               area: (box[2] - box[0]) * (box[3] - box[1]) };
+    }).filter(Boolean);
+    if (list.some(x => x.pts.length)) list = list.filter(x => x.pts.length);   // 空盒子不占位
+    list.sort((a, b) => b.area - a.area);
+    const done = list.filter(x => x.complete);
+    const counted = done.length ? done : list.slice(0, 1);
+    list.forEach((x, i) => { x.color = TRAY_COLORS[i % TRAY_COLORS.length]; x.on = counted.includes(x); x.main = x === counted[0]; });
+    return list;
+  }
+
+  /* ---------- 画 ---------- */
+  function radius() {
+    const P = [];
+    trays.forEach(tr => tr.on && tr.pts.forEach(p => P.push([p.x * base.width / 1000, p.y * base.height / 1000])));
+    if (P.length < 2) return Math.max(10, base.width / 70);
+    const nn = P.map((a, i) => { let m = Infinity; P.forEach((b, j) => { if (i !== j) m = Math.min(m, Math.hypot(a[0] - b[0], a[1] - b[1])); }); return m; }).sort((a, b) => a - b);
+    const med = nn[Math.floor(nn.length / 2)];
+    return Math.max(base.width / 120, Math.min(base.width / 34, med * 0.3));
+  }
+
+  function draw() {
+    if (!base) return;
+    cv.width = base.width; cv.height = base.height;
+    ctx.drawImage(base, 0, 0);
+    const W = cv.width, H = cv.height, r = trays.length ? radius() : 0;
+    const bx = b => [b[1] * W / 1000, b[0] * H / 1000, (b[3] - b[1]) * W / 1000, (b[2] - b[0]) * H / 1000];
+    trays.forEach(tr => {
+      const [x, y, w, h] = bx(tr.box);
+      if (!tr.on) {                                       // 不算的盒子：压暗
+        ctx.fillStyle = 'rgba(8,8,10,.62)'; ctx.fillRect(x, y, w, h);
+        return;
+      }
+      ctx.strokeStyle = tr.color; ctx.lineWidth = Math.max(3, W / 300);   // 算的盒子：四个角括起来
+      const L = Math.min(w, h) * 0.12;
+      [[x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1]].forEach(([cx, cy, sx, sy]) => {
+        ctx.beginPath(); ctx.moveTo(cx, cy + sy * L); ctx.lineTo(cx, cy); ctx.lineTo(cx + sx * L, cy); ctx.stroke();
+      });
+    });
+    trays.forEach(tr => { if (tr.on) tr.pts.forEach(p => dot(p.x * W / 1000, p.y * H / 1000, r, tr.color, p.man)); });
+  }
+
+  function dot(x, y, r, col, man) {                       // 糖果球
+    ctx.beginPath(); ctx.arc(x, y, r + Math.max(2, r * .16), 0, Math.PI * 2); ctx.fillStyle = man ? '#0c0c0e' : '#fff'; ctx.fill();
+    const g = ctx.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r);
+    g.addColorStop(0, '#ffffff'); g.addColorStop(.35, col); g.addColorStop(1, shade(col));
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+  }
+  function shade(hex) {
+    const n = parseInt(hex.slice(1), 16), f = .62;
+    return 'rgb(' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => Math.round(v * f)).join(',') + ')';
+  }
+
+  const total = () => trays.reduce((s, tr) => s + (tr.on ? tr.pts.length : 0), 0);
+
+  function render() {
+    draw();
+    const num = $('num');
+    num.classList.toggle('wait', busy);
+    const n = total();
+    num.textContent = busy ? '··' : (trays.length ? String(n) : '—');
+    num.classList.toggle('long', !busy && String(n).length > 3);
+    const d = edits.add - edits.del, ed = $('edited');
+    ed.hidden = busy || (!edits.add && !edits.del);
+    ed.textContent = t('edited', { d: (edits.add ? '+' + edits.add : '') + (edits.add && edits.del ? ' ' : '') + (edits.del ? '−' + edits.del : '') });
+    const chips = $('chips'); chips.innerHTML = '';
+    if (!busy && trays.length > 1 || (!busy && trays.length === 1 && !trays[0].complete)) {
+      trays.forEach((tr, i) => {
+        const c = document.createElement('div');
+        c.className = 'chip' + (tr.on ? '' : ' off') + (tr.on && !tr.complete ? ' warn' : '');
+        const dotEl = document.createElement('i'); dotEl.style.background = tr.color; c.appendChild(dotEl);
+        const s = document.createElement('span');
+        s.textContent = t('trayN', { i: i + 1 }) + ' · ' + (tr.on ? t('trayPcs', { n: tr.pts.length }) : t('cut'));
+        c.appendChild(s);
+        if (tr.on && !tr.complete) { const w = document.createElement('span'); w.className = 'w'; w.textContent = t('cutMain'); c.appendChild(w); }
+        if (trays.length > 1) {
+          const b = document.createElement('button'); b.type = 'button';
+          b.textContent = tr.on ? t('exclude') : t('include');
+          b.addEventListener('click', () => { tr.on = !tr.on; render(); });
+          c.appendChild(b);
+        }
+        chips.appendChild(c);
+      });
+    }
+    chips.hidden = !chips.children.length;
+    $('save').disabled = busy || !trays.length;
+    $('recount').disabled = busy || !base;
+    if (!busy && trays.length && $('status').className.indexOf('err') < 0) {
+      setStatus(t('fixHint') + '  ' + t('by', { m: usedModel }));
+    }
+  }
+
+  function setStatus(s, err) { const el = $('status'); el.textContent = s; el.className = 'status' + (err ? ' err' : ''); }
+  function setBusy(b) { $('photo').classList.toggle('busy', b); render(); }
+
+  /* ---------- 点圆点删、点漏的补 ---------- */
+  cv.addEventListener('click', e => {
+    if (busy || !trays.length) return;
+    const rc = cv.getBoundingClientRect();
+    const px = (e.clientX - rc.left) * cv.width / rc.width, py = (e.clientY - rc.top) * cv.height / rc.height;
+    const r = radius(), W = cv.width, H = cv.height;
+    let hit = null, best = Infinity;
+    trays.forEach(tr => tr.on && tr.pts.forEach((p, i) => {
+      const dd = Math.hypot(p.x * W / 1000 - px, p.y * H / 1000 - py);
+      if (dd < r * 1.6 && dd < best) { best = dd; hit = [tr, i]; }
+    }));
+    if (hit) {
+      const p = hit[0].pts.splice(hit[1], 1)[0];
+      if (p.man) edits.add--; else edits.del++;
+    } else {
+      const y = py * 1000 / H, x = px * 1000 / W;
+      const inside = trays.filter(tr => tr.on && y >= tr.box[0] && y <= tr.box[2] && x >= tr.box[1] && x <= tr.box[3]);
+      const tr = inside[0] || trays.find(z => z.main) || trays.find(z => z.on);
+      if (!tr) return;
+      tr.pts.push({ y, x, man: true }); edits.add++;
+    }
+    render();
+  });
+
+  $('recount').addEventListener('click', () => count());
+
+  /* ---------- 存图：照片 + 圆点 + 底下一条海报数字 ---------- */
+  $('save').addEventListener('click', async () => {
+    try { await document.fonts.load('200px "DM Serif Display"'); await document.fonts.load('700 40px "Courier Prime"'); } catch (e) {}
+    const W = cv.width, H = cv.height, bandH = Math.round(W * 0.3);
+    const out = document.createElement('canvas'); out.width = W; out.height = H + bandH;
+    const o = out.getContext('2d');
+    o.drawImage(cv, 0, 0);
+    o.save(); o.translate(0, H); o.scale(W / 400, bandH / 120);
+    const poly = (pts, c) => { o.beginPath(); pts.forEach(([x, y], i) => i ? o.lineTo(x, y) : o.moveTo(x, y)); o.closePath(); o.fillStyle = c; o.fill(); };
+    o.fillStyle = '#ff5b1f'; o.fillRect(0, 0, 400, 120);
+    poly([[-10, 20], [110, -10], [180, -10], [120, 70], [210, 130], [-10, 130]], '#1fae4b');
+    poly([[40, 95], [410, 25], [410, 70], [150, 130], [20, 130]], '#12c6f3');
+    poly([[290, -10], [410, -10], [410, 20], [330, 40]], '#1fae4b');
+    o.restore();
+    const n = String(total());
+    o.fillStyle = '#fff'; o.textBaseline = 'alphabetic';
+    o.font = Math.round(bandH * 0.86) + 'px "DM Serif Display", Georgia, serif';
+    o.fillText(n, W * 0.04, H + bandH * 0.86);
+    const nw = o.measureText(n).width;
+    const tag = (txt, x, y, bg, fg) => {
+      o.font = '700 ' + Math.round(bandH * 0.11) + 'px "Courier Prime", monospace';
+      const w = o.measureText(txt).width, ph = bandH * 0.16, pad = bandH * 0.05;
+      o.fillStyle = bg; o.fillRect(x, y - ph, w + pad * 2, ph);
+      o.fillStyle = fg; o.fillText(txt, x + pad, y - ph * 0.28);
+      return w + pad * 2;
+    };
+    const tx = Math.min(W * 0.06 + nw, W * 0.55);
+    tag(t('unit'), tx, H + bandH * 0.84, '#0c0c0e', '#f4f1ea');
+    const now = new Date(), p2 = v => String(v).padStart(2, '0');
+    const stamp = now.getFullYear() + '-' + p2(now.getMonth() + 1) + '-' + p2(now.getDate()) + ' ' + p2(now.getHours()) + ':' + p2(now.getMinutes());
+    o.font = '700 ' + Math.round(bandH * 0.11) + 'px "Courier Prime", monospace';
+    const bw = o.measureText(t('imgBrand')).width + bandH * 0.1;
+    tag(t('imgBrand'), W - bw - W * 0.04, H + bandH * 0.3, '#dcf28a', '#2a0c05');
+    const sw = o.measureText(stamp).width + bandH * 0.1;
+    tag(stamp, W - sw - W * 0.04, H + bandH * 0.52, '#0c0c0e', '#f4f1ea');
+    const blob = await new Promise(ok => out.toBlob(ok, 'image/jpeg', 0.92));
+    const name = t('fileName') + '-' + n + '-' + stamp.replace(/\D/g, '').slice(2, 12) + '.jpg';
+    const file = new File([blob], name, { type: 'image/jpeg' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file] }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  });
+
+  /* ---------- 钥匙抽屉：贴进合格的钥匙就自己关、自己开数 ---------- */
+  const bg = $('sheetBg');
+  function openSheet() {
+    $('k1').value = cfg.k1; $('k2').value = cfg.k2; $('model').value = cfg.model;
+    bg.hidden = false;
+    if (!cfg.k1) setTimeout(() => $('k1').focus(), 60);
+  }
+  function closeSheet(apply) {
+    if (apply) {
+      cfg.k1 = $('k1').value.trim(); cfg.k2 = $('k2').value.trim(); cfg.model = $('model').value;
+      saveCfg();
+    }
+    bg.hidden = true;
+    if (apply && pending && keys().length) { pending = false; count(); }
+    else if (!apply) pending = false;
+  }
+  $('gear1').addEventListener('click', openSheet);
+  $('gear2').addEventListener('click', openSheet);
+  $('sheetX').addEventListener('click', () => closeSheet(false));
+  bg.addEventListener('click', e => { if (e.target === bg) closeSheet(false); });
+  $('sheet').addEventListener('submit', e => { e.preventDefault(); closeSheet(true); });
+  $('k1').addEventListener('input', () => { if (pending && KEY_RE.test($('k1').value.trim())) closeSheet(true); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !bg.hidden) closeSheet(false); });
+
+  window.addEventListener('gs:lang', () => { if (!$('res').hidden) render(); });
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(() => {});
+
+  window.__huoyan = { pickTrays, get trays() { return trays; }, total };   // 自查用
+})();
+</script>
+</body>
+</html>

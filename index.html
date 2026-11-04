@@ -54,8 +54,10 @@ body {
 /* 顶上两个工具来回切：工时榨汁机 | 英寸照妖镜；右边 EN / 中文 */
 .top { display: flex; align-items: center; gap: 8px; }
 .top .tabs { flex: 1; min-width: 0; }
+/* 三个工具：窄屏上 EN/中文 单占一行靠右，三个标签整行平分 */
+@media (max-width: 719px) { .top { flex-wrap: wrap; } .top .tabs { order: 2; flex-basis: 100%; } .top .lang { margin-left: auto; } .tabs a { font-size: 13.5px; } }
 .tabs {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 3px;
   background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
 }
 .tabs a {
@@ -319,6 +321,7 @@ li.off .v { color: var(--faint); font-weight: 500; }
     <nav class="tabs" data-i18n-attr="aria-label:common.tabsLabel">
       <a href="./" aria-current="page" data-i18n="common.tabCo"></a>
       <a href="inch/" data-i18n="common.tabInch"></a>
+      <a href="count/" data-i18n="common.tabCount"></a>
     </nav>
     <div class="lang" role="group" data-i18n-attr="aria-label:common.langLabel">
       <button type="button" data-l="en" lang="en">EN</button>
