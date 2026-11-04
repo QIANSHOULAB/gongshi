@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en" data-page="co">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>工时榨汁机</title>
+<title>Gongshi · Net Hours</title>
+<meta name="description" content="Enter a start and an end time. Tea breaks and meals get squeezed out, and the real hours come out fresh-pressed. Made for the changeover time box on your CO sheet.">
+<script src="strings.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
@@ -31,6 +33,9 @@
   --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
   color-scheme: dark;
 }
+html[lang="en"] {
+  --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", Roboto, sans-serif;
+}
 
 *, *::before, *::after { box-sizing: border-box; }
 body {
@@ -46,7 +51,9 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 .wrap { max-width: 440px; margin: 0 auto; display: grid; gap: 14px; }
-/* 顶上两个工具来回切：工时榨汁机 | 英寸照妖镜 */
+/* 顶上两个工具来回切：工时榨汁机 | 英寸照妖镜；右边 EN / 中文 */
+.top { display: flex; align-items: center; gap: 8px; }
+.top .tabs { flex: 1; min-width: 0; }
 .tabs {
   display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px;
   background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
@@ -58,6 +65,21 @@ body {
 }
 .tabs a[aria-current="page"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
 .tabs a:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+/* EN / 中文：跟工具切换同一套样子，实底不透；点的范围上下各撑 5px 到 44 高；宽屏挪到页面右上角 */
+.lang {
+  flex: none; display: flex; gap: 2px; padding: 3px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
+}
+.lang button {
+  position: relative; min-width: 44px; height: 34px; padding: 0 10px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; white-space: nowrap;
+}
+.lang button::after { content: ""; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }
+.lang button[aria-pressed="true"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.lang button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+@media (min-width: 720px) {
+  .lang { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); }
+}
 .head h1 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 700; text-wrap: balance; }
 .sub { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
 
@@ -72,14 +94,6 @@ body {
   border-bottom: 1px solid var(--line);
 }
 .lab { font-size: 16px; font-weight: 700; line-height: 1.2; }
-.en {
-  display: block;
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
 .time {
   width: 100%;
   min-width: 0;
@@ -114,7 +128,6 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
   font-weight: 700;
   line-height: 1.15;
 }
-.now .en { color: inherit; opacity: .72; }
 .now:active, .fix:active { transform: translateY(1px); }
 .now:focus-visible, .fix:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
@@ -162,7 +175,6 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
 }
 .band-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .band-lab { font-size: 14px; font-weight: 700; }
-.band-lab .en { display: inline; margin-left: 6px; color: var(--band-muted); }
 .chip {
   font-size: 12px;
   font-weight: 700;
@@ -182,12 +194,8 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
   font-variant-numeric: tabular-nums;
 }
 .unit { font-size: 16px; font-weight: 700; color: var(--band-muted); }
-.line { margin: 8px 0 0; font-size: 15px; color: var(--band-muted); font-variant-numeric: tabular-nums; }
-.line-en { margin: 2px 0 0; font-size: 13px; color: var(--band-muted); font-variant-numeric: tabular-nums; }
-.line-en:empty { display: none; }
-.unit .en { color: var(--band-muted); }
+.line { margin: 8px 0 0; font-size: 15px; color: var(--band-muted); }
 .ledger-head .r { text-align: right; }
-.ledger-head .en, .n .en { margin-top: 1px; }
 .fix {
   margin-top: 10px;
   padding: 10px 16px;
@@ -233,6 +241,7 @@ li.off .t { color: var(--muted); }
 li.off .v { color: var(--faint); font-weight: 500; }
 
 .foot { margin: 0; padding-inline: 2px; font-size: 12.5px; color: var(--muted); }
+.foot.ver { margin-top: -6px; color: var(--faint); }
 
 /* 改休息时间：就在休息表里原地改，不另开页面 */
 .ghost {
@@ -245,7 +254,6 @@ li.off .v { color: var(--faint); font-weight: 500; }
   font-size: 15px;
   font-weight: 700;
 }
-.ghost .en { display: inline; margin-left: 6px; color: var(--muted); }
 .ghost:active, .done:active, .del:active { transform: translateY(1px); }
 .ghost:focus-visible, .done:focus-visible, .del:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .edit-bar { border-top: 1px solid var(--line); padding: 10px 0; }
@@ -307,29 +315,35 @@ li.off .v { color: var(--faint); font-weight: 500; }
 </head>
 <body>
 <main class="wrap">
-  <nav class="tabs" aria-label="千手院车间小工具">
-    <a href="./" aria-current="page">工时榨汁机</a>
-    <a href="inch/">英寸照妖镜</a>
-  </nav>
+  <div class="top">
+    <nav class="tabs" data-i18n-attr="aria-label:common.tabsLabel">
+      <a href="./" aria-current="page" data-i18n="common.tabCo"></a>
+      <a href="inch/" data-i18n="common.tabInch"></a>
+    </nav>
+    <div class="lang" role="group" data-i18n-attr="aria-label:common.langLabel">
+      <button type="button" data-l="en" lang="en">EN</button>
+      <button type="button" data-l="zh" lang="zh-CN">中文</button>
+    </div>
+  </div>
 
   <header class="head">
-    <h1>工时榨汁机</h1>
-    <p class="sub">智商欠费算盘精，鸡毛蒜皮当圣经。<br>抹去凡间烟火气，灵长动物化肉身。</p>
+    <h1 data-i18n="co.h1"></h1>
+    <p class="sub" data-i18n-html="co.sub"></p>
   </header>
 
-  <section class="card" aria-label="开工和收工时间">
+  <section class="card" data-i18n-attr="aria-label:co.cardLabel">
     <div class="row">
-      <label class="lab" for="start">开始<span class="en">Start</span></label>
+      <label class="lab" for="start" data-i18n="co.start"></label>
       <input class="time" id="start" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="5" placeholder="830" enterkeyhint="next" aria-describedby="line">
-      <button class="now" type="button" data-for="start">现在<span class="en">Now</span></button>
+      <button class="now" type="button" data-for="start" data-i18n="co.now"></button>
     </div>
     <div class="row">
-      <label class="lab" for="end">结束<span class="en">End</span></label>
+      <label class="lab" for="end" data-i18n="co.end"></label>
       <input class="time" id="end" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="5" placeholder="1321" enterkeyhint="done" aria-describedby="line">
-      <button class="now" type="button" data-for="end">现在<span class="en">Now</span></button>
+      <button class="now" type="button" data-for="end" data-i18n="co.now"></button>
     </div>
     <label class="switch" for="next">
-      <span class="sw-text">次日结束<span class="en">Ends next day</span></span>
+      <span class="sw-text" data-i18n="co.nextDay"></span>
       <input id="next" type="checkbox" role="switch">
       <span class="track" aria-hidden="true"></span>
     </label>
@@ -337,41 +351,42 @@ li.off .v { color: var(--faint); font-weight: 500; }
 
   <section class="band" aria-live="polite">
     <div class="band-top">
-      <span class="band-lab">实际换型时间<span class="en">Actual CO time</span></span>
-      <span class="chip" id="chip" hidden>示例 EXAMPLE</span>
+      <span class="band-lab" data-i18n="co.bandLabel"></span>
+      <span class="chip" id="chip" hidden data-i18n="co.chip"></span>
     </div>
-    <div class="big"><span id="net">—</span><span class="unit">分钟<span class="en">Min</span></span></div>
+    <div class="big"><span id="net">—</span><span class="unit" data-i18n="co.unit"></span></div>
     <p class="line" id="line"></p>
-    <p class="line-en" id="line-en"></p>
-    <button class="fix" id="fix" type="button" hidden>改为次日结束</button>
+    <button class="fix" id="fix" type="button" hidden data-i18n="co.fix"></button>
   </section>
 
-  <section class="ledger" id="ledger" aria-label="休息表和本单扣除">
-    <div class="ledger-head"><h2>休息表<span class="en">Breaks</span></h2><span class="r">本单扣（分）<span class="en">This job (min)</span></span></div>
+  <section class="ledger" id="ledger" data-i18n-attr="aria-label:co.ledgerLabel">
+    <div class="ledger-head"><h2 data-i18n="co.breaks"></h2><span class="r" data-i18n="co.deducted"></span></div>
     <ul id="rows"></ul>
     <div class="edit-bar" id="edit-bar">
-      <button class="ghost" id="edit" type="button">改休息时间<span class="en">Edit breaks</span></button>
+      <button class="ghost" id="edit" type="button" data-i18n="co.edit"></button>
     </div>
     <div class="editor" id="editor" hidden>
       <div class="shift">
-        <label for="on">上班<input class="time sm" id="on" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="815"></label>
-        <label for="off">下班<input class="time sm" id="off" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="2030"></label>
+        <label for="on"><span data-i18n="co.clockIn"></span><input class="time sm" id="on" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="815"></label>
+        <label for="off"><span data-i18n="co.clockOut"></span><input class="time sm" id="off" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="2030"></label>
       </div>
       <div class="ed-btns">
-        <button class="ghost" id="add" type="button">＋ 加一段</button>
-        <button class="ghost" id="reset" type="button">恢复默认</button>
-        <button class="done" id="done" type="button">完成</button>
+        <button class="ghost" id="add" type="button" data-i18n="co.add"></button>
+        <button class="ghost" id="reset" type="button" data-i18n="co.reset"></button>
+        <button class="done" id="done" type="button" data-i18n="co.done"></button>
       </div>
       <p class="ed-note" id="ed-note"></p>
     </div>
   </section>
 
-  <p class="foot" id="foot">上班 08:15 · 下班 20:30 · 只扣和起止时间重叠的部分</p>
+  <p class="foot" id="foot"></p>
+  <p class="foot ver" data-version></p>
 </main>
 
 <script>
 const CO = (() => {
   // 默认就是我们车间那套；每部手机可以在「改休息时间」里改成自己的，存在那部手机上。
+  // 休息的名字存的是中文那几个（休息、午饭、晚饭……），英文界面照 strings.js 的 co.names 显示。
   const DEFAULTS = {
     on: 495,    // 08:15 上班
     off: 1230,  // 20:30 下班
@@ -384,9 +399,6 @@ const CO = (() => {
   };
   const DAY = 1440;
   const MAX_BREAKS = 12;
-  const EN = { '休息': 'Break', '茶歇': 'Break', '午饭': 'Lunch', '午餐': 'Lunch', '晚饭': 'Dinner', '晚餐': 'Dinner',
-               '早饭': 'Breakfast', '早餐': 'Breakfast', '夜宵': 'Supper', '宵夜': 'Supper', '开会': 'Meeting' };
-  const nameEn = n => EN[n] || 'Break';
 
   const copy = r => ({ on: r.on, off: r.off, breaks: r.breaks.map(b => ({ s: b.s, e: b.e, name: b.name })) });
   const isMin = v => Number.isInteger(v) && v >= 0 && v < DAY;
@@ -481,30 +493,20 @@ const CO = (() => {
     return { gross, breaks, night, net };
   }
 
-  function hm(m) {
-    if (m < 60) return m + ' 分';
-    const h = Math.floor(m / 60), r = m % 60;
-    return r ? h + ' 小时 ' + r + ' 分' : h + ' 小时';
-  }
-
-  function hmEn(m) {
-    if (m < 60) return m + ' min';
-    const h = Math.floor(m / 60), r = m % 60;
-    return r ? h + ' hr ' + r + ' min' : h + ' hr';
-  }
-
-  return { DEFAULTS: copy(DEFAULTS), MAX_BREAKS, valid, setRules, getRules, isDefault, nameEn,
-           fmt, parseTime, compute, hm, hmEn, maskTime };
+  return { DEFAULTS: copy(DEFAULTS), MAX_BREAKS, valid, setRules, getRules, isDefault,
+           fmt, parseTime, compute, maskTime };
 })();
 </script>
 
 <script>
 (() => {
+  GS.init();                                            // 死字照当前语言填上，接上右上角 EN / 中文
+  const t = GS.t;
   const KEY = 'co-calc-v1';
   const RULES_KEY = 'co-calc-rules-v1';
   const $ = id => document.getElementById(id);
   const startEl = $('start'), endEl = $('end'), nextEl = $('next');
-  const netEl = $('net'), lineEl = $('line'), lineEnEl = $('line-en'), fixEl = $('fix'), chipEl = $('chip'), rowsEl = $('rows');
+  const netEl = $('net'), lineEl = $('line'), fixEl = $('fix'), chipEl = $('chip'), rowsEl = $('rows');
   const ledgerEl = $('ledger'), editBarEl = $('edit-bar'), editorEl = $('editor'), onEl = $('on'), offEl = $('off');
   const noteEl = $('ed-note'), footEl = $('foot');
   let example = false;
@@ -537,34 +539,47 @@ const CO = (() => {
   }
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+  // 休息的名字：存的是中文底（休息、午饭……），显示照当前语言；打进来的英文词（Lunch）存回中文底
+  const BREAK = '休息';
+  const showName = n => { const m = t('co.names'); return (m && m[n]) || n; };
+  function storeName(n) {
+    const v = String(n).trim(), low = v.toLowerCase(), en = GS_STRINGS.en.co.names;
+    if (!v) return BREAK;
+    for (const k in en) if (en[k].toLowerCase() === low) return k;
+    return v;
+  }
+  function dur(m) {
+    if (m < 60) return t('co.durMin', { m });
+    const h = Math.floor(m / 60), r = m % 60;
+    return r ? t('co.durHrMin', { h, m: r }) : t('co.durHr', { h });
+  }
+
   function renderRows(res, days) {
     if (draft) return;                                   // 正在改：框子别被刷掉
     const r = CO.getRules();
     const items = r.breaks.map((b, i) => ({
       t: CO.fmt(b.s) + '–' + CO.fmt(b.e),
-      n: b.name || '休息',
-      en: CO.nameEn(b.name || '休息'),
+      n: showName(b.name || BREAK),
       v: res ? res.breaks[i] : 0
     }));
     if (days) items.push({
       t: CO.fmt(r.off) + '–' + CO.fmt(r.on),
-      n: '下班 → 次日上班',
-      en: 'Off → next shift',
+      n: t('co.overnight'),
       v: res ? res.night : 0
     });
     rowsEl.innerHTML = items.length ? items.map(it =>
       '<li class="' + (it.v > 0 ? 'on' : 'off') + '">' +
         '<span class="t">' + it.t + '</span>' +
-        '<span class="n">' + esc(it.n) + '<span class="en">' + it.en + '</span></span>' +
+        '<span class="n">' + esc(it.n) + '</span>' +
         '<span class="v">' + (it.v > 0 ? '−' + it.v : '—') + '</span>' +
       '</li>'
-    ).join('') : '<li class="off"><span class="t">—</span><span class="n">没有休息<span class="en">No breaks</span></span><span class="v">—</span></li>';
+    ).join('') : '<li class="off"><span class="t">—</span><span class="n">' + esc(t('co.noBreaks')) + '</span><span class="v">—</span></li>';
   }
 
   function renderFoot() {
     const r = CO.getRules();
-    footEl.textContent = '上班 ' + CO.fmt(r.on) + ' · 下班 ' + CO.fmt(r.off) + ' · 只扣和起止时间重叠的部分' +
-      (CO.isDefault() ? '' : ' · 休息表是这台手机自己改的');
+    footEl.textContent = t('co.foot', { on: CO.fmt(r.on), off: CO.fmt(r.off) }) +
+      (CO.isDefault() ? '' : ' · ' + t('co.footCustom'));
   }
 
   function render() {
@@ -574,27 +589,23 @@ const CO = (() => {
     startEl.setAttribute('aria-invalid', Number.isNaN(S) ? 'true' : 'false');
     endEl.setAttribute('aria-invalid', Number.isNaN(E) ? 'true' : 'false');
     fixEl.hidden = true;
-    lineEnEl.textContent = '';
     let res = null;
 
     if (Number.isNaN(S) || Number.isNaN(E)) {
       netEl.textContent = '—';
-      lineEl.textContent = (Number.isNaN(S) ? '开始' : '结束') + '时间看不懂，直接打数字，比如 830 或 1321。';
+      lineEl.textContent = t(Number.isNaN(S) ? 'co.badStart' : 'co.badEnd');
     } else if (S === null || E === null) {
       netEl.textContent = '—';
-      lineEl.textContent = S === null && E === null ? '填开始和结束时间。'
-        : S === null ? '还差开始时间。'
-        : '还差结束时间，收工时按「现在」。';
+      lineEl.textContent = t(S === null && E === null ? 'co.needBoth' : S === null ? 'co.needStart' : 'co.needEnd');
     } else {
       res = CO.compute(S, E, days);
       if (!res) {
         netEl.textContent = '—';
-        lineEl.textContent = '结束早于开始。第二天才收尾的话：';
+        lineEl.textContent = t('co.endBeforeStart');
         fixEl.hidden = false;
       } else {
         netEl.textContent = String(res.net);
-        lineEl.textContent = CO.hm(res.net) + ' · 毛时长 ' + res.gross + ' 分，扣 ' + (res.gross - res.net) + ' 分';
-        lineEnEl.textContent = CO.hmEn(res.net) + ' · ' + res.gross + ' min from start to end, minus ' + (res.gross - res.net);
+        lineEl.textContent = t('co.summary', { net: dur(res.net), gross: res.gross, cut: res.gross - res.net });
       }
     }
     renderRows(res, days);
@@ -604,7 +615,7 @@ const CO = (() => {
   // ---------------------------------------------------------------- 改休息时间（就在休息表里原地改）
   const toDraft = r => ({
     on: CO.fmt(r.on), off: CO.fmt(r.off),
-    rows: r.breaks.map(b => ({ s: CO.fmt(b.s), e: CO.fmt(b.e), name: b.name }))
+    rows: r.breaks.map(b => ({ s: CO.fmt(b.s), e: CO.fmt(b.e), name: showName(b.name) }))
   });
 
   // 框里的字变成规则。空着的一行不算；有毛病的框记下来（标红、说一声）。
@@ -612,20 +623,20 @@ const CO = (() => {
     const bad = [];
     const rule = { on: CO.parseTime(draft.on, true), off: CO.parseTime(draft.off, true), breaks: [] };
     const okTime = v => typeof v === 'number' && !Number.isNaN(v);
-    if (!okTime(rule.on)) bad.push({ el: onEl, why: '上班时间看不懂' });
-    if (!okTime(rule.off)) bad.push({ el: offEl, why: '下班时间看不懂' });
-    if (okTime(rule.on) && okTime(rule.off) && rule.off <= rule.on) bad.push({ el: offEl, why: '下班要比上班晚' });
+    if (!okTime(rule.on)) bad.push({ el: onEl, why: t('co.badOn') });
+    if (!okTime(rule.off)) bad.push({ el: offEl, why: t('co.badOff') });
+    if (okTime(rule.on) && okTime(rule.off) && rule.off <= rule.on) bad.push({ el: offEl, why: t('co.offBeforeOn') });
     draft.rows.forEach((row, i) => {
       if (!row.s.trim() && !row.e.trim()) return;        // 空行：不算
       const s = CO.parseTime(row.s, true), e = CO.parseTime(row.e, true);
       const sEl = rowsEl.querySelector('[data-i="' + i + '"][data-k="s"]');
       const eEl = rowsEl.querySelector('[data-i="' + i + '"][data-k="e"]');
-      if (!okTime(s)) { bad.push({ el: sEl, why: '有一段的开始时间看不懂' }); return; }
-      if (!okTime(e)) { bad.push({ el: eEl, why: '有一段的结束时间看不懂' }); return; }
-      if (e <= s) { bad.push({ el: eEl, why: '有一段结束比开始早' }); return; }
-      rule.breaks.push({ s, e, name: row.name.trim() || '休息' });
+      if (!okTime(s)) { bad.push({ el: sEl, why: t('co.badRowStart') }); return; }
+      if (!okTime(e)) { bad.push({ el: eEl, why: t('co.badRowEnd') }); return; }
+      if (e <= s) { bad.push({ el: eEl, why: t('co.rowBackwards') }); return; }
+      rule.breaks.push({ s, e, name: storeName(row.name) });
     });
-    if (rule.breaks.length > CO.MAX_BREAKS) bad.push({ el: null, why: '最多 ' + CO.MAX_BREAKS + ' 段' });
+    if (rule.breaks.length > CO.MAX_BREAKS) bad.push({ el: null, why: t('co.tooMany', { n: CO.MAX_BREAKS }) });
     return { rule, bad };
   }
 
@@ -639,10 +650,10 @@ const CO = (() => {
     if (!bad.length && CO.setRules(rule)) {
       saveRules();
       noteEl.className = 'ed-note';
-      noteEl.textContent = '改了马上算数，只存在这台手机上。';
+      noteEl.textContent = t('co.noteOk');
     } else if (shown.length) {
       noteEl.className = 'ed-note bad';
-      noteEl.textContent = shown[0].why + '。直接打数字，比如 1000 就是 10:00。';
+      noteEl.textContent = t('co.noteBad', { why: shown[0].why });
     }
     render();
     return bad;
@@ -651,11 +662,11 @@ const CO = (() => {
   function drawEditor(focusRow) {
     rowsEl.innerHTML = draft.rows.map((row, i) =>
       '<li class="ed">' +
-        '<input class="time sm" data-i="' + i + '" data-k="s" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="开始" aria-label="第 ' + (i + 1) + ' 段开始" value="' + esc(row.s) + '">' +
+        '<input class="time sm" data-i="' + i + '" data-k="s" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="' + esc(t('co.rowStartPh')) + '" aria-label="' + esc(t('co.rowStartLabel', { i: i + 1 })) + '" value="' + esc(row.s) + '">' +
         '<span class="dash">–</span>' +
-        '<input class="time sm" data-i="' + i + '" data-k="e" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="结束" aria-label="第 ' + (i + 1) + ' 段结束" value="' + esc(row.e) + '">' +
-        '<input class="name" data-i="' + i + '" data-k="name" type="text" maxlength="6" placeholder="休息" aria-label="第 ' + (i + 1) + ' 段叫什么" value="' + esc(row.name) + '">' +
-        '<button class="del" data-i="' + i + '" type="button" aria-label="删掉第 ' + (i + 1) + ' 段">×</button>' +
+        '<input class="time sm" data-i="' + i + '" data-k="e" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="' + esc(t('co.rowEndPh')) + '" aria-label="' + esc(t('co.rowEndLabel', { i: i + 1 })) + '" value="' + esc(row.e) + '">' +
+        '<input class="name" data-i="' + i + '" data-k="name" type="text" maxlength="' + t('co.nameMax') + '" placeholder="' + esc(showName(BREAK)) + '" aria-label="' + esc(t('co.rowNameLabel', { i: i + 1 })) + '" value="' + esc(row.name) + '">' +
+        '<button class="del" data-i="' + i + '" type="button" aria-label="' + esc(t('co.rowDelLabel', { i: i + 1 })) + '">×</button>' +
       '</li>'
     ).join('');
     onEl.value = draft.on;
@@ -673,7 +684,7 @@ const CO = (() => {
     editBarEl.hidden = true;
     editorEl.hidden = false;
     noteEl.className = 'ed-note';
-    noteEl.textContent = '改了马上算数，只存在这台手机上。';
+    noteEl.textContent = t('co.noteOk');
     drawEditor();
   }
 
@@ -805,6 +816,17 @@ const CO = (() => {
   });
 
   nextEl.addEventListener('change', () => { userEdit(); render(); save(); });
+
+  // 右上角换了语言：正在改的休息表名字跟着换（「休息」⇄「Break」），其余重画
+  window.addEventListener('gs:lang', () => {
+    if (draft) {
+      draft.rows.forEach(row => { if (row.name.trim()) row.name = showName(storeName(row.name)); });
+      drawEditor();
+      applyDraft(false);
+      return;
+    }
+    render();
+  });
   fixEl.addEventListener('click', () => { nextEl.checked = true; userEdit(); render(); save(); });
 
   const rules = load(RULES_KEY);

@@ -1,0 +1,119 @@
+htmlLang	zh-CN
+common.tabsLabel	车间小工具
+common.tabCo	工时榨汁机
+common.tabInch	英寸照妖镜
+common.langLabel	语言
+co.docTitle	工时榨汁机
+co.metaDesc	开始、结束两个时间一填，茶歇饭点自动扣光，真工时当场出汁。专治换型单上那格 CO 时间。
+co.h1	工时榨汁机
+co.sub	智商欠费算盘精，鸡毛蒜皮当圣经。<br>抹去凡间烟火气，灵长动物化肉身。
+co.cardLabel	开工和收工时间
+co.start	开始
+co.end	结束
+co.now	现在
+co.nextDay	次日结束
+co.bandLabel	实际换型时间
+co.chip	示例
+co.unit	分钟
+co.badStart	开始时间看不懂，直接打数字，比如 830 或 1321。
+co.badEnd	结束时间看不懂，直接打数字，比如 830 或 1321。
+co.needBoth	填开始和结束时间。
+co.needStart	还差开始时间。
+co.needEnd	还差结束时间，收工时按「现在」。
+co.endBeforeStart	结束比开始还早。第二天才收工的话：
+co.fix	改成次日
+co.summary	{net} · 毛时长 {gross} 分，扣 {cut} 分
+co.durMin	{m} 分
+co.durHr	{h} 小时
+co.durHrMin	{h} 小时 {m} 分
+co.ledgerLabel	休息表和本单扣除
+co.breaks	休息表
+co.deducted	本单扣（分）
+co.overnight	下班 → 次日上班
+co.noBreaks	没有休息
+co.edit	改休息表
+co.clockIn	上班
+co.clockOut	下班
+co.add	＋ 加一段
+co.reset	恢复默认
+co.done	完成
+co.noteOk	改了马上算数，只存在这台手机上。
+co.noteBad	{why}。直接打数字，比如 1000 就是 10:00。
+co.badOn	上班时间看不懂
+co.badOff	下班时间看不懂
+co.offBeforeOn	下班要比上班晚
+co.badRowStart	有一段的开始时间看不懂
+co.badRowEnd	有一段的结束时间看不懂
+co.rowBackwards	有一段结束比开始早
+co.tooMany	最多 {n} 段
+co.rowStartPh	开始
+co.rowEndPh	结束
+co.rowStartLabel	第 {i} 段开始
+co.rowEndLabel	第 {i} 段结束
+co.rowNameLabel	第 {i} 段叫什么
+co.rowDelLabel	删掉第 {i} 段
+co.foot	上班 {on} · 下班 {off} · 只扣和起止时间重叠的部分
+co.footCustom	休息表是这台手机自己改的
+inch.docTitle	英寸照妖镜
+inch.metaDesc	对着检查表一拍，尺寸、公差、控制范围的英寸当场换成毫米，红字落在原图上。识字在手机里跑，照片不上传。
+inch.h1	英寸照妖镜
+inch.sub	八分之三算断魂，二五点四乘进坟。<br>烂图一拍全干碎，只认毫米弃碑文。
+inch.segLabel	换算方向
+inch.in2mm	英寸 → 毫米
+inch.mm2in	毫米 → 英寸
+inch.shootLabel	拍照
+inch.faceIdle	拍照
+inch.faceBusy	照妖中
+inch.retry	重试
+inch.hintTitle	对着检查表拍
+inch.hintText	尺寸、公差、控制范围当场现原形。
+inch.album	相册
+inch.loadWait	脑子还在装，装好马上照。
+inch.loadFirst	第一次用，先给手机装个识字的脑子（约 30 MB），装完断网也能用。
+inch.loadWarm	开光中…
+inch.loadFail	识字的脑子没装上，有网了点「重试」。
+inch.stepOrient	照片扶正中…
+inch.stepRead	认字中…
+inch.stepCheck	对账中…
+inch.stepDraw	落红字…
+inch.failWhy	照妖失败：{why}。再拍一张试试。
+inch.fail	照妖失败，再拍一张试试。
+inch.badImage	这张图手机打不开
+inch.none	一个数字都没照出来。凑近点、拍正点，再来一张。
+inch.redIs	红字是{unit}
+inch.flagsOne	1 个黄格没对上账，点它改
+inch.flagsMany	{n} 个黄格没对上账，点它改
+inch.checkedOne	1 行全对上账
+inch.checkedMany	{n} 行全对上账
+inch.tapToFix	认错了就点红字改
+inch.loose	没找到 DIMENSION / LSL / USL，照片里的数字全换了
+inch.looseFlags	黄的没把握，点它改
+inch.mm	毫米
+inch.inches	英寸
+inch.unitWrong	表上是{unit}，选反了？
+inch.unitFix	换过来
+inch.picAlt	换算结果：原图数字旁边的红字是换算后的值
+inch.turn	手机横过来看，字大一倍多。
+inch.save	保存图片
+inch.again	再拍一张
+inch.edTitle	这个数认对了吗？
+inch.edRow	标号 {no}
+inch.edReadAs	认成 {text}
+inch.edLoose	照片里的数
+inch.names.DIM	尺寸 DIMENSION
+inch.names.LSL	下差 LSL
+inch.names.USL	上差 USL
+inch.names.LCL	控制下限 LCL
+inch.names.UCL	控制上限 UCL
+inch.names.STOCK	加工余量 STOCK
+inch.signLabel	正负号
+inch.numLabel	原数
+inch.numHint	只认数字，比如 1.0860、-0.0050、3/8
+inch.sugCalc	按尺寸和公差算该是
+inch.sugBack	按 LCL/UCL 倒推是
+inch.sugUse	用这个
+inch.cancel	取消
+inch.ok	改好了
+inch.imgRed	红字
+inch.imgBrand	英寸照妖镜
+inch.fileName	英寸照妖镜

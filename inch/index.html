@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en" data-page="inch">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>英寸照妖镜</title>
+<title>Yingcun · Inch Converter</title>
+<meta name="description" content="Snap an inspection sheet. Sizes, tolerances and control limits flip between inches and millimeters, written in red right on the photo. Runs on your phone; the photo never leaves it.">
+<script src="../strings.js"></script>
 <meta name="theme-color" content="#0e141c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +33,9 @@
   --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
   color-scheme: dark;
 }
+html[lang="en"] {
+  --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", Roboto, sans-serif;
+}
 *, *::before, *::after { box-sizing: border-box; }
 body {
   background: var(--bg);
@@ -44,10 +49,12 @@ body {
   padding-block: 14px 32px;
   -webkit-text-size-adjust: 100%;
 }
-.wrap { max-width: 440px; margin: 0 auto; display: grid; gap: 14px; }
+.wrap { max-width: 440px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }   /* 列宽钉死：宽结果图自己往两边伸，不把整条竖栏撑宽 */
 button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 a { -webkit-tap-highlight-color: transparent; }
 
+.top { display: flex; align-items: center; gap: 8px; }
+.top .tabs { flex: 1; min-width: 0; }
 .tabs {
   display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px;
   background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
@@ -58,28 +65,31 @@ a { -webkit-tap-highlight-color: transparent; }
 }
 .tabs a[aria-current="page"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
 .tabs a:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+/* EN / 中文：跟工具切换同一套样子，实底不透（底下有藤蔓）；点的范围上下各撑 5px 到 44 高；宽屏挪到页面右上角 */
+.lang {
+  flex: none; display: flex; gap: 2px; padding: 3px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
+}
+.lang button {
+  position: relative; min-width: 44px; height: 34px; padding: 0 10px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; white-space: nowrap;
+}
+.lang button::after { content: ""; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }
+.lang button[aria-pressed="true"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.lang button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+@media (min-width: 720px) {
+  .lang { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); }
+}
 
-/* 英文小字：照工时榨汁机那套，中文下面一行小号大写 */
-.en { display: block; font-size: 10.5px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); line-height: 1.3; }
-.seg button .en, .btn .en, .album .en, .unit button .en, .sug button .en, .retry .en { color: inherit; opacity: .72; }
-.btn, .album { flex-direction: column; line-height: 1.15; }
-.btn > span, .album > span { display: block; }
-.btn.withicon, .album { flex-direction: row; }
-.face-label .en { margin-top: 5px; font-size: 10.5px; letter-spacing: .12em; color: inherit; opacity: .62; font-weight: 700; }
-/* 长句子的英文跟榨汁机底下那行一样：正常大小写、稍大一点，读得顺；全大写只给短标签 */
-.en.s { font-size: 12px; letter-spacing: 0; text-transform: none; line-height: 1.4; margin-top: 2px; }
-.hint b { margin-bottom: 10px; }
-.hint b .en { margin-top: 4px; font-weight: 600; }
-.status .en, .sum .en, .turn .en, .prev .en, #unit-text .en { font-size: 12px; letter-spacing: 0; text-transform: none; line-height: 1.4; margin-top: 2px; }
-.sum .en { font-weight: 500; }
 .status p { align-items: flex-start; }
 .unit button, .sug button, .retry { line-height: 1.15; height: auto; min-height: 36px; padding-block: 5px; }
-.sheet h2 .en { font-size: 11px; margin-top: 2px; }
 .head { text-align: center; }
 .head h1 { margin: 2px 0 0; font-size: 30px; line-height: 1.2; font-weight: 700; letter-spacing: .06em; }
+html[lang="en"] .head h1 { font-size: 28px; letter-spacing: -.02em; }
 .sub { margin: 6px 0 0; font-size: 15px; line-height: 1.6; color: var(--muted); }
 /* 照妖镜周围的藤蔓会爬到这些东西底下：它们得站在藤蔓上面 */
-.tabs, .head, .seg, .hint, .album, .status, .result, .foot { position: relative; z-index: 2; }
+.tabs, .lang, .head, .seg, .hint, .album, .status, .result, .foot { position: relative; z-index: 2; }
+@media (min-width: 720px) { .lang { position: absolute; } }   /* 上面那条把它改回 relative 了，宽屏再挪回右上角 */
 
 .seg {
   position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 3px;
@@ -172,6 +182,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 }
 .face svg { width: 36px; height: 36px; opacity: .88; }
 .face-label { font-size: 18px; font-weight: 700; letter-spacing: .12em; line-height: 1; margin-left: .12em; }
+html[lang="en"] .face-label { letter-spacing: .02em; margin-left: 0; }
 .hero.working .face::after { opacity: .9; animation: sweep 1.1s linear infinite; }
 .hero.working .face { filter: brightness(1.06); }
 .hero.working .vines .tw, .hero.working .spore { animation-play-state: paused; }
@@ -227,7 +238,7 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 .status.bad .bar { display: none; }
 .status .retry { margin-top: 10px; height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--field-line); background: transparent; color: var(--ink); font-weight: 700; }
 
-.result { display: grid; gap: 10px; }
+.result { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .sum { display: flex; align-items: flex-start; gap: 9px; margin: 0; font-size: 15px; font-weight: 700; line-height: 1.45; }
 .sum::before { content: ""; flex: none; width: 9px; height: 9px; margin-top: 6px; border-radius: 50%; background: var(--ok); }
 .sum.flag::before { background: var(--flag); }
@@ -265,11 +276,11 @@ html, body { overflow-x: hidden; overflow-x: clip; }
   letter-spacing: .02em; font-variant-numeric: tabular-nums; -webkit-appearance: none; appearance: none; }
 .num:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
 .num[aria-invalid="true"] { border-color: var(--warn); outline-color: var(--warn); }
-.prev { margin: 10px 2px 0; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.prev b { color: #ff6b6b; font-family: var(--font-num); font-size: 22px; font-weight: 700; margin-right: 4px; }
+.prev { margin: 10px 2px 0; font-size: 15px; color: var(--muted); }
+.prev b { color: #ff6b6b; font-family: var(--font-num); font-size: 22px; font-weight: 700; margin-right: 4px; font-variant-numeric: tabular-nums; }
 .sug { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding: 10px 12px;
   border-radius: 12px; background: rgba(255,214,10,.1); border: 1px solid rgba(255,214,10,.4); font-size: 14px; }
-.sug b { font-family: var(--font-num); font-size: 20px; color: var(--flag); margin-left: 4px; }
+.sug b { font-family: var(--font-num); font-size: 20px; color: var(--flag); margin-left: 4px; font-variant-numeric: tabular-nums; }
 .sug button { flex: none; height: 36px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--flag); color: #1a1500; font-weight: 700; }
 .sheet .acts { margin-top: 16px; }
 @keyframes rise { from { transform: translateY(100%); } }
@@ -280,19 +291,25 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 </head>
 <body>
 <main class="wrap">
-  <nav class="tabs" aria-label="千手院车间小工具">
-    <a href="../">工时榨汁机</a>
-    <a href="./" aria-current="page">英寸照妖镜</a>
-  </nav>
+  <div class="top">
+    <nav class="tabs" data-i18n-attr="aria-label:common.tabsLabel">
+      <a href="../" data-i18n="common.tabCo"></a>
+      <a href="./" aria-current="page" data-i18n="common.tabInch"></a>
+    </nav>
+    <div class="lang" role="group" data-i18n-attr="aria-label:common.langLabel">
+      <button type="button" data-l="en" lang="en">EN</button>
+      <button type="button" data-l="zh" lang="zh-CN">中文</button>
+    </div>
+  </div>
 
   <header class="head">
-    <h1>英寸照妖镜</h1>
-    <p class="sub">八分之三算断魂，二五点四乘进坟。<br>烂图一拍全干碎，只认毫米弃碑文。</p>
+    <h1 data-i18n="inch.h1"></h1>
+    <p class="sub" data-i18n-html="inch.sub"></p>
   </header>
 
-  <div class="seg" id="seg" role="radiogroup" aria-label="换算方向">
-    <button type="button" role="radio" data-mode="in2mm">英寸 → 毫米<span class="en">Inch → mm</span></button>
-    <button type="button" role="radio" data-mode="mm2in">毫米 → 英寸<span class="en">mm → Inch</span></button>
+  <div class="seg" id="seg" role="radiogroup" data-i18n-attr="aria-label:inch.segLabel">
+    <button type="button" role="radio" data-mode="in2mm" data-i18n="inch.in2mm"></button>
+    <button type="button" role="radio" data-mode="mm2in" data-i18n="inch.mm2in"></button>
   </div>
 
   <section class="hero" id="hero">
@@ -300,12 +317,12 @@ html, body { overflow-x: hidden; overflow-x: clip; }
       <div class="vines back" id="vines-back"></div>
       <div class="spores" id="spores"></div>
     </div>
-    <button class="mirror" id="shoot" type="button" aria-label="拍照">
+    <button class="mirror" id="shoot" type="button" data-i18n-attr="aria-label:inch.shootLabel">
       <svg class="layer spin" id="mirror-spin" viewBox="-140 -140 280 280" aria-hidden="true"></svg>
       <svg class="layer" id="mirror-rim" viewBox="-140 -140 280 280" aria-hidden="true"></svg>
       <span class="face">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.3-2h7l1.3 2h1.7A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.6"/></svg>
-        <span class="face-label"><span id="face-label">拍照</span><span class="en" id="face-en">Shoot</span></span>
+        <span class="face-label" id="face-label"></span>
       </span>
     </button>
     <div class="stage front" aria-hidden="true"><div class="vines front" id="vines-front"></div></div>
@@ -316,42 +333,43 @@ html, body { overflow-x: hidden; overflow-x: clip; }
   <section class="status" id="status" aria-live="polite" hidden>
     <p><span id="st-text"></span><span class="pct" id="st-pct"></span></p>
     <div class="bar"><i id="st-bar"></i></div>
-    <button class="retry" id="retry" type="button" hidden>重试<span class="en">Retry</span></button>
+    <button class="retry" id="retry" type="button" hidden data-i18n="inch.retry"></button>
   </section>
 
-  <p class="hint" id="hint"><b>对着检查表拍<span class="en">Snap the inspection sheet</span></b>尺寸、公差、控制范围当场现原形。<span class="en s">Size, tolerance and limits, unmasked on the spot</span></p>
+  <p class="hint" id="hint"><b data-i18n="inch.hintTitle"></b><span data-i18n="inch.hintText"></span></p>
   <button class="album" id="album" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 15.5l-4.6-4.6a1.6 1.6 0 0 0-2.3 0L6 19"/></svg>
-    <span>相册<span class="en">Photos</span></span>
+    <span data-i18n="inch.album"></span>
   </button>
 
   <section class="result" id="result" aria-live="polite" hidden>
     <p class="sum" id="sum"></p>
-    <div class="unit" id="unit" hidden><span id="unit-text"></span><button type="button" id="unit-fix">换过来<span class="en">Switch</span></button></div>
-    <div class="pic"><img id="pic" alt="换算结果：原图数字旁边的红字是换算后的值"></div>
-    <p class="turn" id="turn" hidden>手机横过来看，字大一倍多。<span class="en">Turn sideways for bigger text</span></p>
+    <div class="unit" id="unit" hidden><span id="unit-text"></span><button type="button" id="unit-fix" data-i18n="inch.unitFix"></button></div>
+    <div class="pic"><img id="pic" data-i18n-attr="alt:inch.picAlt"></div>
+    <p class="turn" id="turn" hidden data-i18n="inch.turn"></p>
     <div class="acts">
-      <button class="btn primary" id="save" type="button"><span>保存图片<span class="en">Save image</span></span></button>
-      <button class="btn ghost" id="again" type="button"><span>再拍一张<span class="en">Shoot again</span></span></button>
+      <button class="btn primary" id="save" type="button" data-i18n="inch.save"></button>
+      <button class="btn ghost" id="again" type="button" data-i18n="inch.again"></button>
     </div>
   </section>
 
+  <p class="foot" data-version></p>
 </main>
 
 <div class="veil" id="veil" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ed-title">
     <div class="grab"></div>
-    <h2 id="ed-title">这个数认对了吗？<span class="en">Did it read this right?</span></h2>
+    <h2 id="ed-title" data-i18n="inch.edTitle"></h2>
     <p class="meta" id="ed-meta"></p>
     <div class="field">
-      <button class="sign" id="ed-sign" type="button" aria-label="正负号">±</button>
-      <input class="num" id="ed-num" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="原数">
+      <button class="sign" id="ed-sign" type="button" data-i18n-attr="aria-label:inch.signLabel">±</button>
+      <input class="num" id="ed-num" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" data-i18n-attr="aria-label:inch.numLabel">
     </div>
     <p class="prev" id="ed-prev"></p>
-    <div class="sug" id="ed-sug" hidden><span id="ed-sug-text"></span><button type="button" id="ed-sug-use">用这个<span class="en">Use it</span></button></div>
+    <div class="sug" id="ed-sug" hidden><span id="ed-sug-text"></span><button type="button" id="ed-sug-use" data-i18n="inch.sugUse"></button></div>
     <div class="acts">
-      <button class="btn ghost" id="ed-cancel" type="button"><span>取消<span class="en">Cancel</span></span></button>
-      <button class="btn primary" id="ed-ok" type="button"><span>改好了<span class="en">Done</span></span></button>
+      <button class="btn ghost" id="ed-cancel" type="button" data-i18n="inch.cancel"></button>
+      <button class="btn primary" id="ed-ok" type="button" data-i18n="inch.ok"></button>
     </div>
   </div>
 </div>
@@ -1000,11 +1018,12 @@ const MIRROR = (() => {
     g.fillStyle = '#0e141c'; g.fillRect(0, c.height, out.width, F);
     const fs = Math.round(F * 0.44), y = c.height + F / 2;
     g.font = '700 ' + fs + 'px ' + FONT; g.textBaseline = 'middle'; g.textAlign = 'left';
-    g.fillStyle = '#ff5a5f'; g.fillText('红字', fs * 0.7, y);
-    const w1 = g.measureText('红字').width;
-    g.fillStyle = '#e5eaf1'; g.fillText(' = ' + (mode === 'in2mm' ? '毫米' : '英寸'), fs * 0.7 + w1, y);
+    const red = GS.t('inch.imgRed');                 // 图底下那条：「红字 = 毫米」+ 落款，跟着界面语言
+    g.fillStyle = '#ff5a5f'; g.fillText(red, fs * 0.7, y);
+    const w1 = g.measureText(red).width;
+    g.fillStyle = '#e5eaf1'; g.fillText(' = ' + GS.t(mode === 'in2mm' ? 'inch.mm' : 'inch.inches'), fs * 0.7 + w1, y);
     g.textAlign = 'right'; g.fillStyle = '#9aa7b8'; g.font = '600 ' + Math.round(fs * 0.9) + 'px ' + FONT;
-    g.fillText('英寸照妖镜', out.width - fs * 0.7, y);
+    g.fillText(GS.t('inch.imgBrand'), out.width - fs * 0.7, y);
     return out;
   }
 
@@ -1570,6 +1589,8 @@ HERO.init();
 <script>
 (() => {
   'use strict';
+  GS.init();                                            // 死字照当前语言填上，接上右上角 EN / 中文
+  const t = GS.t;
   const $ = id => document.getElementById(id);
   const MODE_KEY = 'inch-mirror-mode';
   const seg = $('seg'), statusEl = $('status'), stText = $('st-text'), stPct = $('st-pct'), stBar = $('st-bar'), retryEl = $('retry');
@@ -1580,7 +1601,7 @@ HERO.init();
   window.__inch = { state, timings: {} };
 
   try { const m = localStorage.getItem(MODE_KEY); if (m === 'in2mm' || m === 'mm2in') state.mode = m; } catch (e) {}
-  const UNIT = () => state.mode === 'in2mm' ? '毫米' : '英寸';
+  const UNIT = () => t(state.mode === 'in2mm' ? 'inch.mm' : 'inch.inches');
 
   function paintMode() {
     seg.dataset.mode = state.mode;
@@ -1600,24 +1621,24 @@ HERO.init();
   }
 
   // ------------------------------------------------------------------ 状态条
-  // 中文 + 下面一行英文小字
-  const put = (node, zh, en) => { node.textContent = zh; if (en) { const e = document.createElement('span'); e.className = 'en'; e.textContent = en; node.appendChild(e); } };
-  const setSum = (zh, en) => { const t = document.createElement('span'); put(t, zh, en); sumEl.replaceChildren(t); };
-  function status(text, pct, bad, en) {
+  // 记下最后一句状态（key + 填空），换语言时照原样重说一遍
+  let lastStatus = null;
+  const setSum = text => { const sp = document.createElement('span'); sp.textContent = text; sumEl.replaceChildren(sp); };
+  function status(key, pct, bad, vars) {
+    lastStatus = { key, pct, bad, vars };
     statusEl.hidden = false;
     statusEl.classList.toggle('bad', !!bad);
-    put(stText, text, en);
+    stText.textContent = t(key, vars && vars.whyKey ? { why: t(vars.whyKey) } : vars);
     stPct.textContent = pct == null || bad ? '' : Math.round(pct * 100) + '%';
     stBar.style.width = pct == null ? '0' : Math.round(pct * 100) + '%';
     retryEl.hidden = !bad;
   }
-  const hideStatus = () => { statusEl.hidden = true; };
+  const hideStatus = () => { statusEl.hidden = true; lastStatus = null; };
 
   // ------------------------------------------------------------------ 装引擎
   let firstTime = true, lastP = 0, shown = false;
-  const loadMsg = () => state.waiting ? ['脑子还在装，装好马上照。', 'Still loading, hang on']
-    : firstTime ? ['第一次用，先给手机装个识字的脑子（约 30 MB），装完断网也能用。', 'First run: downloading the reader (~30 MB), works offline after'] : ['开光中…', 'Warming up'];
-  const showLoad = () => { if (shown && (!state.busy || state.waiting)) { const m = loadMsg(); status(m[0], lastP, false, m[1]); } };
+  const loadMsg = () => state.waiting ? 'inch.loadWait' : firstTime ? 'inch.loadFirst' : 'inch.loadWarm';
+  const showLoad = () => { if (shown && (!state.busy || state.waiting)) status(loadMsg(), lastP, false); };
   function boot() {
     state.engine = 'loading';
     const timer = setTimeout(() => { shown = true; showLoad(); }, 350);
@@ -1625,7 +1646,8 @@ HERO.init();
       .then(() => { clearTimeout(timer); state.engine = 'ready'; if (!state.busy) hideStatus(); })
       .catch(err => {
         clearTimeout(timer); state.engine = 'failed';
-        status('脑子没装上（' + (err && err.message || err) + '）。有网了点「重试」。', null, true, 'Download failed. Tap Retry when online');
+        console.error(err);
+        status('inch.loadFail', null, true);
         throw err;
       });
   }
@@ -1648,12 +1670,14 @@ HERO.init();
   cam.addEventListener('change', () => cam.files[0] && run(cam.files[0]));
   lib.addEventListener('change', () => lib.files[0] && run(lib.files[0]));
 
-  const STEP = { orient: ['照片扶正中…', 0.15, 'Straightening'], read: ['认字中…', 0.45, 'Reading'], check: ['对账中…', 0.85, 'Cross-checking'], draw: ['落红字…', 0.95, 'Drawing'] };
+  const STEP = { orient: ['inch.stepOrient', 0.15], read: ['inch.stepRead', 0.45], check: ['inch.stepCheck', 0.85], draw: ['inch.stepDraw', 0.95] };
+  const paintFace = () => { $('face-label').textContent = t(state.busy ? 'inch.faceBusy' : 'inch.faceIdle'); };
+  paintFace();
   function setBusy(b) {
     state.busy = b;
     [shootBtn, albumBtn, againBtn].forEach(x => { x.disabled = b; });
     $('hero').classList.toggle('working', b);       // 镜子转快、镜面扫光、藤上跑光
-    $('face-label').textContent = b ? '照妖中' : '拍照'; $('face-en').textContent = b ? 'Reading' : 'Shoot';
+    paintFace();
     HERO.setWorking(b);
   }
   // 用 onload 等图：img.decode() 在页面切到后台时可能永远不回话
@@ -1676,17 +1700,19 @@ HERO.init();
         try { if (state.engine === 'failed') await boot(); else await MIRROR.load(); } finally { state.waiting = false; }
       }
       let img;
-      try { img = await loadImage(file); } catch (e) { throw new Error('这张图手机打不开'); }
-      const job = await MIRROR.read(img, k => status(STEP[k][0], STEP[k][1], false, STEP[k][2]));
+      try { img = await loadImage(file); } catch (e) { const x = new Error('decode'); x.why = 'inch.badImage'; throw x; }
+      const job = await MIRROR.read(img, k => status(STEP[k][0], STEP[k][1], false));
       state.job = job;
       window.__inch.timings = job.t;
-      status(STEP.draw[0], STEP.draw[1], false, STEP.draw[2]);
+      status(STEP.draw[0], STEP.draw[1], false);
       await new Promise(r => setTimeout(r, 0));
       await show(true);
       hideStatus();
     } catch (err) {
       console.error(err);
-      status('照妖失败：' + (err && err.message || err) + '。再拍一张试试。', null, true, 'Failed. Try another shot');
+      // 说得出原因的说一句人话；说不出的不把报错原文甩给人看（原文在控制台）
+      if (err && err.why) status('inch.failWhy', null, true, { whyKey: err.why });
+      else status('inch.fail', null, true);
       retryEl.hidden = true;
     } finally {
       setBusy(false);
@@ -1700,7 +1726,7 @@ HERO.init();
     unitEl.hidden = true;
     if (!job || job.kind === 'none') {
       sumEl.className = 'sum none';
-      setSum('一个数字都没照出来。凑近点、拍正点，再来一张。', 'No numbers found. Get closer, shoot straight, try again');
+      setSum(t('inch.none'));
       pic.parentElement.hidden = true; saveBtn.hidden = true;
       state.out = null;
       window.__inch.result = { kind: 'none' };
@@ -1715,22 +1741,21 @@ HERO.init();
     state.url = URL.createObjectURL(blob);
     state.blob = blob;
     await new Promise(res => { pic.onload = res; pic.onerror = res; pic.src = state.url; });
-    const st = out.stat, unit = UNIT(), uen = state.mode === 'in2mm' ? 'mm' : 'inch';
-    let text, en, cls = 'sum';
+    const st = out.stat, red = t('inch.redIs', { unit: UNIT() });
+    let text, cls = 'sum';
     if (job.kind === 'table') {
-      if (st.flags) { text = '红字是' + unit + ' · ' + st.flags + ' 个黄格没对上账，点它改'; en = 'Red = ' + uen + ' · ' + st.flags + ' yellow cell' + (st.flags > 1 ? 's' : '') + " don't add up, tap to fix"; cls += ' flag'; }
-      else if (st.checked) { text = '红字是' + unit + ' · ' + st.okRows + ' 行全对上账'; en = 'Red = ' + uen + ' · all ' + st.okRows + ' rows check out'; }
-      else { text = '红字是' + unit + ' · 认错了就点红字改'; en = 'Red = ' + uen + ' · tap a red number to fix it'; }
+      if (st.flags) { text = red + ' · ' + t(st.flags === 1 ? 'inch.flagsOne' : 'inch.flagsMany', { n: st.flags }); cls += ' flag'; }
+      else if (st.checked) text = red + ' · ' + t(st.okRows === 1 ? 'inch.checkedOne' : 'inch.checkedMany', { n: st.okRows });
+      else text = red + ' · ' + t('inch.tapToFix');
     } else {
-      text = '没找到 DIMENSION / LSL / USL，照片里的数字全换了 · 红字是' + unit; en = 'No table found, converted every number · red = ' + uen;
-      if (st.flags) { text += ' · 黄的没把握，点它改'; en += ' · yellow = unsure, tap to fix'; cls += ' flag'; }
+      text = t('inch.loose') + ' · ' + red;
+      if (st.flags) { text += ' · ' + t('inch.looseFlags'); cls += ' flag'; }
     }
-    sumEl.className = cls; setSum(text, en);
+    sumEl.className = cls; setSum(text);
     $('turn').hidden = out.canvas.width <= 1200;     // 图宽了（带控制范围），竖屏看字小，提醒一句
     const want = state.mode === 'in2mm' ? 'in' : 'mm';
     if (job.unit && job.unit !== want) {
-      put(unitText, '表上是' + (job.unit === 'in' ? '英寸' : '毫米') + '，选反了？',
-        'Sheet is in ' + (job.unit === 'in' ? 'inches' : 'mm') + '. Wrong way round?');
+      unitText.textContent = t('inch.unitWrong', { unit: t(job.unit === 'in' ? 'inch.inches' : 'inch.mm') });
       unitEl.hidden = false;
     }
     window.__inch.timings.draw = Math.round(performance.now() - t0);
@@ -1757,7 +1782,7 @@ HERO.init();
   saveBtn.addEventListener('click', async () => {
     if (!state.blob) return;
     const d = new Date(), p = n => String(n).padStart(2, '0');
-    const name = '英寸照妖镜-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '.jpg';
+    const name = t('inch.fileName') + '-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '.jpg';
     const file = new File([state.blob], name, { type: 'image/jpeg' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try { await navigator.share({ files: [file] }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
@@ -1778,21 +1803,27 @@ HERO.init();
     }
     if (hit) openEdit(hit);
   });
-  const NAMES = { DIM: '尺寸 DIMENSION', LSL: '下差 LSL', USL: '上差 USL', LCL: '控制下限 LCL', UCL: '控制上限 UCL', STOCK: '加工余量 STOCK' };
-  function openEdit(L) {
-    const job = state.job, it = L.item;
-    state.editing = L;
-    const row = L.row >= 0 ? job.A.rows[L.row] : null;
-    edMeta.textContent = (row && row.NO && row.NO.text ? '标号 ' + row.NO.text + ' · ' : '') + (L.key ? NAMES[L.key] : '照片里的数') + ' · 认成 ' + it.text;
-    edNum.value = it.num ? it.num.s : it.text;
+  // 单子上的字（换语言时单子开着也跟着换）
+  function paintEdit() {
+    const L = state.editing;
+    if (!L) return;
+    const job = state.job, it = L.item, row = L.row >= 0 ? job.A.rows[L.row] : null;
+    edMeta.textContent = (row && row.NO && row.NO.text ? t('inch.edRow', { no: row.NO.text }) + ' · ' : '') +
+      (L.key ? t('inch.names')[L.key] : t('inch.edLoose')) + ' · ' + t('inch.edReadAs', { text: it.text });
     const sug = row ? state.out.chk[L.row].sugg[L.key] : null;
     edSug.hidden = !sug;
     if (sug) {
       edSugText.innerHTML = '';
-      edSugText.append(L.key === 'LCL' || L.key === 'UCL' ? '按尺寸和公差算该是' : '按 LCL/UCL 倒推是');
+      edSugText.append(t(L.key === 'LCL' || L.key === 'UCL' ? 'inch.sugCalc' : 'inch.sugBack'));
       const b = document.createElement('b'); b.textContent = sug; edSugText.append(b); edSug.dataset.v = sug;
     }
     preview();
+  }
+  function openEdit(L) {
+    const it = L.item;
+    state.editing = L;
+    edNum.value = it.num ? it.num.s : it.text;
+    paintEdit();
     veil.hidden = false;
     fitSheet();
     edNum.focus();                                   // 必须在点击当下聚焦，iPhone 才肯弹键盘
@@ -1814,7 +1845,7 @@ HERO.init();
     edNum.setAttribute('aria-invalid', String(!p && edNum.value.trim() !== ''));
     edPrev.innerHTML = '';
     if (p) { const b = document.createElement('b'); b.textContent = MIRROR.convert(p, state.mode); edPrev.append('= ', b, UNIT()); }
-    else put(edPrev, '只认数字，比如 1.0860、-0.0050、3/8', 'Numbers only, e.g. 1.0860, -0.0050, 3/8');
+    else edPrev.textContent = t('inch.numHint');
     $('ed-ok').disabled = !p;
   }
   edNum.addEventListener('input', preview);
@@ -1837,6 +1868,14 @@ HERO.init();
     closeEdit();
     show(false);
   }
+  // 右上角换了语言：状态条、镜面、结果那句和图底下的落款、开着的改数单子都照新语言重来一遍
+  window.addEventListener('gs:lang', () => {
+    paintFace();
+    if (lastStatus && !statusEl.hidden) status(lastStatus.key, lastStatus.pct, lastStatus.bad, lastStatus.vars);
+    if (lastStatus && lastStatus.bad) retryEl.hidden = lastStatus.key !== 'inch.loadFail';
+    if (state.job && !resultEl.hidden) show(false).then(paintEdit);
+    else paintEdit();
+  });
   window.__inch.run = run;
   window.__inch.openEdit = i => state.out && openEdit(state.out.labels[i]);
 })();

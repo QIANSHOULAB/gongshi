@@ -1,0 +1,318 @@
+/* 工时榨汁机 + 英寸照妖镜：两页给人看的字都在这一处。en 是门面（默认），zh 是第二语言。
+   改字只改这里。{n} 这类是填空；页面上带 data-i18n 的地方照 key 填（-html 的允许 <br> <b>）。
+   挑语言：网址 ?lang=zh|en（只管这一次）> 右上角选过的（localStorage「gongshi.lang」）> 英文。
+   不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。 */
+window.GS_VERSION = '0.1.1';
+window.GS_STRINGS = {
+  en: {
+    htmlLang: 'en',
+    common: {
+      tabsLabel: 'Shop-floor tools',
+      tabCo: 'Net Hours',
+      tabInch: 'Inch Converter',
+      langLabel: 'Language'
+    },
+    co: {
+      docTitle: 'Gongshi · Net Hours',
+      metaDesc: 'Enter a start and an end time. Tea breaks and meals get squeezed out, and the real hours come out fresh-pressed. Made for the changeover time box on your CO sheet.',
+      h1: 'Gongshi · Net Hours',
+      sub: 'Squeeze out the breaks. Keep the real hours.',
+      cardLabel: 'Start and end time',
+      start: 'Start',
+      end: 'End',
+      now: 'Now',
+      nextDay: 'Ends next day',
+      bandLabel: 'Actual changeover time',
+      chip: 'Example',
+      unit: 'min',
+      badStart: 'Can’t read the start time. Just type digits, like 830 or 1321.',
+      badEnd: 'Can’t read the end time. Just type digits, like 830 or 1321.',
+      needBoth: 'Enter a start and an end time.',
+      needStart: 'Need a start time.',
+      needEnd: 'Need an end time. Tap Now when you wrap up.',
+      endBeforeStart: 'End is before start. Wrapped up the next day?',
+      fix: 'Next day',
+      summary: '{net} · {gross} min gross, {cut} squeezed out',
+      durMin: '{m} min',
+      durHr: '{h} hr',
+      durHrMin: '{h} hr {m} min',
+      ledgerLabel: 'Breaks and deductions',
+      breaks: 'Breaks',
+      deducted: 'Deducted (min)',
+      overnight: 'Overnight (off shift)',
+      noBreaks: 'No breaks',
+      edit: 'Edit breaks',
+      clockIn: 'Clock in',
+      clockOut: 'Clock out',
+      add: '+ Add',
+      reset: 'Reset',
+      done: 'Done',
+      noteOk: 'Changes count right away. Saved on this phone only.',
+      noteBad: '{why}. Type digits: 1000 means 10:00.',
+      badOn: 'Can’t read the clock-in time',
+      badOff: 'Can’t read the clock-out time',
+      offBeforeOn: 'Clock-out has to be after clock-in',
+      badRowStart: 'Can’t read a break’s start time',
+      badRowEnd: 'Can’t read a break’s end time',
+      rowBackwards: 'A break ends before it starts',
+      tooMany: '{n} breaks max',
+      rowStartPh: 'Start',
+      rowEndPh: 'End',
+      rowStartLabel: 'Break {i} start',
+      rowEndLabel: 'Break {i} end',
+      rowNameLabel: 'Break {i} name',
+      rowDelLabel: 'Delete break {i}',
+      nameMax: 12,
+      foot: 'Shift {on}–{off} · Breaks count only where they overlap the job',
+      footCustom: 'Custom break table on this phone',
+      // 休息的名字：存的时候用中文那几个当底（默认表就是这么存的），英文界面照这张表显示；
+      // 英文界面里打这些词，存回去也落成左边的中文，两边来回切不会变成「自己改过的表」。
+      names: { '休息': 'Break', '茶歇': 'Break', '午饭': 'Lunch', '午餐': 'Lunch', '晚饭': 'Dinner', '晚餐': 'Dinner',
+               '早饭': 'Breakfast', '早餐': 'Breakfast', '夜宵': 'Supper', '宵夜': 'Supper', '开会': 'Meeting' }
+    },
+    inch: {
+      docTitle: 'Yingcun · Inch Converter',
+      metaDesc: 'Snap an inspection sheet. Sizes, tolerances and control limits flip between inches and millimeters, written in red right on the photo. Runs on your phone; the photo never leaves it.',
+      h1: 'Yingcun · Inch Converter',
+      sub: 'Point it at the sheet. Inches confess in millimeters.',
+      segLabel: 'Direction',
+      in2mm: 'Inches → mm',
+      mm2in: 'mm → Inches',
+      shootLabel: 'Take a photo',
+      faceIdle: 'Snap',
+      faceBusy: 'Unmasking',
+      retry: 'Retry',
+      hintTitle: 'Snap the inspection sheet',
+      hintText: 'Sizes, tolerances and limits show their true colors.',
+      album: 'Photos',
+      loadWait: 'Still loading the brain. One sec.',
+      loadFirst: 'First run: grabbing the text-reading brain (~30 MB). Works offline after that.',
+      loadWarm: 'Warming up…',
+      loadFail: 'Couldn’t download the brain. Tap Retry once you’re online.',
+      stepOrient: 'Straightening…',
+      stepRead: 'Reading…',
+      stepCheck: 'Cross-checking…',
+      stepDraw: 'Writing in red…',
+      failWhy: 'No luck: {why}. Try another shot.',
+      fail: 'That didn’t work. Try another shot.',
+      badImage: 'this image won’t open',
+      none: 'Not a single number caught. Get closer, shoot straight, try again.',
+      redIs: 'Red = {unit}',
+      flagsOne: '1 yellow cell doesn’t add up, tap to fix',
+      flagsMany: '{n} yellow cells don’t add up, tap to fix',
+      checkedOne: '1 row checks out',
+      checkedMany: 'All {n} rows check out',
+      tapToFix: 'Misread? Tap the red number',
+      loose: 'No DIMENSION / LSL / USL table, so every number got converted',
+      looseFlags: 'Yellow = unsure, tap to fix',
+      mm: 'mm',
+      inches: 'inches',
+      unitWrong: 'This sheet is in {unit}. Wrong way round?',
+      unitFix: 'Switch',
+      picAlt: 'Converted sheet: the red numbers next to the originals are the converted values',
+      turn: 'Turn sideways for 2× bigger text.',
+      save: 'Save image',
+      again: 'Shoot again',
+      edTitle: 'Did it read this right?',
+      edRow: 'No. {no}',
+      edReadAs: 'read as {text}',
+      edLoose: 'Number in photo',
+      names: { DIM: 'Dimension', LSL: 'Lower tol. (LSL)', USL: 'Upper tol. (USL)', LCL: 'Lower limit (LCL)', UCL: 'Upper limit (UCL)', STOCK: 'Stock allowance' },
+      signLabel: 'Flip the sign',
+      numLabel: 'Original value',
+      numHint: 'Numbers only, like 1.0860, -0.0050 or 3/8',
+      sugCalc: 'Size + tolerance says',
+      sugBack: 'LCL/UCL says',
+      sugUse: 'Use it',
+      cancel: 'Cancel',
+      ok: 'Done',
+      imgRed: 'Red',
+      imgBrand: 'Yingcun · Inch Converter',
+      fileName: 'Yingcun'
+    }
+  },
+
+  zh: {
+    htmlLang: 'zh-CN',
+    common: {
+      tabsLabel: '车间小工具',
+      tabCo: '工时榨汁机',
+      tabInch: '英寸照妖镜',
+      langLabel: '语言'
+    },
+    co: {
+      docTitle: '工时榨汁机',
+      metaDesc: '开始、结束两个时间一填，茶歇饭点自动扣光，真工时当场出汁。专治换型单上那格 CO 时间。',
+      h1: '工时榨汁机',
+      sub: '智商欠费算盘精，鸡毛蒜皮当圣经。<br>抹去凡间烟火气，灵长动物化肉身。',
+      cardLabel: '开工和收工时间',
+      start: '开始',
+      end: '结束',
+      now: '现在',
+      nextDay: '次日结束',
+      bandLabel: '实际换型时间',
+      chip: '示例',
+      unit: '分钟',
+      badStart: '开始时间看不懂，直接打数字，比如 830 或 1321。',
+      badEnd: '结束时间看不懂，直接打数字，比如 830 或 1321。',
+      needBoth: '填开始和结束时间。',
+      needStart: '还差开始时间。',
+      needEnd: '还差结束时间，收工时按「现在」。',
+      endBeforeStart: '结束比开始还早。第二天才收工的话：',
+      fix: '改成次日',
+      summary: '{net} · 毛时长 {gross} 分，扣 {cut} 分',
+      durMin: '{m} 分',
+      durHr: '{h} 小时',
+      durHrMin: '{h} 小时 {m} 分',
+      ledgerLabel: '休息表和本单扣除',
+      breaks: '休息表',
+      deducted: '本单扣（分）',
+      overnight: '下班 → 次日上班',
+      noBreaks: '没有休息',
+      edit: '改休息表',
+      clockIn: '上班',
+      clockOut: '下班',
+      add: '＋ 加一段',
+      reset: '恢复默认',
+      done: '完成',
+      noteOk: '改了马上算数，只存在这台手机上。',
+      noteBad: '{why}。直接打数字，比如 1000 就是 10:00。',
+      badOn: '上班时间看不懂',
+      badOff: '下班时间看不懂',
+      offBeforeOn: '下班要比上班晚',
+      badRowStart: '有一段的开始时间看不懂',
+      badRowEnd: '有一段的结束时间看不懂',
+      rowBackwards: '有一段结束比开始早',
+      tooMany: '最多 {n} 段',
+      rowStartPh: '开始',
+      rowEndPh: '结束',
+      rowStartLabel: '第 {i} 段开始',
+      rowEndLabel: '第 {i} 段结束',
+      rowNameLabel: '第 {i} 段叫什么',
+      rowDelLabel: '删掉第 {i} 段',
+      nameMax: 6,
+      foot: '上班 {on} · 下班 {off} · 只扣和起止时间重叠的部分',
+      footCustom: '休息表是这台手机自己改的',
+      names: {}
+    },
+    inch: {
+      docTitle: '英寸照妖镜',
+      metaDesc: '对着检查表一拍，尺寸、公差、控制范围的英寸当场换成毫米，红字落在原图上。识字在手机里跑，照片不上传。',
+      h1: '英寸照妖镜',
+      sub: '八分之三算断魂，二五点四乘进坟。<br>烂图一拍全干碎，只认毫米弃碑文。',
+      segLabel: '换算方向',
+      in2mm: '英寸 → 毫米',
+      mm2in: '毫米 → 英寸',
+      shootLabel: '拍照',
+      faceIdle: '拍照',
+      faceBusy: '照妖中',
+      retry: '重试',
+      hintTitle: '对着检查表拍',
+      hintText: '尺寸、公差、控制范围当场现原形。',
+      album: '相册',
+      loadWait: '脑子还在装，装好马上照。',
+      loadFirst: '第一次用，先给手机装个识字的脑子（约 30 MB），装完断网也能用。',
+      loadWarm: '开光中…',
+      loadFail: '识字的脑子没装上，有网了点「重试」。',
+      stepOrient: '照片扶正中…',
+      stepRead: '认字中…',
+      stepCheck: '对账中…',
+      stepDraw: '落红字…',
+      failWhy: '照妖失败：{why}。再拍一张试试。',
+      fail: '照妖失败，再拍一张试试。',
+      badImage: '这张图手机打不开',
+      none: '一个数字都没照出来。凑近点、拍正点，再来一张。',
+      redIs: '红字是{unit}',
+      flagsOne: '1 个黄格没对上账，点它改',
+      flagsMany: '{n} 个黄格没对上账，点它改',
+      checkedOne: '1 行全对上账',
+      checkedMany: '{n} 行全对上账',
+      tapToFix: '认错了就点红字改',
+      loose: '没找到 DIMENSION / LSL / USL，照片里的数字全换了',
+      looseFlags: '黄的没把握，点它改',
+      mm: '毫米',
+      inches: '英寸',
+      unitWrong: '表上是{unit}，选反了？',
+      unitFix: '换过来',
+      picAlt: '换算结果：原图数字旁边的红字是换算后的值',
+      turn: '手机横过来看，字大一倍多。',
+      save: '保存图片',
+      again: '再拍一张',
+      edTitle: '这个数认对了吗？',
+      edRow: '标号 {no}',
+      edReadAs: '认成 {text}',
+      edLoose: '照片里的数',
+      names: { DIM: '尺寸 DIMENSION', LSL: '下差 LSL', USL: '上差 USL', LCL: '控制下限 LCL', UCL: '控制上限 UCL', STOCK: '加工余量 STOCK' },
+      signLabel: '正负号',
+      numLabel: '原数',
+      numHint: '只认数字，比如 1.0860、-0.0050、3/8',
+      sugCalc: '按尺寸和公差算该是',
+      sugBack: '按 LCL/UCL 倒推是',
+      sugUse: '用这个',
+      cancel: '取消',
+      ok: '改好了',
+      imgRed: '红字',
+      imgBrand: '英寸照妖镜',
+      fileName: '英寸照妖镜'
+    }
+  }
+};
+
+/* 换语言的小发动机：<head> 里同步加载，先把 <html lang>、标题、简介定下来再画页面。 */
+(function () {
+  var S = window.GS_STRINGS, KEY = 'gongshi.lang', d = document, root = d.documentElement;
+  var q = /[?&]lang=(zh|en)(?:&|$)/.exec(location.search), saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  var page = root.getAttribute('data-page');            // co | inch
+  var GS = window.GS = {
+    version: window.GS_VERSION,
+    lang: q ? q[1] : (saved === 'zh' || saved === 'en' ? saved : 'en'),
+    // GS.t('co.summary', {net: …})：取字、填空
+    t: function (key, vars) {
+      var v = S[GS.lang], parts = key.split('.');
+      for (var i = 0; i < parts.length && v != null; i++) v = v[parts[i]];
+      if (typeof v !== 'string') return v == null ? key : v;
+      return vars ? v.replace(/\{(\w+)\}/g, function (m, k) { return vars[k] != null ? vars[k] : m; }) : v;
+    },
+    head: function () {
+      var T = S[GS.lang];
+      root.lang = T.htmlLang;
+      if (page && T[page]) {
+        d.title = T[page].docTitle;
+        var m = d.querySelector('meta[name="description"]');
+        if (m) m.setAttribute('content', T[page].metaDesc);
+      }
+    },
+    // 页面上的死字：data-i18n（纯文字）、data-i18n-html（带 <br> <b>）、data-i18n-attr="aria-label:key;placeholder:key"
+    fill: function (scope) {
+      scope = scope || d;
+      scope.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = GS.t(el.getAttribute('data-i18n')); });
+      scope.querySelectorAll('[data-i18n-html]').forEach(function (el) { el.innerHTML = GS.t(el.getAttribute('data-i18n-html')); });
+      scope.querySelectorAll('[data-i18n-attr]').forEach(function (el) {
+        el.getAttribute('data-i18n-attr').split(';').forEach(function (pair) {
+          var kv = pair.split(':'); if (kv.length === 2) el.setAttribute(kv[0].trim(), GS.t(kv[1].trim()));
+        });
+      });
+      scope.querySelectorAll('[data-version]').forEach(function (el) { el.textContent = 'v' + GS.version; });
+      scope.querySelectorAll('.lang button').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-l') === GS.lang));
+      });
+    },
+    // 右上角点了：记住、换字、通知页面把动态的字重画一遍
+    setLang: function (l) {
+      if (!S[l] || l === GS.lang) return;
+      GS.lang = l;
+      try { localStorage.setItem(KEY, l); } catch (e) {}
+      GS.head(); GS.fill();
+      window.dispatchEvent(new CustomEvent('gs:lang', { detail: l }));
+    },
+    // 页面画好以后调一次：填字、接上右上角的按钮
+    init: function () {
+      GS.fill();
+      d.querySelectorAll('.lang button').forEach(function (b) {
+        b.addEventListener('click', function () { GS.setLang(b.getAttribute('data-l')); });
+      });
+    }
+  };
+  GS.head();
+})();

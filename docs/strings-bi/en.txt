@@ -1,0 +1,130 @@
+htmlLang	en
+common.tabsLabel	Shop-floor tools
+common.tabCo	Net Hours
+common.tabInch	Inch Converter
+common.langLabel	Language
+co.docTitle	Gongshi · Net Hours
+co.metaDesc	Enter a start and an end time. Tea breaks and meals get squeezed out, and the real hours come out fresh-pressed. Made for the changeover time box on your CO sheet.
+co.h1	Gongshi · Net Hours
+co.sub	Squeeze out the breaks. Keep the real hours.
+co.cardLabel	Start and end time
+co.start	Start
+co.end	End
+co.now	Now
+co.nextDay	Ends next day
+co.bandLabel	Actual changeover time
+co.chip	Example
+co.unit	min
+co.badStart	Can’t read the start time. Just type digits, like 830 or 1321.
+co.badEnd	Can’t read the end time. Just type digits, like 830 or 1321.
+co.needBoth	Enter a start and an end time.
+co.needStart	Need a start time.
+co.needEnd	Need an end time. Tap Now when you wrap up.
+co.endBeforeStart	End is before start. Wrapped up the next day?
+co.fix	Next day
+co.summary	{net} · {gross} min gross, {cut} squeezed out
+co.durMin	{m} min
+co.durHr	{h} hr
+co.durHrMin	{h} hr {m} min
+co.ledgerLabel	Breaks and deductions
+co.breaks	Breaks
+co.deducted	Deducted (min)
+co.overnight	Overnight (off shift)
+co.noBreaks	No breaks
+co.edit	Edit breaks
+co.clockIn	Clock in
+co.clockOut	Clock out
+co.add	+ Add
+co.reset	Reset
+co.done	Done
+co.noteOk	Changes count right away. Saved on this phone only.
+co.noteBad	{why}. Type digits: 1000 means 10:00.
+co.badOn	Can’t read the clock-in time
+co.badOff	Can’t read the clock-out time
+co.offBeforeOn	Clock-out has to be after clock-in
+co.badRowStart	Can’t read a break’s start time
+co.badRowEnd	Can’t read a break’s end time
+co.rowBackwards	A break ends before it starts
+co.tooMany	{n} breaks max
+co.rowStartPh	Start
+co.rowEndPh	End
+co.rowStartLabel	Break {i} start
+co.rowEndLabel	Break {i} end
+co.rowNameLabel	Break {i} name
+co.rowDelLabel	Delete break {i}
+co.foot	Shift {on}–{off} · Breaks count only where they overlap the job
+co.footCustom	Custom break table on this phone
+co.names.休息	Break
+co.names.茶歇	Break
+co.names.午饭	Lunch
+co.names.午餐	Lunch
+co.names.晚饭	Dinner
+co.names.晚餐	Dinner
+co.names.早饭	Breakfast
+co.names.早餐	Breakfast
+co.names.夜宵	Supper
+co.names.宵夜	Supper
+co.names.开会	Meeting
+inch.docTitle	Yingcun · Inch Converter
+inch.metaDesc	Snap an inspection sheet. Sizes, tolerances and control limits flip between inches and millimeters, written in red right on the photo. Runs on your phone; the photo never leaves it.
+inch.h1	Yingcun · Inch Converter
+inch.sub	Point it at the sheet. Inches confess in millimeters.
+inch.segLabel	Direction
+inch.in2mm	Inches → mm
+inch.mm2in	mm → Inches
+inch.shootLabel	Take a photo
+inch.faceIdle	Snap
+inch.faceBusy	Unmasking
+inch.retry	Retry
+inch.hintTitle	Snap the inspection sheet
+inch.hintText	Sizes, tolerances and limits show their true colors.
+inch.album	Photos
+inch.loadWait	Still loading the brain. One sec.
+inch.loadFirst	First run: grabbing the text-reading brain (~30 MB). Works offline after that.
+inch.loadWarm	Warming up…
+inch.loadFail	Couldn’t download the brain. Tap Retry once you’re online.
+inch.stepOrient	Straightening…
+inch.stepRead	Reading…
+inch.stepCheck	Cross-checking…
+inch.stepDraw	Writing in red…
+inch.failWhy	No luck: {why}. Try another shot.
+inch.fail	That didn’t work. Try another shot.
+inch.badImage	this image won’t open
+inch.none	Not a single number caught. Get closer, shoot straight, try again.
+inch.redIs	Red = {unit}
+inch.flagsOne	1 yellow cell doesn’t add up, tap to fix
+inch.flagsMany	{n} yellow cells don’t add up, tap to fix
+inch.checkedOne	1 row checks out
+inch.checkedMany	All {n} rows check out
+inch.tapToFix	Misread? Tap the red number
+inch.loose	No DIMENSION / LSL / USL table, so every number got converted
+inch.looseFlags	Yellow = unsure, tap to fix
+inch.mm	mm
+inch.inches	inches
+inch.unitWrong	This sheet is in {unit}. Wrong way round?
+inch.unitFix	Switch
+inch.picAlt	Converted sheet: the red numbers next to the originals are the converted values
+inch.turn	Turn sideways for 2× bigger text.
+inch.save	Save image
+inch.again	Shoot again
+inch.edTitle	Did it read this right?
+inch.edRow	No. {no}
+inch.edReadAs	read as {text}
+inch.edLoose	Number in photo
+inch.names.DIM	Dimension
+inch.names.LSL	Lower tol. (LSL)
+inch.names.USL	Upper tol. (USL)
+inch.names.LCL	Lower limit (LCL)
+inch.names.UCL	Upper limit (UCL)
+inch.names.STOCK	Stock allowance
+inch.signLabel	Flip the sign
+inch.numLabel	Original value
+inch.numHint	Numbers only, like 1.0860, -0.0050 or 3/8
+inch.sugCalc	Size + tolerance says
+inch.sugBack	LCL/UCL says
+inch.sugUse	Use it
+inch.cancel	Cancel
+inch.ok	Done
+inch.imgRed	Red
+inch.imgBrand	Yingcun · Inch Converter
+inch.fileName	Yingcun
