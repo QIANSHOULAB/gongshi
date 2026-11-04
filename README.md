@@ -2,7 +2,7 @@
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
-三个车间小工具，页面顶上一点就互相切换。版本 0.4.1。
+三个车间小工具，页面顶上一点就互相切换。版本 0.5.0。
 
 打开：https://qianshoulab.github.io/gongshi/
 
@@ -46,6 +46,7 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 
 - 规矩：只数一盒；第二盒完整拍进来才一起数。贴着照片边的盒子一律算没拍全；主盒没拍全也照数，但标黄提醒看边上
 - 每盒旁边有「不算 / 也算上」，判错了自己翻
+- 数两遍（0.5.0）：第一遍让模型一格一格、一排一排数，每件报格子号和一个点；第二眼把数过的托盘裁大、每件点一个小品红点再发一次，专找没点的（漏的多半是躲在后面、立着的那件）和点错的。第二眼补上的圆点是柠檬绿圈，状态行写「复查揪出 N 个漏网的」；第二眼没看成（额度、网络）就照第一遍的数给。一张照片两次请求
 - 照片上每个数到的件盖一个糖果圆点：点圆点删掉，点漏掉的件补一个，数字跟着变，右边标「手改 +n −n」
 - 存图：照片 + 圆点 + 底下一条海报数字和时间，手机上直接弹分享（存相册）
 - 数数的是谷歌 Gemini。不填钥匙：走 Song 的中转站（QIANSHOULAB/luruseng-relay 的 /count，钥匙锁在 Cloudflare Secret；先 gemini-3.8-flash，额度没了换 gemini-3.5-flash-lite），大伙共用每天的免费额度；额度吃干了弹出钥匙抽屉，贴自己的钥匙接着数

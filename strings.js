@@ -4,7 +4,7 @@
    不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。
    改了这个文件：GS_VERSION 往上加，三页里 <script src="…strings.js?v=…"> 的 v 改成一样的——
    GitHub 的 CDN 把同一个网址缓存 10 分钟，不换网址的话，刚上线那几分钟新页面会配上旧字，满屏 count.xxx。 */
-window.GS_VERSION = '0.4.1';
+window.GS_VERSION = '0.5.0';
 window.GS_STRINGS = {
   en: {
     htmlLang: 'en',
@@ -100,6 +100,9 @@ window.GS_STRINGS = {
       include: 'Count it',
       exclude: 'Skip it',
       fixHint: 'Tap a dot to drop it. Tap a missed part to add it.',
+      auditing: 'Second look: hunting the ones hiding behind the others',
+      auditAdd: 'Second look caught {n} it missed (lime rings)',
+      auditDel: 'dropped {n} stray dots',
       edited: 'Fixed by hand: {d}',
       retake: 'Snap another',
       save: 'Save image',
@@ -281,6 +284,9 @@ window.GS_STRINGS = {
       include: '也算上',
       exclude: '不算',
       fixHint: '点圆点删掉，点漏掉的件补上。',
+      auditing: '复查一遍，专抓躲在后面的',
+      auditAdd: '复查揪出 {n} 个漏网的（绿圈）',
+      auditDel: '删了 {n} 个点错的',
       edited: '手改 {d}',
       retake: '再拍一盘',
       save: '存图',
