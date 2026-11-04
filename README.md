@@ -2,7 +2,7 @@
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
-三个车间小工具，页面顶上一点就互相切换。版本 0.2.0。
+三个车间小工具，页面顶上一点就互相切换。版本 0.3.0。
 
 打开：https://qianshoulab.github.io/gongshi/
 
@@ -41,6 +41,8 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 打开：https://qianshoulab.github.io/gongshi/count/
 
 拍一盘工件，数量直接出来。
+
+长相（0.3.0，群青套印）：一整页是一张孔版海报。电光群青的纸、白红两色油墨，五个字五种字体叠印（铁 宋体粗、件 庆科黄油、点 马善政、钞 黑体粗、机 志莽行；英文 COUNT 也是五种），深靛色压一块工件剪影、柠檬绿圆环叠印，满纸颗粒、字上掉墨。快门是一颗紫色滚花旋钮，左相册右设置。数完数字像点钞机一样从 0 跑上去，照片上的圆点一排一排跟着亮；数字用 Ultra 粗衬线，红版错位。海报大字用 Google Fonts 的 text= 子集，只下那几个字。
 
 - 规矩：只数一盒；第二盒完整拍进来才一起数。贴着照片边的盒子一律算没拍全；主盒没拍全也照数，但标黄提醒看边上
 - 每盒旁边有「不算 / 也算上」，判错了自己翻

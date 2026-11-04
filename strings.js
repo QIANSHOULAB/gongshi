@@ -2,7 +2,7 @@
    改字只改这里。{n} 这类是填空；页面上带 data-i18n 的地方照 key 填（-html 的允许 <br> <b>）。
    挑语言：网址 ?lang=zh|en（只管这一次）> 右上角选过的（localStorage「gongshi.lang」）> 英文。
    不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。 */
-window.GS_VERSION = '0.2.0';
+window.GS_VERSION = '0.3.0';
 window.GS_STRINGS = {
   en: {
     htmlLang: 'en',
@@ -78,6 +78,10 @@ window.GS_STRINGS = {
       sub: 'Counting by eye until your eyes give out?<br>It’s a cash counter, but for steel. One snap, every piece.',
       shoot: 'Snap the tray',
       album: 'Pick from photos',
+      albumShort: 'Photos',
+      cap: 'SNAP',
+      certified: 'Third-eye certified',
+      lab: 'QIANSHOU LAB',
       hint: 'Shoot from straight above. One whole tray in frame.',
       working: ['Reading every slot', 'Counting the leaners too', 'Pretending the half tray isn’t there', 'Double-checking the stacked ones'],
       unit: 'pcs',
@@ -250,6 +254,10 @@ window.GS_STRINGS = {
       sub: '肉眼凡胎当枪使，满盘铁件数到死。<br>残盒半露入法眼，天眼一开万数知。',
       shoot: '拍这一盘',
       album: '从相册挑',
+      albumShort: '相册',
+      cap: '拍',
+      certified: '天眼开光',
+      lab: '千手院出品',
       hint: '尽量从正上方拍，整盘拍进来。',
       working: ['一格一格过目', '歪着的也逮住', '半截盒子装没看见', '叠着的再瞄一眼'],
       unit: '件',
