@@ -1,7 +1,9 @@
 /* 工时榨汁机 + 英寸照妖镜：两页给人看的字都在这一处。en 是门面（默认），zh 是第二语言。
    改字只改这里。{n} 这类是填空；页面上带 data-i18n 的地方照 key 填（-html 的允许 <br> <b>）。
    挑语言：网址 ?lang=zh|en（只管这一次）> 右上角选过的（localStorage「gongshi.lang」）> 英文。
-   不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。 */
+   不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。
+   改了这个文件：GS_VERSION 往上加，三页里 <script src="…strings.js?v=…"> 的 v 改成一样的——
+   GitHub 的 CDN 把同一个网址缓存 10 分钟，不换网址的话，刚上线那几分钟新页面会配上旧字，满屏 count.xxx。 */
 window.GS_VERSION = '0.4.0';
 window.GS_STRINGS = {
   en: {
