@@ -1,4 +1,4 @@
-# 工时榨汁机 · 英寸照妖镜 · 火眼点件
+# 工时榨汁机 · 英寸照妖镜 · 铁件点钞机
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
@@ -36,7 +36,7 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 
 用到的东西：PaddleOCR PP-OCRv4 识字模型（Apache-2.0，ONNX 版来自 RapidOCR）、onnxruntime-web 1.31.1（MIT）。
 
-## 火眼点件
+## 铁件点钞机
 
 打开：https://qianshoulab.github.io/gongshi/count/
 

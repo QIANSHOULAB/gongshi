@@ -10,7 +10,7 @@ window.GS_STRINGS = {
       tabsLabel: 'Shop-floor tools',
       tabCo: 'Net Hours',
       tabInch: 'Inch Converter',
-      tabCount: 'Tray Count',
+      tabCount: 'Part Counter',
       langLabel: 'Language'
     },
     co: {
@@ -72,10 +72,10 @@ window.GS_STRINGS = {
                '早饭': 'Breakfast', '早餐': 'Breakfast', '夜宵': 'Supper', '宵夜': 'Supper', '开会': 'Meeting' }
     },
     count: {
-      docTitle: 'Huoyan · Tray Count',
+      docTitle: 'Tiejian · Part Counter',
       metaDesc: 'Snap a tray of parts and get the count. Only the tray you aimed at counts; a half tray at the edge gets ignored. Tap to fix any miss.',
-      h1: 'Huoyan · Tray Count',
-      sub: 'Lost count at 37 again?<br>Snap the tray. The machine never gets bored.',
+      h1: 'Tiejian · Part Counter',
+      sub: 'Counting by eye until your eyes give out?<br>It’s a cash counter, but for steel. One snap, every piece.',
       shoot: 'Snap the tray',
       album: 'Pick from photos',
       hint: 'Shoot from straight above. One whole tray in frame.',
@@ -111,8 +111,8 @@ window.GS_STRINGS = {
       errNet: 'Can’t reach Google. Check the connection.',
       errParse: 'Couldn’t read Google’s answer ({r}). Try Recount.',
       errNoKey: 'Need a key first.',
-      imgBrand: 'Huoyan · Tray Count',
-      fileName: 'tray-count',
+      imgBrand: 'Tiejian · Part Counter',
+      fileName: 'part-counter',
       foot: 'Counts one tray. A second tray counts only if it’s fully in frame.'
     },
     inch: {
@@ -183,7 +183,7 @@ window.GS_STRINGS = {
       tabsLabel: '车间小工具',
       tabCo: '工时榨汁机',
       tabInch: '英寸照妖镜',
-      tabCount: '火眼点件',
+      tabCount: '铁件点钞机',
       langLabel: '语言'
     },
     co: {
@@ -242,10 +242,10 @@ window.GS_STRINGS = {
       names: {}
     },
     count: {
-      docTitle: '火眼点件',
+      docTitle: '铁件点钞机',
       metaDesc: '对着一盘工件拍一张，数量当场蹦出来。只数对准的那一盒，边上露半截的不算；数错的点一下就改。',
-      h1: '火眼点件',
-      sub: '数到三十七，忘了刚才那个数没数。<br>拍一张，火眼替你从一数到底。',
+      h1: '铁件点钞机',
+      sub: '肉眼凡胎当枪使，满盘铁件数到死。<br>残盒半露入法眼，天眼一开万数知。',
       shoot: '拍这一盘',
       album: '从相册挑',
       hint: '尽量从正上方拍，整盘拍进来。',
@@ -281,8 +281,8 @@ window.GS_STRINGS = {
       errNet: '连不上谷歌，看看网。',
       errParse: '谷歌的回答没看懂（{r}），点重数再来。',
       errNoKey: '先贴钥匙。',
-      imgBrand: '火眼点件',
-      fileName: '火眼点件',
+      imgBrand: '铁件点钞机',
+      fileName: '铁件点钞机',
       foot: '只数一盒；第二盒完整拍进来才一起数。'
     },
     inch: {

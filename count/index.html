@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Huoyan · Tray Count</title>
+<title>Tiejian · Part Counter</title>
 <meta name="description" content="Snap a tray of parts and get the count.">
 <script src="../strings.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=DM+Serif+Display&family=Courier+Prime:wght@400;700&display=swap">
 <style>
-/* 火眼点件：黑底压住车间白光；色块拼贴（橙 / 绿 / 青）当舞台，结果数字用海报那种巨号衬线白字；
+/* 铁件点钞机：黑底压住车间白光；色块拼贴（橙 / 绿 / 青）当舞台，结果数字用海报那种巨号衬线白字；
    工件上的点是糖果球。苹果的留白和层级，颜色可以野，排版不乱。 */
 :root {
   --bg: #0c0c0e;
@@ -320,7 +320,7 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
   GS.init();
 
   /* ---------- 设置：钥匙、模型，只存这台手机 ---------- */
-  const CFG_KEY = 'huoyan.cfg';
+  const CFG_KEY = 'tiejian.cfg';
   let cfg = { k1: '', k2: '', model: 'auto' };
   try { Object.assign(cfg, JSON.parse(localStorage.getItem(CFG_KEY) || '{}')); } catch (e) {}
   const saveCfg = () => { try { localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); } catch (e) {} };
@@ -671,7 +671,7 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
   window.addEventListener('gs:lang', () => { if (!$('res').hidden) render(); });
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(() => {});
 
-  window.__huoyan = { pickTrays, get trays() { return trays; }, total };   // 自查用
+  window.__tiejian = { pickTrays, get trays() { return trays; }, total };   // 自查用
 })();
 </script>
 </body>
