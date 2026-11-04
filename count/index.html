@@ -417,6 +417,10 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
     finally { clearTimeout(timer); }
     const body = await res.json().catch(() => null);
     if (!res.ok) throw new HttpErr(res.status, (body && body.error && body.error.message) || res.statusText || '');
+    return parseReply(body);
+  }
+
+  function parseReply(body) {
     const c = body && body.candidates && body.candidates[0];
     const txt = c && c.content && (c.content.parts || []).filter(p => p.text && !p.thought).map(p => p.text).join('');
     if (!txt) throw Object.assign(new Error('parse'), { reason: (c && c.finishReason) || (body && body.promptFeedback && body.promptFeedback.blockReason) || 'empty' });
@@ -424,8 +428,28 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
     catch (e) { throw Object.assign(new Error('parse'), { reason: c.finishReason || 'JSON' }); }
   }
 
+  // 不填钥匙：走 Song 的中转站（Cloudflare，钥匙锁在那边），大伙共用每天的免费额度
+  const RELAY = 'https://luruseng-relay.lunzigeju.workers.dev/count';
+  async function askRelay() {
+    const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 240000);
+    let res;
+    try { res = await fetch(RELAY, { method: 'POST', signal: ac.signal, headers: { 'Content-Type': 'text/plain' }, body: jpeg64 }); }
+    catch (e) { throw new HttpErr(0, ''); }
+    finally { clearTimeout(timer); }
+    const body = await res.json().catch(() => null);
+    if (!res.ok) {
+      const code = body && body.error && body.error.code;
+      if (res.status === 429 && code && String(code).startsWith('quota')) throw Object.assign(new Error('quota'), { relay: 'quota' });
+      if (res.status === 503 && code === 'no_key') throw Object.assign(new Error('off'), { relay: 'off' });
+      throw new HttpErr(res.status, (body && body.error && body.error.message) || res.statusText || '');
+    }
+    usedModel = res.headers.get('x-model') || 'gemini';
+    return parseReply(body);
+  }
+
   async function askChain() {
     const ks = keys();
+    if (!ks.length) return askRelay();
     const models = cfg.model === 'auto' ? ['gemini-2.5-pro', 'gemini-2.5-flash'] : [cfg.model];
     let last;
     for (const m of models) for (const k of ks) {
@@ -442,7 +466,6 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
   let ticker = 0;
   async function count() {
     if (!base) return;
-    if (!keys().length) { pending = true; render(); openSheet(); setStatus(t('errNoKey')); return; }
     const id = ++runId;
     busy = true; setBusy(true);
     const lines = t('working'); let li = 0;
@@ -458,6 +481,7 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
     } catch (e) {
       if (id !== runId) return;
       trays = [];
+      if (e.relay) { pending = true; setStatus(t(e.relay === 'quota' ? 'quotaOut' : 'relayOff'), true); openSheet(); return; }
       setStatus(e instanceof HttpErr ? (e.status ? t('errHttp', { s: e.status, m: e.message }) : t('errNet')) : t('errParse', { r: e.reason || '?' }), true);
     } finally {
       if (id === runId) { clearInterval(ticker); busy = false; setBusy(false); render(); }
