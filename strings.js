@@ -4,7 +4,7 @@
    不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。
    改了这个文件：GS_VERSION 往上加，三页里 <script src="…strings.js?v=…"> 的 v 改成一样的——
    GitHub 的 CDN 把同一个网址缓存 10 分钟，不换网址的话，刚上线那几分钟新页面会配上旧字，满屏 count.xxx。 */
-window.GS_VERSION = '0.4.0';
+window.GS_VERSION = '0.4.1';
 window.GS_STRINGS = {
   en: {
     htmlLang: 'en',
@@ -116,7 +116,7 @@ window.GS_STRINGS = {
       key2: 'Key 2 (spare, used when 1 runs dry)',
       keyPh: 'AIza… or AQ.…',
       model: 'Model',
-      modelAuto: 'Auto: Pro first, Flash when Pro runs out',
+      modelAuto: 'Auto: 3.8 Flash first, 3.5 Flash-Lite when it runs out',
       settings: 'Settings',
       done: 'Done',
       cancel: 'Cancel',
@@ -297,7 +297,7 @@ window.GS_STRINGS = {
       key2: '钥匙 2（备胎，1 号用完自动换）',
       keyPh: 'AIza… 或 AQ.…',
       model: '模型',
-      modelAuto: '自动：先 Pro，额度没了换 Flash',
+      modelAuto: '自动：先 3.8 Flash，额度没了换 3.5 Flash-Lite',
       settings: '设置',
       done: '好了',
       cancel: '取消',

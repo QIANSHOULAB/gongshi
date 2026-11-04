@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#120d3c">
 <title>Tiejian · Part Counter</title>
 <meta name="description" content="Snap a tray of parts and get the count.">
-<script src="../strings.js?v=0.4.0"></script>
+<script src="../strings.js?v=0.4.1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap">
@@ -457,9 +457,8 @@ html[lang="en"] .cap { font-family: "Bungee", Impact, sans-serif; font-size: 15p
     <label class="field"><span data-i18n="count.model"></span>
       <select id="model">
         <option value="auto" data-i18n="count.modelAuto"></option>
-        <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-        <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+        <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+        <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
       </select></label>
     <p class="note" data-i18n="count.keyNote"></p>
     <div class="sheet-acts">
@@ -482,6 +481,7 @@ html[lang="en"] .cap { font-family: "Bungee", Impact, sans-serif; font-size: 15p
   const CFG_KEY = 'tiejian.cfg';
   let cfg = { k1: '', k2: '', model: 'auto' };
   try { Object.assign(cfg, JSON.parse(localStorage.getItem(CFG_KEY) || '{}')); } catch (e) {}
+  if (!['auto', ...['gemini-3.8-flash', 'gemini-3.5-flash-lite']].includes(cfg.model)) cfg.model = 'auto';   // 以前存过 2.5 的回到自动
   const saveCfg = () => { try { localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); } catch (e) {} };
   const keys = () => [cfg.k1, cfg.k2].map(s => (s || '').trim()).filter(Boolean);
   const KEY_RE = /^(AIza[\w-]{30,}|AQ\.[\w.-]{20,})$/;
@@ -632,6 +632,11 @@ html[lang="en"] .cap { font-family: "Bungee", Impact, sans-serif; font-size: 15p
 
   class HttpErr extends Error { constructor(s, m) { super(m); this.status = s; } }
 
+  // 只用 Gemini 3（Song 11-04：2.5 直接不要，新钥匙也用不了）。Gemini 3 起不发 temperature
+  const AUTO_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];   // 先准的，额度没了换免费额度大的
+  const NEXT = new Set([429, 500, 503, 403, 404]);                       // 额度没了、谷歌忙、这把钥匙用不了这个模型：换
+  const genConfig = () => ({ responseMimeType: 'application/json', responseSchema: SCHEMA });
+
   async function ask(model, key) {
     const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
     const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 240000);
@@ -641,7 +646,7 @@ html[lang="en"] .cap { font-family: "Bungee", Impact, sans-serif; font-size: 15p
         method: 'POST', signal: ac.signal, headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ inline_data: { mime_type: 'image/jpeg', data: jpeg64 } }, { text: PROMPT }] }],
-          generationConfig: { responseMimeType: 'application/json', responseSchema: SCHEMA, maxOutputTokens: 32768 }
+          generationConfig: genConfig(model)
         })
       });
     } catch (e) { throw new HttpErr(0, ''); }
@@ -681,13 +686,13 @@ html[lang="en"] .cap { font-family: "Bungee", Impact, sans-serif; font-size: 15p
   async function askChain() {
     const ks = keys();
     if (!ks.length) return askRelay();
-    const models = cfg.model === 'auto' ? ['gemini-2.5-pro', 'gemini-2.5-flash'] : [cfg.model];
+    const models = cfg.model === 'auto' || !cfg.model ? AUTO_MODELS : [cfg.model];
     let last;
     for (const m of models) for (const k of ks) {
       try { const r = await ask(m, k); usedModel = m; return r; }
       catch (e) {
         last = e;
-        if (e instanceof HttpErr && (e.status === 429 || e.status === 503 || e.status === 500)) continue;   // 额度没了 / 忙：换钥匙、换模型
+        if (e instanceof HttpErr && NEXT.has(e.status)) continue;
         throw e;
       }
     }

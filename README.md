@@ -2,7 +2,7 @@
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
-三个车间小工具，页面顶上一点就互相切换。版本 0.4.0。
+三个车间小工具，页面顶上一点就互相切换。版本 0.4.1。
 
 打开：https://qianshoulab.github.io/gongshi/
 
@@ -48,6 +48,6 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 - 每盒旁边有「不算 / 也算上」，判错了自己翻
 - 照片上每个数到的件盖一个糖果圆点：点圆点删掉，点漏掉的件补一个，数字跟着变，右边标「手改 +n −n」
 - 存图：照片 + 圆点 + 底下一条海报数字和时间，手机上直接弹分享（存相册）
-- 数数的是谷歌 Gemini。不填钥匙：走 Song 的中转站（QIANSHOULAB/luruseng-relay 的 /count，钥匙锁在 Cloudflare Secret），大伙共用每天的免费额度；额度吃干了弹出钥匙抽屉，贴自己的钥匙接着数
-- 自己的钥匙存在手机上，网址 ?key= 带过去；默认先 Pro，额度用完自动换 Flash，钥匙 2 是备胎；出错原样显示谷歌回的 HTTP 状态和 message
+- 数数的是谷歌 Gemini。不填钥匙：走 Song 的中转站（QIANSHOULAB/luruseng-relay 的 /count，钥匙锁在 Cloudflare Secret；先 gemini-3.8-flash，额度没了换 gemini-3.5-flash-lite），大伙共用每天的免费额度；额度吃干了弹出钥匙抽屉，贴自己的钥匙接着数
+- 自己的钥匙存在手机上，网址 ?key= 带过去；默认先 gemini-3.8-flash，额度没了或这把钥匙用不了就换 gemini-3.5-flash-lite；不用 2.5（新钥匙用不了），钥匙 2 是备胎；出错原样显示谷歌回的 HTTP 状态和 message
 - 照片发给谷歌去数，本页不存
