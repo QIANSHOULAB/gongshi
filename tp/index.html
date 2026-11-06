@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Hole Shift</title>
-<meta name="description" content="Bolt-circle radius plus the angle error from the CMM report. Out comes how far the hole slid along the circle, in millimeters.">
-<script src="../strings.js?v=0.5.1"></script>
+<meta name="description" content="Bolt-circle radius plus the angle error from the CMM report. Out comes how far the hole center moved, in millimeters.">
+<script src="../strings.js?v=0.5.2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
@@ -161,7 +161,7 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
       lineEl.textContent = GS.t(!rOk && r != null ? 'tp.badR' : Number.isNaN(a) ? 'tp.badA' : 'tp.need');
       return;
     }
-    const d = r * Math.abs(a) * RAD;
+    const d = 2 * r * Math.sin(Math.abs(a) * RAD / 2);   // 孔心从理论位置到实际位置走的是直线（弦），不是圆弧
     outEl.textContent = fmt(d, 3);
     lineEl.innerHTML = GS.t('tp.result', { r: r, a: Math.abs(a), tp: fmt(d * 2, 3) });
   }

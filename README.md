@@ -2,7 +2,7 @@
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
-三个车间小工具，页面顶上一点就互相切换。版本 0.5.1。
+三个车间小工具，页面顶上一点就互相切换。版本 0.5.2。
 
 打开：https://qianshoulab.github.io/gongshi/
 
@@ -40,7 +40,7 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 
 打开：https://qianshoulab.github.io/gongshi/tp/
 
-填分布圆半径 R 和 CMM 报告上 PA 偏的度数，算孔沿圆周挪了几毫米：R × 度数 × π ÷ 180（负号只表示方向，算距离取绝对值）。顺带给出「半径没偏时 TP ≈ 2 × 挪的距离」、这个半径上 1° 等于几毫米，页面底下列着公式：TP ÷ 2 是孔心总偏移，√((TP÷2)² − 圆周偏移²) 是半径方向偏了多少。
+填分布圆半径 R 和 CMM 报告上 PA 偏的度数，算孔心挪了几毫米：按直线（弦）算，2R × sin(度数 ÷ 2)；偏零点几度时跟弧长 R × 度数 × π ÷ 180 差不到 0.001 毫米（负号只表示方向，算距离取绝对值）。顺带给出「半径没偏时 TP ≈ 2 × 挪的距离」、这个半径上 1° 等于几毫米，页面底下列着公式：TP ÷ 2 是孔心总偏移，√((TP÷2)² − 直线偏移²) 是半径方向偏了多少。
 
 ## 铁件点钞机（已下架）
 

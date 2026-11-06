@@ -4,7 +4,7 @@
    不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。
    改了这个文件：GS_VERSION 往上加，三页里 <script src="…strings.js?v=…"> 的 v 改成一样的——
    GitHub 的 CDN 把同一个网址缓存 10 分钟，不换网址的话，刚上线那几分钟新页面会配上旧字，满屏 count.xxx。 */
-window.GS_VERSION = '0.5.1';
+window.GS_VERSION = '0.5.2';
 window.GS_STRINGS = {
   en: {
     htmlLang: 'en',
@@ -134,7 +134,7 @@ window.GS_STRINGS = {
     },
     tp: {
       docTitle: 'Hole Shift',
-      metaDesc: 'Bolt-circle radius plus the angle error from the CMM report. Out comes how far the hole slid along the circle, in millimeters.',
+      metaDesc: 'Bolt-circle radius plus the angle error from the CMM report. Out comes how far the hole center moved, in millimeters.',
       h1: 'Hole Shift',
       sub: 'The report swears it’s only 0.4°. Sounds harmless.<br>In millimeters, the truth comes out.',
       cardLabel: 'Radius and angle error',
@@ -142,16 +142,16 @@ window.GS_STRINGS = {
       rHint: 'Part center to hole center',
       a: 'Angle off by',
       aHint: 'PA DEV on the CMM report',
-      bandLabel: 'Hole slid along the circle',
+      bandLabel: 'Hole center moved',
       chip: 'Example',
       need: 'Enter a radius and an angle.',
       badR: 'Radius has to be a positive number.',
       badA: 'Can’t read the angle. Digits only, like 0.4175 or -1.3762.',
       result: '{a}° on R{r} · TP about <b>{tp}</b> if the radius is right',
       fTitle: 'The math',
-      f1: 'Shift along the circle',
-      f1c: 'R × degrees × π ÷ 180',
-      f1w: 'π ÷ 180 turns degrees into radians. Skip it and the answer is 57 times too big.',
+      f1: 'Straight-line shift',
+      f1c: '2R × sin(degrees ÷ 2)',
+      f1w: 'The center moves in a straight line, not along the arc. At a fraction of a degree it equals R × degrees × π ÷ 180 to within 0.001 mm (π ÷ 180 turns degrees into radians).',
       f2: '1° on this radius',
       f2c: '1° ≈ {v} mm',
       f2w: 'Shortcut: degrees × this number.',
@@ -349,7 +349,7 @@ window.GS_STRINGS = {
     },
     tp: {
       docTitle: '孔位测谎仪',
-      metaDesc: '填分布圆半径和 CMM 报告上偏的角度，算出孔沿圆周挪了几毫米。',
+      metaDesc: '填分布圆半径和 CMM 报告上偏的角度，算出孔心挪了几毫米。',
       h1: '孔位测谎仪',
       sub: '报告说只歪了零点几度，听着不多。<br>换成毫米，当场露馅。',
       cardLabel: '半径和偏的角度',
@@ -357,16 +357,16 @@ window.GS_STRINGS = {
       rHint: '工件中心到孔中心',
       a: '角度偏了',
       aHint: 'CMM 报告 PA 那行的 DEV',
-      bandLabel: '孔沿圆周挪了',
+      bandLabel: '孔心挪了',
       chip: '例子',
       need: '填半径和角度。',
       badR: '半径得是正数。',
       badA: '角度认不出来，只填数字，比如 0.4175、-1.3762。',
       result: 'R{r} 上偏 {a}° · 半径没偏的话，TP 约 <b>{tp}</b>',
       fTitle: '公式',
-      f1: '沿圆周挪的距离',
-      f1c: 'R × 度数 × π ÷ 180',
-      f1w: 'π ÷ 180 是把度换成弧度。漏了它，答案大 57 倍。',
+      f1: '孔心直线挪的距离',
+      f1c: '2R × sin(度数 ÷ 2)',
+      f1w: '孔心走的是直线，不是圆弧。只偏零点几度时，跟 R × 度数 × π ÷ 180 差不到 0.001 毫米（π ÷ 180 是把度换成弧度）。',
       f2: '这个半径上转 1°',
       f2c: '1° ≈ {v} mm',
       f2w: '偷懒算法：度数 × 这个数。',
@@ -374,7 +374,7 @@ window.GS_STRINGS = {
       f3c: 'TP ÷ 2',
       f3w: '报告上的 TP 是公差圆的直径，除以 2 才是孔心实际跑了多远。',
       f4: '半径偏没偏',
-      f4c: '√((TP ÷ 2)² − 圆周偏移²)',
+      f4c: '√((TP ÷ 2)² − 直线偏移²)',
       f4w: 'TP ÷ 2 跟上面算的差不多，半径就没偏；差出来的那截，就是孔往里或往外跑的量。'
     },
     inch: {
