@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Hole Shift</title>
 <meta name="description" content="Bolt-circle radius plus the angle error from the CMM report. Out comes how far the hole center moved, in millimeters.">
-<script src="../strings.js?v=0.5.3"></script>
+<script src="../strings.js?v=0.5.4"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
@@ -149,20 +149,25 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
     <figure>
       <svg viewBox="0 0 300 190" role="img" data-i18n-attr="aria-label:tp.diagCap">
         <path d="M30 170L255 122.2M30 170L220.7 41.4" stroke="#5c6a7d" stroke-width="1.5" fill="none"/>
-        <path d="M255 122.2A230 230 0 0 0 220.7 41.4" stroke="#9aa7b8" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+        <path d="M220.7 41.4H255V122.2" stroke="#f08a5d" stroke-width="1.6" stroke-dasharray="5 4" fill="none"/>
+        <path d="M247 41.4V49.4H255" stroke="#f08a5d" stroke-width="1.2" fill="none"/>
+        <path d="M255 122.2A230 230 0 0 0 220.7 41.4" stroke="#9aa7b8" stroke-width="1.2" stroke-dasharray="1.5 3" fill="none"/>
         <path d="M255 122.2L220.7 41.4" stroke="#86aee6" stroke-width="2.5" stroke-linecap="round" fill="none"/>
         <path d="M69.1 161.7A40 40 0 0 0 63.2 147.6" stroke="#e0b25a" stroke-width="1.5" fill="none"/>
         <circle cx="30" cy="170" r="3.5" fill="#e5eaf1"/>
+        <circle cx="255" cy="41.4" r="2.5" fill="#f08a5d"/>
         <circle cx="255" cy="122.2" r="5" fill="#0e141c" stroke="#e5eaf1" stroke-width="1.5"/>
         <circle cx="220.7" cy="41.4" r="5" fill="#86aee6"/>
         <text x="16" y="186">O</text>
         <text x="264" y="128">A</text>
-        <text x="228" y="34">B</text>
+        <text x="211" y="38" text-anchor="end">B</text>
+        <text x="262" y="38">C</text>
         <text x="138" y="162" class="soft">R</text>
         <text x="122" y="104" class="soft">R</text>
         <text x="78" y="152" style="fill:#e0b25a">Δθ</text>
-        <text x="227" y="94" text-anchor="end" class="hot" data-i18n="tp.diagChord"></text>
-        <text x="252" y="74" class="soft" data-i18n="tp.diagArc"></text>
+        <text x="238" y="32" text-anchor="middle" style="fill:#f08a5d">X</text>
+        <text x="263" y="86" style="fill:#f08a5d">Y</text>
+        <text x="227" y="96" text-anchor="end" class="hot" data-i18n="tp.diagChord"></text>
       </svg>
       <figcaption data-i18n="tp.diagCap"></figcaption>
     </figure>
