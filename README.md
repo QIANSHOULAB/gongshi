@@ -2,7 +2,7 @@
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
-三个车间小工具，页面顶上一点就互相切换。版本 0.5.2。
+三个车间小工具，页面顶上一点就互相切换。版本 0.5.3。
 
 打开：https://qianshoulab.github.io/gongshi/
 
@@ -40,7 +40,7 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 
 打开：https://qianshoulab.github.io/gongshi/tp/
 
-填分布圆半径 R 和 CMM 报告上 PA 偏的度数，算孔心挪了几毫米：按直线（弦）算，2R × sin(度数 ÷ 2)；偏零点几度时跟弧长 R × 度数 × π ÷ 180 差不到 0.001 毫米（负号只表示方向，算距离取绝对值）。顺带给出「半径没偏时 TP ≈ 2 × 挪的距离」、这个半径上 1° 等于几毫米，页面底下列着公式：TP ÷ 2 是孔心总偏移，√((TP÷2)² − 直线偏移²) 是半径方向偏了多少。
+填分布圆半径 R 和 CMM 报告上 PA 偏的度数，算孔心挪了几毫米：按直线（弦）算，2R × sin(度数 ÷ 2)；偏零点几度时跟弧长 R × 度数 × π ÷ 180 差不到 0.001 毫米（负号只表示方向，算距离取绝对值）。顺带给出「半径没偏时 TP ≈ 2 × 挪的距离」、这个半径上 1° 等于几毫米，页面底下列着公式：TP ÷ 2 是孔心总偏移，√((TP÷2)² − 直线偏移²) 是半径方向偏了多少。最底下「原理，说人话版」：一张示意图（工件中心 O、理论孔位 A、实测孔位 B），六小段讲清为什么是三角形、为什么走直线、度怎么换弧度、TP 为什么除以 2、勾股定理怎么判断半径偏没偏、直线偏移怎么分到 X 和 Y。
 
 ## 铁件点钞机（已下架）
 

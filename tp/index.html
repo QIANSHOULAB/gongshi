@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Hole Shift</title>
 <meta name="description" content="Bolt-circle radius plus the angle error from the CMM report. Out comes how far the hole center moved, in millimeters.">
-<script src="../strings.js?v=0.5.2"></script>
+<script src="../strings.js?v=0.5.3"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
@@ -79,6 +79,20 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
 .formulas dd { margin: 3px 0 0; }
 .formulas code { font-family: var(--font-num); font-size: 21px; font-weight: 700; letter-spacing: .01em; color: var(--accent); }
 .formulas .why { display: block; margin-top: 2px; font-size: 13px; color: var(--muted); }
+
+.math { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 6px; }
+.math h2 { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: var(--muted); }
+.math figure { margin: 0 0 4px; }
+.math svg { display: block; width: 100%; height: auto; }
+.math svg text { font-family: var(--font-ui); font-size: 13px; font-weight: 700; fill: var(--ink); }
+.math svg .soft { fill: var(--muted); font-weight: 600; }
+.math svg .hot { fill: var(--accent); }
+.math figcaption { font-size: 12.5px; color: var(--muted); text-align: center; }
+.math dl { margin: 0; }
+.math .m { padding-block: 10px; border-top: 1px solid var(--line); }
+.math .m:first-of-type { border-top: 0; }
+.math dt { font-size: 14px; font-weight: 700; }
+.math dd { margin: 3px 0 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -127,6 +141,38 @@ button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparen
       <div class="f"><dt data-i18n="tp.f2"></dt><dd><code id="perDeg"></code><span class="why" data-i18n="tp.f2w"></span></dd></div>
       <div class="f"><dt data-i18n="tp.f3"></dt><dd><code data-i18n="tp.f3c"></code><span class="why" data-i18n="tp.f3w"></span></dd></div>
       <div class="f"><dt data-i18n="tp.f4"></dt><dd><code data-i18n="tp.f4c"></code><span class="why" data-i18n="tp.f4w"></span></dd></div>
+    </dl>
+  </section>
+
+  <section class="math">
+    <h2 data-i18n="tp.mTitle"></h2>
+    <figure>
+      <svg viewBox="0 0 300 190" role="img" data-i18n-attr="aria-label:tp.diagCap">
+        <path d="M30 170L255 122.2M30 170L220.7 41.4" stroke="#5c6a7d" stroke-width="1.5" fill="none"/>
+        <path d="M255 122.2A230 230 0 0 0 220.7 41.4" stroke="#9aa7b8" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+        <path d="M255 122.2L220.7 41.4" stroke="#86aee6" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M69.1 161.7A40 40 0 0 0 63.2 147.6" stroke="#e0b25a" stroke-width="1.5" fill="none"/>
+        <circle cx="30" cy="170" r="3.5" fill="#e5eaf1"/>
+        <circle cx="255" cy="122.2" r="5" fill="#0e141c" stroke="#e5eaf1" stroke-width="1.5"/>
+        <circle cx="220.7" cy="41.4" r="5" fill="#86aee6"/>
+        <text x="16" y="186">O</text>
+        <text x="264" y="128">A</text>
+        <text x="228" y="34">B</text>
+        <text x="138" y="162" class="soft">R</text>
+        <text x="122" y="104" class="soft">R</text>
+        <text x="78" y="152" style="fill:#e0b25a">Δθ</text>
+        <text x="227" y="94" text-anchor="end" class="hot" data-i18n="tp.diagChord"></text>
+        <text x="252" y="74" class="soft" data-i18n="tp.diagArc"></text>
+      </svg>
+      <figcaption data-i18n="tp.diagCap"></figcaption>
+    </figure>
+    <dl>
+      <div class="m"><dt data-i18n="tp.m1h"></dt><dd data-i18n="tp.m1"></dd></div>
+      <div class="m"><dt data-i18n="tp.m2h"></dt><dd data-i18n="tp.m2"></dd></div>
+      <div class="m"><dt data-i18n="tp.m3h"></dt><dd data-i18n="tp.m3"></dd></div>
+      <div class="m"><dt data-i18n="tp.m4h"></dt><dd data-i18n="tp.m4"></dd></div>
+      <div class="m"><dt data-i18n="tp.m5h"></dt><dd data-i18n="tp.m5"></dd></div>
+      <div class="m"><dt data-i18n="tp.m6h"></dt><dd data-i18n="tp.m6"></dd></div>
     </dl>
   </section>
 </main>
