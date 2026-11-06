@@ -1,4 +1,4 @@
-// 车间小工具的离线看门狗（工时榨汁机 + 英寸照妖镜 + 铁件点钞机）：页面先上网拿新的，断网就用存下的；
+// 车间小工具的离线看门狗（工时榨汁机 + 英寸照妖镜）：页面先上网拿新的，断网就用存下的；
 // 照妖镜的识字模型和运行库存一次用到底。
 const PAGES = 'gongshi-pages-v4';
 const ASSETS = 'inch-mirror-assets-v1';
@@ -8,7 +8,7 @@ const TEXT = /\/strings\.js$/;                    // 两页共用的中英文字
 self.addEventListener('install', e => {
   self.skipWaiting();
   // 两张页面和它们的字先存一份：第一次打开以后，断网也进得去
-  e.waitUntil(caches.open(PAGES).then(c => Promise.all(['./', './inch/', './count/', './strings.js'].map(u => {
+  e.waitUntil(caches.open(PAGES).then(c => Promise.all(['./', './inch/', './strings.js'].map(u => {
     const url = new URL(u, self.location).href;
     return fetch(url).then(r => r.ok && c.put(url, r)).catch(() => {});
   }))));
