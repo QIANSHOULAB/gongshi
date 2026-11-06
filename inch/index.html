@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Yingcun · Inch Converter</title>
 <meta name="description" content="Snap an inspection sheet. Sizes, tolerances and control limits flip between inches and millimeters, written in red right on the photo. Runs on your phone; the photo never leaves it.">
-<script src="../strings.js?v=0.5.0"></script>
+<script src="../strings.js?v=0.5.1"></script>
 <meta name="theme-color" content="#0e141c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,7 +58,7 @@ a { -webkit-tap-highlight-color: transparent; }
 /* 三个工具：窄屏上 EN/中文 单占一行靠右，三个标签整行平分 */
 @media (max-width: 719px) { .top { flex-wrap: wrap; } .top .tabs { order: 2; flex-basis: 100%; } .top .lang { margin-left: auto; } .tabs a { font-size: 13.5px; } }
 .tabs {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 3px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 3px;
   background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
 }
 .tabs a {
@@ -297,6 +297,7 @@ html[lang="en"] .face-label { letter-spacing: .02em; margin-left: 0; }
     <nav class="tabs" data-i18n-attr="aria-label:common.tabsLabel">
       <a href="../" data-i18n="common.tabCo"></a>
       <a href="./" aria-current="page" data-i18n="common.tabInch"></a>
+      <a href="../tp/" data-i18n="common.tabTp"></a>
     </nav>
     <div class="lang" role="group" data-i18n-attr="aria-label:common.langLabel">
       <button type="button" data-l="en" lang="en">EN</button>

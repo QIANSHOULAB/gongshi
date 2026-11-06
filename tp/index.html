@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en" data-page="tp">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hole Shift</title>
+<meta name="description" content="Bolt-circle radius plus the angle error from the CMM report. Out comes how far the hole slid along the circle, in millimeters.">
+<script src="../strings.js?v=0.5.1"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<style>
+/* 孔位测谎仪：跟工时榨汁机同一套深色工单样子。两个输入、一条答案带、一张公式表。 */
+:root {
+  --bg: #0e141c; --surface: #172030; --ink: #e5eaf1; --muted: #9aa7b8; --faint: #5c6a7d;
+  --line: #273347; --field-line: #3a4a60; --accent: #86aee6; --band: #1f3556; --band-ink: #f2f5f9;
+  --band-muted: #a9bbd3; --warn: #f08a5d; --focus: #86aee6;
+  --font-num: "Barlow Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+html[lang="en"] { --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", system-ui, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", Roboto, sans-serif; }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; font-weight: 500; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 14px 32px; -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 440px; margin: 0 auto; display: grid; gap: 14px; }
+.top { display: flex; align-items: center; gap: 8px; }
+.top .tabs { flex: 1; min-width: 0; }
+@media (max-width: 719px) { .top { flex-wrap: wrap; } .top .tabs { order: 2; flex-basis: 100%; } .top .lang { margin-left: auto; } .tabs a { font-size: 13.5px; } }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 3px; background: var(--surface); border: 1px solid var(--line); border-radius: 11px; }
+.tabs a { height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--muted); font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.tabs a[aria-current="page"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.tabs a:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.lang { flex: none; display: flex; gap: 2px; padding: 3px; background: var(--surface); border: 1px solid var(--line); border-radius: 11px; }
+.lang button { position: relative; min-width: 44px; height: 34px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.lang button::after { content: ""; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }
+.lang button[aria-pressed="true"] { background: var(--band); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.35); }
+@media (min-width: 720px) { .lang { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); } }
+button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.head h1 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 700; }
+.sub { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 2px 14px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 172px; align-items: center; gap: 12px; padding-block: 12px; border-bottom: 1px solid var(--line); }
+.row:last-child { border-bottom: 0; }
+.lab { font-size: 16px; font-weight: 700; line-height: 1.25; }
+.hint { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+.field { position: relative; }
+.num {
+  width: 100%; height: 54px; padding: 0 46px 0 10px; font-family: var(--font-num); font-size: 30px; font-weight: 700;
+  font-variant-numeric: tabular-nums; color: var(--ink); background: var(--surface); border: 1px solid var(--field-line);
+  border-radius: 8px; text-align: right; -webkit-appearance: none; appearance: none;
+}
+.num::placeholder { color: var(--faint); }
+.num:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.num[aria-invalid="true"] { border-color: var(--warn); outline-color: var(--warn); }
+.suffix { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 15px; font-weight: 700; pointer-events: none; }
+
+.band { background: var(--band); color: var(--band-ink); border-radius: 12px; padding: 14px 16px 16px; }
+.band-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.band-lab { font-size: 14px; font-weight: 700; }
+.chip { font-size: 12px; font-weight: 700; line-height: 1; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--band-muted); color: var(--band-muted); }
+.big { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
+#out { font-family: var(--font-num); font-size: 76px; font-weight: 800; line-height: .95; letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+.unit { font-size: 16px; font-weight: 700; color: var(--band-muted); }
+.line { margin: 8px 0 0; font-size: 15px; color: var(--band-muted); }
+.line b { color: var(--band-ink); font-weight: 700; }
+
+.formulas { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 4px; }
+.formulas h2 { margin: 0 0 4px; font-size: 14px; font-weight: 700; color: var(--muted); }
+.formulas dl { margin: 0; }
+.formulas .f { padding-block: 10px; border-top: 1px solid var(--line); }
+.formulas .f:first-of-type { border-top: 0; }
+.formulas dt { font-size: 14px; font-weight: 700; }
+.formulas dd { margin: 3px 0 0; }
+.formulas code { font-family: var(--font-num); font-size: 21px; font-weight: 700; letter-spacing: .01em; color: var(--accent); }
+.formulas .why { display: block; margin-top: 2px; font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <nav class="tabs" data-i18n-attr="aria-label:common.tabsLabel">
+      <a href="../" data-i18n="common.tabCo"></a>
+      <a href="../inch/" data-i18n="common.tabInch"></a>
+      <a href="./" aria-current="page" data-i18n="common.tabTp"></a>
+    </nav>
+    <div class="lang" role="group" data-i18n-attr="aria-label:common.langLabel">
+      <button type="button" data-l="en" lang="en">EN</button>
+      <button type="button" data-l="zh" lang="zh-CN">中文</button>
+    </div>
+  </div>
+
+  <header class="head">
+    <h1 data-i18n="tp.h1"></h1>
+    <p class="sub" data-i18n-html="tp.sub"></p>
+  </header>
+
+  <section class="card" data-i18n-attr="aria-label:tp.cardLabel">
+    <div class="row">
+      <label class="lab" for="r"><span data-i18n="tp.r"></span><span class="hint" data-i18n="tp.rHint"></span></label>
+      <div class="field"><input class="num" id="r" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="16" enterkeyhint="next"><span class="suffix">mm</span></div>
+    </div>
+    <div class="row">
+      <label class="lab" for="a"><span data-i18n="tp.a"></span><span class="hint" data-i18n="tp.aHint"></span></label>
+      <div class="field"><input class="num" id="a" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="0.4175" enterkeyhint="done"><span class="suffix">°</span></div>
+    </div>
+  </section>
+
+  <section class="band" aria-live="polite">
+    <div class="band-top">
+      <span class="band-lab" data-i18n="tp.bandLabel"></span>
+      <span class="chip" id="chip" hidden data-i18n="tp.chip"></span>
+    </div>
+    <div class="big"><span id="out">—</span><span class="unit">mm</span></div>
+    <p class="line" id="line"></p>
+  </section>
+
+  <section class="formulas">
+    <h2 data-i18n="tp.fTitle"></h2>
+    <dl>
+      <div class="f"><dt data-i18n="tp.f1"></dt><dd><code data-i18n="tp.f1c"></code><span class="why" data-i18n="tp.f1w"></span></dd></div>
+      <div class="f"><dt data-i18n="tp.f2"></dt><dd><code id="perDeg"></code><span class="why" data-i18n="tp.f2w"></span></dd></div>
+      <div class="f"><dt data-i18n="tp.f3"></dt><dd><code data-i18n="tp.f3c"></code><span class="why" data-i18n="tp.f3w"></span></dd></div>
+      <div class="f"><dt data-i18n="tp.f4"></dt><dd><code data-i18n="tp.f4c"></code><span class="why" data-i18n="tp.f4w"></span></dd></div>
+    </dl>
+  </section>
+</main>
+
+<script>
+(() => {
+  const GS = window.GS;
+  GS.init();
+  const rEl = document.getElementById('r'), aEl = document.getElementById('a');
+  const outEl = document.getElementById('out'), lineEl = document.getElementById('line');
+  const chipEl = document.getElementById('chip'), perDegEl = document.getElementById('perDeg');
+  const KEY = 'gongshi.tp';
+  const RAD = Math.PI / 180;
+  let example = false;
+
+  // 只认数字：允许负号、逗号当小数点（报告里的 DEV 常带负号，算距离只看大小）
+  const read = el => {
+    const s = el.value.trim().replace(',', '.');
+    if (!s) return null;
+    return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(s) ? parseFloat(s) : NaN;
+  };
+  const fmt = (x, d) => x.toFixed(d);
+
+  function render() {
+    const r = read(rEl), a = read(aEl);
+    rEl.setAttribute('aria-invalid', String(Number.isNaN(r) || (r != null && r <= 0)));
+    aEl.setAttribute('aria-invalid', String(Number.isNaN(a)));
+    const rOk = r != null && !Number.isNaN(r) && r > 0;
+    perDegEl.textContent = GS.t('tp.f2c', { v: rOk ? fmt(r * RAD, 4) : 'R × 0.01745' });
+    if (!rOk || a == null || Number.isNaN(a)) {
+      outEl.textContent = '—';
+      lineEl.textContent = GS.t(!rOk && r != null ? 'tp.badR' : Number.isNaN(a) ? 'tp.badA' : 'tp.need');
+      return;
+    }
+    const d = r * Math.abs(a) * RAD;
+    outEl.textContent = fmt(d, 3);
+    lineEl.innerHTML = GS.t('tp.result', { r: r, a: Math.abs(a), tp: fmt(d * 2, 3) });
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ r: rEl.value, a: aEl.value })); } catch (e) {} }
+  function edit() { if (example) { example = false; chipEl.hidden = true; } render(); save(); }
+
+  [rEl, aEl].forEach(el => {
+    el.addEventListener('input', edit);
+    el.addEventListener('focus', () => { if (example) { el.select(); } });
+  });
+  aEl.addEventListener('keydown', e => { if (e.key === 'Enter') aEl.blur(); });
+  rEl.addEventListener('keydown', e => { if (e.key === 'Enter') aEl.focus(); });
+  window.addEventListener('gs:lang', render);
+
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  if (saved && (saved.r || saved.a)) { rEl.value = saved.r || ''; aEl.value = saved.a || ''; }
+  else { rEl.value = '16'; aEl.value = '0.4175'; example = true; chipEl.hidden = false; }
+  render();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>

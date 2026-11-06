@@ -2,7 +2,7 @@
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
-三个车间小工具，页面顶上一点就互相切换。版本 0.5.0。
+三个车间小工具，页面顶上一点就互相切换。版本 0.5.1。
 
 打开：https://qianshoulab.github.io/gongshi/
 
@@ -35,6 +35,12 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 - 识字全在手机本地跑，照片不上传；第一次打开下载约 30 MB 识字模型，之后断网也能用
 
 用到的东西：PaddleOCR PP-OCRv4 识字模型（Apache-2.0，ONNX 版来自 RapidOCR）、onnxruntime-web 1.31.1（MIT）。
+
+## 孔位测谎仪
+
+打开：https://qianshoulab.github.io/gongshi/tp/
+
+填分布圆半径 R 和 CMM 报告上 PA 偏的度数，算孔沿圆周挪了几毫米：R × 度数 × π ÷ 180（负号只表示方向，算距离取绝对值）。顺带给出「半径没偏时 TP ≈ 2 × 挪的距离」、这个半径上 1° 等于几毫米，页面底下列着公式：TP ÷ 2 是孔心总偏移，√((TP÷2)² − 圆周偏移²) 是半径方向偏了多少。
 
 ## 铁件点钞机（已下架）
 
