@@ -4,7 +4,7 @@
    不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。
    改了这个文件：GS_VERSION 往上加，三页里 <script src="…strings.js?v=…"> 的 v 改成一样的——
    GitHub 的 CDN 把同一个网址缓存 10 分钟，不换网址的话，刚上线那几分钟新页面会配上旧字，满屏 count.xxx。 */
-window.GS_VERSION = '0.5.4';
+window.GS_VERSION = '0.5.3';
 window.GS_STRINGS = {
   en: {
     htmlLang: 'en',
@@ -162,20 +162,21 @@ window.GS_STRINGS = {
       f4c: '√((TP ÷ 2)² − shift²)',
       f4w: 'If TP ÷ 2 matches the shift above, the radius is fine. Whatever is left over is how far the hole moved in or out.',
       mTitle: 'The math, in plain words',
-      diagChord: 'AB straight',
-      diagCap: 'O part center · A nominal · B actual · dotted gray = arc · BC is X, CA is Y (angle drawn way bigger than life)',
+      diagChord: 'straight',
+      diagArc: 'arc',
+      diagCap: 'O part center · A nominal hole · B actual hole (angle drawn way bigger than life)',
       m1h: 'Why a triangle',
       m1: 'The hole rotated around the part center. Connect center O, nominal hole A and actual hole B and you get a triangle with two sides of R. The tip angle is the angle error.',
-      m2h: 'How far the center moved: AB',
-      m2: 'The hole ended up at B. How far that is from where it belongs, A, is the straight line AB = 2R × sin(angle ÷ 2), not the arc. At small angles the two are the same length, and arc = R × radians.',
+      m2h: 'The center moves in a straight line',
+      m2: 'A to B is the base of that triangle, not the arc: base = 2R × sin(angle ÷ 2). At small angles it is as long as the arc, and arc = R × radians.',
       m3h: 'Degrees to radians',
       m3: 'One full turn is 360°, or 2π radians. So 1° = π ÷ 180 ≈ 0.01745.',
       m4h: 'Why TP gets halved',
-      m4: 'TP is the diameter of the tolerance zone, which is twice AB. Halve it to get how far the center moved.',
+      m4: 'TP is the diameter of the tolerance zone. How far the center actually moved is a radius, so halve it.',
       m5h: 'Pythagoras checks the radius',
       m5: 'The center can only drift along the circle (angle error) or along the radius (radius error), and those two meet at a right angle: (TP ÷ 2)² = shift² + radial drift². If the shift ≈ TP ÷ 2, the radial drift is zero.',
-      m6h: 'On the machine: X is BC, Y is CA',
-      m6: 'AB is the hypotenuse; BC (X) and CA (Y) are the legs, so AB² = BC² + CA². dX = R × (cos actual − cos nominal), dY = R × (sin actual − sin nominal). Fix X and Y together: fix only BC and CA is still off. A hole on the X axis shifts almost all in Y; one on the Y axis, almost all in X.'
+      m6h: 'Splitting it into X and Y',
+      m6: 'AB is the hypotenuse, X and Y are the two legs: dX = R × (cos actual − cos nominal), dY = R × (sin actual − sin nominal). A hole sitting on the X axis moves almost all in Y. A hole on the Y axis moves almost all in X.'
     },
     inch: {
       docTitle: 'Yingcun · Inch Converter',
@@ -392,20 +393,21 @@ window.GS_STRINGS = {
       f4c: '√((TP ÷ 2)² − 直线偏移²)',
       f4w: 'TP ÷ 2 跟上面算的差不多，半径就没偏；差出来的那截，就是孔往里或往外跑的量。',
       mTitle: '原理，说人话版',
-      diagChord: 'AB 直线',
-      diagCap: 'O 工件中心 · A 理论孔位 · B 实测孔位 · 灰点线是圆弧 · BC 是 X，CA 是 Y（角度放大了好多倍画的）',
+      diagChord: '直线',
+      diagArc: '圆弧',
+      diagCap: 'O 工件中心 · A 理论孔位 · B 实测孔位（角度放大了好多倍画的）',
       m1h: '为什么是三角形',
       m1: '孔绕着工件中心转了个角。中心 O、理论孔位 A、实测孔位 B 连起来，是两条腰都等于 R 的等腰三角形，顶上那个角就是偏的度数。',
-      m2h: '孔心偏了多远：AB',
-      m2: '孔最后打在 B，离理论位置 A 有多远，就是 AB 这条直线，不是圆弧：AB = 2R × sin(度数 ÷ 2)。角度小的时候它跟圆弧一样长，圆弧 = R × 弧度。',
+      m2h: '孔心走的是直线',
+      m2: '从 A 到 B 走的是三角形底边，不是圆弧：底边 = 2R × sin(度数 ÷ 2)。角度小的时候它跟圆弧一样长，圆弧 = R × 弧度。',
       m3h: '度怎么变弧度',
       m3: '转一圈是 360°，也是 2π 弧度，所以 1° = π ÷ 180 ≈ 0.01745。',
       m4h: 'TP 为什么除以 2',
-      m4: 'TP 是公差圆的直径，等于 AB 的两倍，所以除以 2 才是孔心偏的距离。',
+      m4: 'TP 是公差圆的直径，孔心实际跑的距离是半径，所以除以 2。',
       m5h: '半径偏没偏，勾股定理说了算',
       m5: '孔心只能沿圆周跑（角度偏）或者沿半径跑（半径偏），这两个方向互相垂直：(TP ÷ 2)² = 直线偏移² + 半径偏移²。算出的直线偏移 ≈ TP ÷ 2，半径偏移就是 0。',
-      m6h: '落到机床：X 是 BC，Y 是 CA',
-      m6: 'AB 是斜边，BC（X）和 CA（Y）是两条直角边，AB² = BC² + CA²。dX = R × (cos 实测角 − cos 理论角)，dY = R × (sin 实测角 − sin 理论角)。改程序 X、Y 要一起改，只改 BC，CA 那截还偏着。孔在 X 轴上几乎全偏 Y，在 Y 轴上几乎全偏 X。'
+      m6h: '落到机床的 X、Y',
+      m6: 'AB 是斜边，X、Y 是两条直角边：dX = R × (cos 实测角 − cos 理论角)，dY = R × (sin 实测角 − sin 理论角)。孔在 X 轴上，偏移几乎全给 Y；孔在 Y 轴上，几乎全给 X。'
     },
     inch: {
       docTitle: '英寸照妖镜',
