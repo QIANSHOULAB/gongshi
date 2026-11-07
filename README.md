@@ -2,7 +2,7 @@
 
 Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcun · Inch Converter（Point it at the sheet. Inches confess in millimeters.）。
 
-三个车间小工具，页面顶上一点就互相切换。版本 0.5.3。
+三个车间小工具，页面顶上一点就互相切换。版本 0.5.5。
 
 打开：https://qianshoulab.github.io/gongshi/
 
@@ -36,7 +36,7 @@ Gongshi · Net Hours（Squeeze out the breaks. Keep the real hours.）和 Yingcu
 
 用到的东西：PaddleOCR PP-OCRv4 识字模型（Apache-2.0，ONNX 版来自 RapidOCR）、onnxruntime-web 1.31.1（MIT）。
 
-## 孔位测谎仪
+## 角度算距离（原名孔位测谎仪）
 
 打开：https://qianshoulab.github.io/gongshi/tp/
 

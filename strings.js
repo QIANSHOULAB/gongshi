@@ -4,7 +4,7 @@
    不跟浏览器语言走（Song 11-03 22:19：所有网站默认英语，第二语言中文）。
    改了这个文件：GS_VERSION 往上加，三页里 <script src="…strings.js?v=…"> 的 v 改成一样的——
    GitHub 的 CDN 把同一个网址缓存 10 分钟，不换网址的话，刚上线那几分钟新页面会配上旧字，满屏 count.xxx。 */
-window.GS_VERSION = '0.5.3';
+window.GS_VERSION = '0.5.5';
 window.GS_STRINGS = {
   en: {
     htmlLang: 'en',
@@ -13,7 +13,7 @@ window.GS_STRINGS = {
       tabCo: 'Net Hours',
       tabInch: 'Inch Converter',
       tabCount: 'Part Counter',
-      tabTp: 'Hole Shift',
+      tabTp: 'Angle to mm',
       langLabel: 'Language'
     },
     co: {
@@ -133,9 +133,9 @@ window.GS_STRINGS = {
       foot: 'Counts one tray. A second tray counts only if it’s fully in frame.'
     },
     tp: {
-      docTitle: 'Hole Shift',
+      docTitle: 'Angle to mm',
       metaDesc: 'Bolt-circle radius plus the angle error from the CMM report. Out comes how far the hole center moved, in millimeters.',
-      h1: 'Hole Shift',
+      h1: 'Angle to mm',
       sub: 'The report swears it’s only 0.4°. Sounds harmless.<br>In millimeters, the truth comes out.',
       cardLabel: 'Radius and angle error',
       r: 'Bolt-circle radius',
@@ -247,7 +247,7 @@ window.GS_STRINGS = {
       tabCo: '工时榨汁机',
       tabInch: '英寸照妖镜',
       tabCount: '铁件点钞机',
-      tabTp: '孔位测谎仪',
+      tabTp: '角度算距离',
       langLabel: '语言'
     },
     co: {
@@ -364,9 +364,9 @@ window.GS_STRINGS = {
       foot: '只数一盒；第二盒完整拍进来才一起数。'
     },
     tp: {
-      docTitle: '孔位测谎仪',
+      docTitle: '角度算距离',
       metaDesc: '填分布圆半径和 CMM 报告上偏的角度，算出孔心挪了几毫米。',
-      h1: '孔位测谎仪',
+      h1: '角度算距离',
       sub: '报告说只歪了零点几度，听着不多。<br>换成毫米，当场露馅。',
       cardLabel: '半径和偏的角度',
       r: '分布圆半径',
